@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 public class VenueService {
@@ -15,36 +16,35 @@ public class VenueService {
     private final VenueRepository venueRepository;
 
     public void saveVenue(Response response) {
+        VenueEntity existingVenue = venueRepository.findById(response.getId())
+                .orElse(new VenueEntity());
 
-        Optional<VenueEntity> existingVenue = venueRepository.findById(response.getId());
-
-        if(existingVenue.isPresent()) {
-            VenueEntity venue = existingVenue.get();
-            if(venue.getCapacity() == null) {
-                  venue.setCapacity(response.getCapacity());
-            }
-            if(venue.getCity() == null) {
-                venue.setCity(response.getCity());
-            }
-            if(venue.getSurface() == null) {
-                venue.setSurface(response.getSurface());
-            }
-            if(venue.getAddress() == null) {
-                venue.setAddress(response.getAddress());
-            }
-            venueRepository.save(venue);
-        } else {
-            venueRepository.save(
-                    VenueEntity.builder()
-                            .id(response.getId())
-                            .image(response.getImage())
-                            .surface(response.getSurface())
-                            .country(response.getCountry())
-                            .address(response.getAddress())
-                            .capacity(response.getCapacity())
-                            .name(response.getName())
-                            .city(response.getCity())
-                            .build());
+        if (response.getCapacity() != null) {
+            existingVenue.setCapacity(response.getCapacity());
         }
+        if (response.getCity() != null) {
+            existingVenue.setCity(response.getCity());
+        }
+        if (response.getSurface() != null) {
+            existingVenue.setSurface(response.getSurface());
+        }
+        if (response.getAddress() != null) {
+            existingVenue.setAddress(response.getAddress());
+        }
+        existingVenue.setId(response.getId());
+        existingVenue.setImage(response.getImage());
+        existingVenue.setCountry(response.getCountry());
+        existingVenue.setName(response.getName());
+
+        venueRepository.save(existingVenue);
     }
+
+    public void save(VenueEntity venueEntity){
+        venueRepository.save(venueEntity);
+    }
+
+    public Optional<VenueEntity> findById(Long id){
+        return venueRepository.findById(id);
+    }
+
 }

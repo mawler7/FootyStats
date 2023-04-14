@@ -4,7 +4,6 @@ package com.example.foot8.controller;
 import com.example.foot8.buisness.match.response.FixtureResponse;
 import com.example.foot8.service.MatchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kong.unirest.json.JSONObject;
 import lombok.RequiredArgsConstructor;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -22,7 +21,8 @@ import java.io.IOException;
 public class MatchController {
 
     private final MatchService matchService;
-
+    private final OkHttpClient httpClient;
+    private final ObjectMapper objectMapper;
     @Value("${X-RapidAPI-Key}")
     private String apiKey;
     @Value("${X-RapidAPI-Host}")
@@ -30,9 +30,6 @@ public class MatchController {
 
     @GetMapping("/fixtures/{league}/{season}")
     public void getMatchesByLeagueAndSeason(@PathVariable String season, @PathVariable String league) throws IOException {
-        Response response = null;
-        OkHttpClient client = new OkHttpClient();
-
         HttpUrl url = new HttpUrl.Builder()
                 .scheme("https")
                 .host("api-football-v1.p.rapidapi.com")
@@ -48,22 +45,12 @@ public class MatchController {
                 .addHeader("X-RapidAPI-Key", apiKey)
                 .addHeader("X-RapidAPI-Host", apiHost)
                 .build();
-        try {
-            response = client.newCall(request).execute();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (response.body() != null) {
+                String jsonData = response.body().string();
+                FixtureResponse fixtureResponse = objectMapper.readValue(jsonData, FixtureResponse.class);
+                fixtureResponse.getResponse().forEach(matchService::saveMatch);
+            }
         }
-        String jsonData = response.body().string();
-        JSONObject jsonObject = new JSONObject(jsonData);
-
-        String responseJson = jsonObject.toString();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        FixtureResponse fixtureResponse = objectMapper.readValue(responseJson, FixtureResponse.class);
-
-        fixtureResponse.getResponse().forEach(matchService::saveMatch);
     }
-
-
 }

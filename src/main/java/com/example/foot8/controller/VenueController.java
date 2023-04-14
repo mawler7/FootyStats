@@ -1,10 +1,8 @@
 package com.example.foot8.controller;
 
-import com.example.foot8.buisness.venue.model.VenueDto;
 import com.example.foot8.buisness.venue.response.VenueResponse;
 import com.example.foot8.service.VenueService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kong.unirest.json.JSONObject;
 import lombok.RequiredArgsConstructor;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -21,18 +19,16 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class VenueController {
 
+    private final VenueService venueService;
+    private final OkHttpClient httpClient;
+    private final ObjectMapper objectMapper;
     @Value("${X-RapidAPI-Key}")
     private String apiKey;
     @Value("${X-RapidAPI-Host}")
     private String apiHost;
 
-    private final VenueService venueService;
-
     @GetMapping("/venues/{country}")
     public void getMatchesByLeagueAndSeason(@PathVariable String country) throws IOException {
-        Response response = null;
-        OkHttpClient client = new OkHttpClient();
-
         HttpUrl url = new HttpUrl.Builder()
                 .scheme("https")
                 .host("api-football-v1.p.rapidapi.com")
@@ -47,26 +43,13 @@ public class VenueController {
                 .addHeader("X-RapidAPI-Key", apiKey)
                 .addHeader("X-RapidAPI-Host", apiHost)
                 .build();
-        try {
-            response = client.newCall(request).execute();
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (response.body() != null) {
+                String jsonData = response.body().string();
+                VenueResponse venueResponse = objectMapper.readValue(jsonData, VenueResponse.class);
+                venueResponse.getResponse().forEach(venueService::saveVenue);
+            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        String jsonData = response.body().string();
-        JSONObject jsonObject = new JSONObject(jsonData);
-
-        String responseJson = jsonObject.toString();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        VenueResponse venueResponse = objectMapper.readValue(responseJson, VenueResponse.class);
-
-        venueResponse.getResponse().forEach(r -> {
-            venueService.saveVenue(r);
-
-        });
-
     }
-
 }
