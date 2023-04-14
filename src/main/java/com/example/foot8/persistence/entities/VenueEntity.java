@@ -38,16 +38,6 @@ public class VenueEntity {
 
     }
 
-    public VenueEntity(VenueDto venueDto) {
-        this.id = venueDto.getId();
-        this.name = venueDto.getName();
-        this.city = venueDto.getCity();
-        this.address = venueDto.getAddress();
-        this.country = venueDto.getCountry();
-        this.capacity = venueDto.getCapacity();
-        this.surface = venueDto.getSurface();
-    }
-
     public boolean isEqual(VenueDto venueDto) {
         return Objects.equals(this.capacity, venueDto.getCapacity()) &&
                 Objects.equals(this.city, venueDto.getCity()) &&
