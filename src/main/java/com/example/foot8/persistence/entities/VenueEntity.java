@@ -37,6 +37,7 @@ public class VenueEntity {
         this.city = venueDto.getCity();
 
     }
+
     public VenueEntity(VenueDto venueDto) {
         this.id = venueDto.getId();
         this.name = venueDto.getName();

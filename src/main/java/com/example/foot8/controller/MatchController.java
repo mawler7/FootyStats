@@ -75,7 +75,7 @@ public class MatchController {
         return httpClient.newCall(request).execute();
     }
 
-    private List<MatchDto> extractMatchesFromResponse(@NotNull Response response) throws  IOException {
+    private List<MatchDto> extractMatchesFromResponse(@NotNull Response response) throws IOException {
         String jsonData = Objects.requireNonNull(response.body()).string();
         FixtureResponse fixtureResponse = objectMapper.readValue(jsonData, FixtureResponse.class);
         return fixtureResponse.getResponse();

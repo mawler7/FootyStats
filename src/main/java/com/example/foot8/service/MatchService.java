@@ -114,16 +114,16 @@ public class MatchService {
     }
 
     private void updateMatchFields(MatchEntity match, @NotNull MatchDto response) {
-            match.setHomeTeamGoals(response.getGoals().getHome());
-            match.setAwayTeamGoals(response.getGoals().getAway());
-            match.setHalftimeHomeTeamGoals(response.getScore().getHalftime().getHome());
-            match.setHalftimeAwayTeamGoals(response.getScore().getHalftime().getAway());
-            match.setExtratimeHomeTeamGoals(response.getScore().getExtratime().getHome());
-            match.setExtratimeAwayTeamGoals(response.getScore().getExtratime().getAway());
-            match.setPenaltyHomeTeamGoals(response.getScore().getPenalty().getHome());
-            match.setPenaltyAwayTeamGoals(response.getScore().getPenalty().getAway());
-            match.setAwayTeamWinner(response.getTeams().getAway().getWinner());
-            match.setHomeTeamWinner(response.getTeams().getHome().getWinner());
+        match.setHomeTeamGoals(response.getGoals().getHome());
+        match.setAwayTeamGoals(response.getGoals().getAway());
+        match.setHalftimeHomeTeamGoals(response.getScore().getHalftime().getHome());
+        match.setHalftimeAwayTeamGoals(response.getScore().getHalftime().getAway());
+        match.setExtratimeHomeTeamGoals(response.getScore().getExtratime().getHome());
+        match.setExtratimeAwayTeamGoals(response.getScore().getExtratime().getAway());
+        match.setPenaltyHomeTeamGoals(response.getScore().getPenalty().getHome());
+        match.setPenaltyAwayTeamGoals(response.getScore().getPenalty().getAway());
+        match.setAwayTeamWinner(response.getTeams().getAway().getWinner());
+        match.setHomeTeamWinner(response.getTeams().getHome().getWinner());
     }
 
 

@@ -47,11 +47,11 @@ public class VenueService {
         setVenuesFields(newVenue, venueDto);
     }
 
-    public void save(VenueEntity venueEntity){
+    public void save(VenueEntity venueEntity) {
         venueRepository.save(venueEntity);
     }
 
-    public Optional<VenueEntity> findById(Long id){
+    public Optional<VenueEntity> findById(Long id) {
         return venueRepository.findById(id);
     }
 
