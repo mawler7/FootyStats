@@ -11,6 +11,7 @@ import lombok.Setter;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -46,5 +47,14 @@ public class VenueEntity {
         this.surface = venueDto.getSurface();
     }
 
+    public boolean isEqual(VenueDto venueDto) {
+        return Objects.equals(this.capacity, venueDto.getCapacity()) &&
+                Objects.equals(this.city, venueDto.getCity()) &&
+                Objects.equals(this.surface, venueDto.getSurface()) &&
+                Objects.equals(this.address, venueDto.getAddress()) &&
+                Objects.equals(this.image, venueDto.getImage()) &&
+                Objects.equals(this.country, venueDto.getCountry()) &&
+                Objects.equals(this.name, venueDto.getName());
+    }
 
 }

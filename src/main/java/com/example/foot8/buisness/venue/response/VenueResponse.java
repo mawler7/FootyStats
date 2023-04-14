@@ -1,5 +1,6 @@
 package com.example.foot8.buisness.venue.response;
 
+import com.example.foot8.buisness.venue.model.VenueDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +21,5 @@ public class VenueResponse {
     private List<String> errors;
     private Integer results;
     private Paging paging;
-    private List<Response> response;
+    private List<VenueDto> response;
 }

@@ -2,6 +2,8 @@ package com.example.foot8.controller;
 
 
 import com.example.foot8.buisness.match.response.FixtureResponse;
+import com.example.foot8.buisness.match.response.MatchDto;
+import com.example.foot8.exception.MatchesByLeagueAndSeasonException;
 import com.example.foot8.service.MatchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +11,16 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,28 +35,54 @@ public class MatchController {
     private String apiHost;
 
     @GetMapping("/fixtures/{league}/{season}")
-    public void getMatchesByLeagueAndSeason(@PathVariable String season, @PathVariable String league) throws IOException {
-        HttpUrl url = new HttpUrl.Builder()
+    public void saveMatchesByLeagueAndSeason(@PathVariable String season, @PathVariable String league) {
+
+        try {
+            HttpUrl url = createUrlForMatchesByLeagueAndSeason(season, league);
+            Request request = createRequestWithHeaders(url);
+            Response response = executeRequest(request);
+            List<MatchDto> responses = extractMatchesFromResponse(response);
+            saveMatches(responses);
+        } catch (IOException e) {
+            throw new MatchesByLeagueAndSeasonException("Failed to retrieve matches for season " + season + " and league " + league, e);
+        }
+    }
+
+    @NotNull
+    @Contract("_, _ -> _")
+    private HttpUrl createUrlForMatchesByLeagueAndSeason(String season, String league) {
+        return new HttpUrl.Builder()
                 .scheme("https")
                 .host("api-football-v1.p.rapidapi.com")
-                .addPathSegment("v3")
-                .addPathSegment("fixtures")
+                .addPathSegments("v3/fixtures")
                 .addQueryParameter("league", league)
                 .addQueryParameter("season", season)
                 .build();
+    }
 
-        Request request = new Request.Builder()
+    @NotNull
+    private Request createRequestWithHeaders(HttpUrl url) {
+        return new Request.Builder()
                 .url(url)
                 .get()
                 .addHeader("X-RapidAPI-Key", apiKey)
                 .addHeader("X-RapidAPI-Host", apiHost)
                 .build();
-        try (Response response = httpClient.newCall(request).execute()) {
-            if (response.body() != null) {
-                String jsonData = response.body().string();
-                FixtureResponse fixtureResponse = objectMapper.readValue(jsonData, FixtureResponse.class);
-                fixtureResponse.getResponse().forEach(matchService::saveMatch);
-            }
-        }
     }
+
+    @NotNull
+    private Response executeRequest(Request request) throws IOException {
+        return httpClient.newCall(request).execute();
+    }
+
+    private List<MatchDto> extractMatchesFromResponse(@NotNull Response response) throws  IOException {
+        String jsonData = Objects.requireNonNull(response.body()).string();
+        FixtureResponse fixtureResponse = objectMapper.readValue(jsonData, FixtureResponse.class);
+        return fixtureResponse.getResponse();
+    }
+
+    private void saveMatches(@NotNull List<MatchDto> matches) {
+        matches.forEach(matchService::saveMatch);
+    }
+
 }
