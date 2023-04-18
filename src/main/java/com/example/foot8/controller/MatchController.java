@@ -3,6 +3,7 @@ package com.example.foot8.controller;
 
 import com.example.foot8.buisness.match.response.FixtureResponse;
 import com.example.foot8.buisness.match.response.MatchDto;
+import com.example.foot8.constants.League;
 import com.example.foot8.exception.MatchesByLeagueAndSeasonException;
 import com.example.foot8.service.MatchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +35,26 @@ public class MatchController {
     private String apiKey;
     @Value("${X-RapidAPI-Host}")
     private String apiHost;
+
+    private static final String SEASON = "2022";
+
+
+
+//    @GetMapping("/fixtures/update-all")
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updateAllMatches() {
+        for (League league : League.values()) {
+            try {
+                HttpUrl url = createUrlForMatchesByLeagueAndSeason(SEASON, league.getId());
+                Request request = createRequestWithHeaders(url);
+                Response response = executeRequest(request);
+                List<MatchDto> responses = extractMatchesFromResponse(response);
+                saveMatches(responses);
+            } catch (IOException e) {
+                throw new MatchesByLeagueAndSeasonException("Failed to retrieve matches for season " + SEASON + " and league " + league.getId(), e);
+            }
+        }
+    }
 
     @GetMapping("/fixtures/{league}/{season}")
     public void saveMatchesByLeagueAndSeason(@PathVariable String season, @PathVariable String league) {

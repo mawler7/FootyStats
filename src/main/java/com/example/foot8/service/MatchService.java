@@ -75,6 +75,7 @@ public class MatchService {
     private boolean shouldUpdateMatch(MatchEntity match, MatchDto response) {
         return (response.getGoals().getHome() != null &&
                 response.getGoals().getAway() != null) &&
+                (response.getFixture().getStatus().getShortName().equals("FT")) &&
                 (match.getHomeTeamGoals() == null && match.getAwayTeamGoals() == null);
     }
 
