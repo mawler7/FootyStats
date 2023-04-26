@@ -15,7 +15,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,11 +80,9 @@ public class MatchService {
         }
     }
 
-    private boolean shouldUpdateMatch(MatchEntity match, MatchDto response) {
-        return (response.getGoals().getHome() != null &&
-                response.getGoals().getAway() != null) &&
-                (response.getFixture().getStatus().getShortName().equals("FT")) &&
-                (match.getHomeTeamGoals() == null && match.getAwayTeamGoals() == null);
+    private boolean shouldUpdateMatch(MatchEntity match, @NotNull MatchDto response) {
+        return response.getFixture().getStatus().getShortName().equals("FT") &&
+                (match.getStatus() == null || !match.getStatus().equals("FT"));
     }
 
     private MatchEntity createNewMatch(@NotNull MatchDto response) {
@@ -91,17 +97,13 @@ public class MatchService {
                 .venueCity(response.getFixture().getVenue().getCity())
                 .leagueName(response.getLeague().getName())
                 .leagueCountry(response.getLeague().getCountry())
-                .leagueLogo(response.getLeague().getLogo())
-                .leagueFlag(response.getLeague().getFlag())
                 .leagueSeason(response.getLeague().getSeason())
                 .leagueRound(response.getLeague().getRound())
                 .homeTeamId(response.getTeams().getHome().getId())
                 .homeTeamName(response.getTeams().getHome().getName())
-                .homeTeamLogo(response.getTeams().getHome().getLogo())
                 .homeTeamWinner(response.getTeams().getHome().getWinner())
                 .awayTeamId(response.getTeams().getAway().getId())
                 .awayTeamName(response.getTeams().getAway().getName())
-                .awayTeamLogo(response.getTeams().getAway().getLogo())
                 .awayTeamWinner(response.getTeams().getAway().getWinner())
                 .homeTeamGoals(response.getGoals().getHome())
                 .awayTeamGoals(response.getGoals().getAway())
@@ -111,6 +113,7 @@ public class MatchService {
                 .extratimeAwayTeamGoals(response.getScore().getExtratime().getAway())
                 .penaltyHomeTeamGoals(response.getScore().getPenalty().getHome())
                 .penaltyAwayTeamGoals(response.getScore().getPenalty().getAway())
+                .status(response.getFixture().getStatus().getShortName())
                 .build();
     }
 
@@ -125,15 +128,18 @@ public class MatchService {
         match.setPenaltyAwayTeamGoals(response.getScore().getPenalty().getAway());
         match.setAwayTeamWinner(response.getTeams().getAway().getWinner());
         match.setHomeTeamWinner(response.getTeams().getHome().getWinner());
+        match.setStatus(response.getFixture().getStatus().getShortName());
     }
 
 
     private void saveAwayTeam(@NotNull MatchDto response) {
+        final var leagueEntity = leagueService.findById(response.getLeague().getId()).orElse(null);
         final var teamsDto = response.getTeams();
         if (teamsDto.getAway().getId() != null) {
             TeamEntity awayTeamEntity = teamService.findById(teamsDto.getAway().getId()).orElse(null);
             if (awayTeamEntity == null) {
                 awayTeamEntity = new TeamEntity(teamsDto.getAway());
+                awayTeamEntity.setLeague(leagueEntity);
                 teamService.save(awayTeamEntity);
                 log.info("Team " + response.getTeams().getAway().getName() + SUCCESS);
             }
@@ -141,11 +147,13 @@ public class MatchService {
     }
 
     private void saveHomeTeam(@NotNull MatchDto response) {
+        final var leagueEntity = leagueService.findById(response.getLeague().getId()).orElse(null);
         final var teamsDto = response.getTeams();
         if (teamsDto.getHome().getId() != null) {
             TeamEntity homeTeamEntity = teamService.findById(teamsDto.getHome().getId()).orElse(null);
             if (homeTeamEntity == null) {
                 homeTeamEntity = new TeamEntity(teamsDto.getHome());
+                homeTeamEntity.setLeague(leagueEntity);
                 teamService.save(homeTeamEntity);
                 log.info("Team " + response.getTeams().getHome().getName() + SUCCESS);
             }
@@ -174,6 +182,25 @@ public class MatchService {
                 log.info("League " + response.getLeague().getName() + SUCCESS);
             }
         }
+    }
+
+    public Map<String, List<MatchEntity>> findByTodayDate() {
+        LocalDate date = LocalDate.now();
+        String start = String.valueOf(LocalDateTime.of(date, LocalTime.MIN));
+        String end = String.valueOf(LocalDateTime.of(date, LocalTime.MAX));
+        Optional<List<MatchEntity>> todayFixtures = matchRepository.findByDateBetween(start, end);
+        return todayFixtures.orElse(Collections.emptyList())
+                .stream()
+                .collect(Collectors.groupingBy(MatchEntity::getLeagueName));
+    }
+
+    public List<MatchEntity> findHeadToHead(Long homeTeamId, Long awayTeamId) {
+        List<MatchEntity> matches = matchRepository.findByHomeTeamIdAndAwayTeamId(homeTeamId, awayTeamId);
+        matches.addAll(matchRepository.findByHomeTeamIdAndAwayTeamId(awayTeamId, homeTeamId));
+        return matches.stream()
+                .filter(m -> m.getStatus() != null && m.getStatus().equals("FT"))
+                .sorted(Comparator.comparing(MatchEntity::getDate).reversed())
+                .toList();
     }
 
 }

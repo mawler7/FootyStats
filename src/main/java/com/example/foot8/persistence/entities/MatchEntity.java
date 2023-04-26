@@ -34,17 +34,13 @@ public class MatchEntity {
     private String venueCity;
     private String leagueName;
     private String leagueCountry;
-    private String leagueLogo;
-    private String leagueFlag;
-    private Long leagueSeason;
+    private Integer leagueSeason;
     private String leagueRound;
     private Long homeTeamId;
     private String homeTeamName;
-    private String homeTeamLogo;
     private Boolean homeTeamWinner;
     private Long awayTeamId;
     private String awayTeamName;
-    private String awayTeamLogo;
     private Boolean awayTeamWinner;
     private Integer homeTeamGoals;
     private Integer awayTeamGoals;
@@ -54,6 +50,6 @@ public class MatchEntity {
     private Integer extratimeAwayTeamGoals;
     private Integer penaltyHomeTeamGoals;
     private Integer penaltyAwayTeamGoals;
-
+    private String status;
 }
 

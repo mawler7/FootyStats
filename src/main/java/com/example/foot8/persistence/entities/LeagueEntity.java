@@ -9,7 +9,9 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,8 +29,9 @@ public class LeagueEntity {
     private String country;
     private String logo;
     private String flag;
-    private Long season;
-    private String round;
+
+    @OneToMany(mappedBy = "league")
+    private Set<TeamEntity> teams;
 
     public LeagueEntity(LeagueDto leagueDto) {
         this.id = leagueDto.getId();
@@ -36,8 +39,6 @@ public class LeagueEntity {
         this.country = leagueDto.getCountry();
         this.logo = leagueDto.getLogo();
         this.flag = leagueDto.getFlag();
-        this.season = leagueDto.getSeason();
-        this.round = leagueDto.getRound();
     }
 
 }

@@ -17,6 +17,6 @@ public class LeagueDto {
     private String country;
     private String logo;
     private String flag;
-    private Long season;
+    private Integer season;
     private String round;
 }
