@@ -203,4 +203,7 @@ public class MatchService {
                 .toList();
     }
 
+    public List<Map<String, Object>> getWinsByResult(int awayGoals, int homeGoals) {
+        return matchRepository.getWinsByResult(awayGoals, homeGoals);
+    }
 }

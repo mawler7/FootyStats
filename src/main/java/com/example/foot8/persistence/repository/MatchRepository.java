@@ -3,9 +3,11 @@ package com.example.foot8.persistence.repository;
 import com.example.foot8.persistence.entities.MatchEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -22,5 +24,14 @@ public interface MatchRepository extends JpaRepository<MatchEntity, Long> {
 
     List<MatchEntity> findByHomeTeamIdAndAwayTeamId(Long homeTeamId, Long awayTeamId);
 
-}
+    @Query("SELECT CASE WHEN m.awayTeamGoals = :awayGoals AND m.homeTeamGoals = :homeGoals " +
+            "THEN m.awayTeamName ELSE m.homeTeamName END AS teamName, COUNT(*) AS wins " +
+            "FROM MatchEntity m " +
+            "WHERE ((m.awayTeamGoals = :awayGoals AND m.homeTeamGoals = :homeGoals)) " +
+            "OR ((m.awayTeamGoals = :homeGoals AND m.homeTeamGoals = :awayGoals)) " +
+            "GROUP BY teamName " +
+            "ORDER BY wins DESC")
+    List<Map<String, Object>> getWinsByResult(@Param("awayGoals") int awayGoals, @Param("homeGoals") int homeGoals);
+
+    }
 

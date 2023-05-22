@@ -15,13 +15,16 @@ import okhttp3.Response;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -105,4 +108,11 @@ public class MatchController {
         matches.forEach(matchService::saveMatch);
     }
 
+    @GetMapping("/wins")
+    public ResponseEntity<List<Map<String, Object>>> getWinsByResult(
+            @RequestParam("awayGoals") int awayGoals,
+            @RequestParam("homeGoals") int homeGoals) {
+        List<Map<String, Object>> result = matchService.getWinsByResult(awayGoals, homeGoals);
+        return ResponseEntity.ok(result);
+    }
 }

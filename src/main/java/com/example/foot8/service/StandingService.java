@@ -46,9 +46,6 @@ public class StandingService {
                             .build();
     }
 
-    private Integer getCurrentSeason() {
-        return matchRepository.findMaxLeagueSeason();
-    }
 
     public List<StandingData> calculateStandings(String leagueName, Integer season) {
         List<MatchEntity> matches = matchRepository.findByLeagueNameAndLeagueSeasonAndStatus(leagueName, season, "FT");
@@ -107,6 +104,9 @@ public class StandingService {
         IntStream.range(0, standingsList.size()).forEach(i -> standingsList.get(i).setPosition(i + 1));
 
         return standingsList;
+    }
+    private Integer getCurrentSeason() {
+        return matchRepository.findMaxLeagueSeason();
     }
 
 }
