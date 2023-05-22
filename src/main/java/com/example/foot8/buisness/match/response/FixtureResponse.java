@@ -20,6 +20,6 @@ public class FixtureResponse {
     private List<String> errors;
     private Integer results;
     private Paging paging;
-    private List<Response> response;
+    private List<MatchDto> response;
 
 }

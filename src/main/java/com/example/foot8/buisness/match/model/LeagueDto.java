@@ -2,16 +2,9 @@ package com.example.foot8.buisness.match.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -24,6 +17,6 @@ public class LeagueDto {
     private String country;
     private String logo;
     private String flag;
-    private Long season;
+    private Integer season;
     private String round;
 }

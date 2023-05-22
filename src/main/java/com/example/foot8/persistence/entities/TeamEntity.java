@@ -6,9 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Getter
@@ -25,7 +30,15 @@ public class TeamEntity {
     private String name;
     private String logo;
 
-    public TeamEntity(TeamDto teamDto) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "league_id")
+    private LeagueEntity league;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id")
+    private VenueEntity venue;
+
+    public TeamEntity(@NotNull TeamDto teamDto) {
         this.id = teamDto.getId();
         this.name = teamDto.getName();
         this.logo = teamDto.getLogo();

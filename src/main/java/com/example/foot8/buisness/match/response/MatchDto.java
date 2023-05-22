@@ -17,7 +17,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class Response {
+public class MatchDto {
     private FixtureDto fixture;
     private LeagueDto league;
     private TeamsDto teams;
