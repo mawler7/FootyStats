@@ -1,6 +1,6 @@
 package com.example.foot8.persistence.repository;
 
-import com.example.foot8.persistence.entities.VenueEntity;
+import com.example.foot8.persistence.entities.venues.VenueEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

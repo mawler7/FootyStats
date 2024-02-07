@@ -15,6 +15,9 @@ import java.util.List;
 @Builder
 public class StandingDataWrapper {
     private String leagueName;
+    private Long leagueId;
+    private String leagueLogo;
     private Integer season;
     private List<StandingData> standingData;
+
 }
