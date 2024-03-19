@@ -1,9 +1,10 @@
 package com.footystars.foot8.api.service.datafetcher;
 
-import com.footystars.foot8.api.model.venue.response.VenuesDto;
+import com.footystars.foot8.api.model.venues.Venues;
 import com.footystars.foot8.buisness.service.CountryService;
 import com.footystars.foot8.buisness.service.VenueService;
 import com.footystars.foot8.persistence.entities.countries.Country;
+import com.footystars.foot8.persistence.entities.venues.VenueDto;
 import lombok.RequiredArgsConstructor;
 
 import org.jetbrains.annotations.NotNull;
@@ -51,9 +52,8 @@ public class VenuesFetcher {
             var params = new HashMap<String, String>();
             params.put(COUNTRY, country.getName());
             try {
-                var venuesResponse = dataFetcher.fetch(VENUES, params, VenuesDto.class);
-                var venues = venuesResponse.getVenues();
-                venues.forEach(venueService::updateFromDto);
+                var venues = dataFetcher.fetch(VENUES, params, Venues.class).getVenueList();
+                venues.forEach(venueService::fetchVenues);
             } catch (IOException e) {
                 logger .error("Error fetching venues", e);
             }

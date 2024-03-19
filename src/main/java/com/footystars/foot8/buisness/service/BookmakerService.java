@@ -1,14 +1,13 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.api.model.odds.model.BetDto;
-import com.footystars.foot8.api.model.odds.model.BookmakerDto;
-import com.footystars.foot8.api.model.odds.model.OddValueDto;
-import com.footystars.foot8.persistence.entities.ValueEntity;
-import com.footystars.foot8.persistence.entities.odds.bets.BetEntity;
-import com.footystars.foot8.persistence.entities.odds.bookmakers.BookmakerEntity;
+import com.footystars.foot8.api.model.odds.BetApi;
+import com.footystars.foot8.api.model.odds.BookmakerApi;
+import com.footystars.foot8.api.model.odds.OddValue;
+import com.footystars.foot8.persistence.entities.bookmakers.odd.Odds;
+import com.footystars.foot8.persistence.entities.bookmakers.bet.Bet;
+import com.footystars.foot8.persistence.entities.bookmakers.bookmaker.Bookmaker;
 import com.footystars.foot8.persistence.repository.BookmakerRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -24,21 +23,21 @@ public class BookmakerService {
     private final BookmakerRepository bookmakerRepository;
     private final BetService betService;
 
-    public void saveBookmakers(@NotNull List<BookmakerDto> bookmakerDtos, String fixtureId) {
-        List<BookmakerEntity> bookmakerEntities = bookmakerDtos.stream()
+    public void saveBookmakers(@NotNull List<BookmakerApi> bookmakerDtos, String fixtureId) {
+        List<Bookmaker> bookmakerEntities = bookmakerDtos.stream()
                 .map(bookmakerDto -> mapToEntity(bookmakerDto, fixtureId))
                 .toList();
         bookmakerRepository.saveAll(bookmakerEntities);
     }
 
-    private BookmakerEntity mapToEntity(@NotNull BookmakerDto bookmakerDto, String fixtureId) {
+    private Bookmaker mapToEntity(@NotNull BookmakerApi bookmakerDto, String fixtureId) {
         return bookmakerRepository.findById(bookmakerDto.getId())
                 .orElseGet(() -> {
-                    BookmakerEntity bookmakerEntity = new BookmakerEntity();
+                    Bookmaker bookmakerEntity = new Bookmaker();
                     bookmakerEntity.setName(bookmakerDto.getName());
 
                     if (bookmakerDto.getBets() != null) {
-                        List<BetEntity> bets = bookmakerDto.getBets().stream()
+                        List<Bet> bets = bookmakerDto.getBets().stream()
                                 .map(betDto -> mapToEntity(betDto, bookmakerEntity, fixtureId))
                                 .toList();
                         bookmakerEntity.setBets(bets);
@@ -48,30 +47,30 @@ public class BookmakerService {
                 });
     }
 
-    private BetEntity mapToEntity(@NotNull BetDto betDto, BookmakerEntity bookmakerEntity, String fixtureId) {
+    private Bet mapToEntity(@NotNull BetApi betDto, Bookmaker bookmakerEntity, String fixtureId) {
         return betService.findById(betDto.getId())
                 .orElseGet(() -> {
-                    BetEntity betEntity = new BetEntity();
+                    Bet betEntity = new Bet();
                     betEntity.setName(betDto.getName());
                     betEntity.setBookmaker(bookmakerEntity);
 
                     if (betDto.getValues() != null) {
-                        List<ValueEntity> valueEntities = betDto.getValues().stream()
+                        List<Odds> valueEntities = betDto.getValues().stream()
                                 .map(oddValueDto -> mapToEntity(oddValueDto, betEntity, fixtureId))
                                 .toList();
-                        betEntity.setValues(valueEntities);
+//                        betEntity.setValues(valueEntities);
                     }
 
                     return betEntity;
                 });
     }
 
-    private ValueEntity mapToEntity(@NotNull OddValueDto oddValueDto, BetEntity betEntity, String fixtureId) {
-        ValueEntity valueEntity = new ValueEntity();
+    private Odds mapToEntity(@NotNull OddValue oddValueDto, Bet betEntity, String fixtureId) {
+        Odds valueEntity = new Odds();
         valueEntity.setValue(oddValueDto.getValue());
         valueEntity.setOdd(oddValueDto.getOdd());
 
-        valueEntity.setFixtureId(parseLong(fixtureId));
+//        valueEntity.setFixtureId(parseLong(fixtureId));
 
         valueEntity.setBet(betEntity);
         return valueEntity;

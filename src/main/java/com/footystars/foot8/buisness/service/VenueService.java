@@ -1,7 +1,9 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.api.model.venue.model.VenueDto;
+import com.footystars.foot8.persistence.entities.teams.seasons.TeamSeasonDto;
+import com.footystars.foot8.persistence.entities.teams.team.TeamDto;
 import com.footystars.foot8.persistence.entities.venues.Venue;
+import com.footystars.foot8.persistence.entities.venues.VenueDto;
 import com.footystars.foot8.persistence.entities.venues.VenueMapper;
 import com.footystars.foot8.persistence.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +22,12 @@ public class VenueService {
     private final VenueMapper venueMapper;
 
     @Transactional
-    public void updateFromDto(@NotNull VenueDto venueDto) {
-        if (venueDto.getVenueId() != null) {
-            var id = venueDto.getVenueId();
-            var venue = venueRepository.findById(id);
-            if (venue.isPresent()) {
-                var venueEntity = venue.get();
+    public void fetchVenues(@NotNull VenueDto venueDto) {
+        if (venueDto.getId() != null) {
+            var id = venueDto.getId();
+            var optionalVenue = venueRepository.findById(id);
+            if (optionalVenue.isPresent()) {
+                var venueEntity = optionalVenue.get();
                 venueMapper.partialUpdate(venueDto, venueEntity);
                 saveVenue(venueEntity);
             } else {
@@ -35,12 +37,15 @@ public class VenueService {
         }
     }
 
-    public Optional<Venue> findById(@NotNull Long venueId) {
-        return venueRepository.findById(venueId);
+    public Optional<Venue> findById(@NotNull Long id) {
+        return venueRepository.findById(id);
     }
 
-    public void saveVenue(@NotNull Venue venueEntity) {
-        venueRepository.save(venueEntity);
+    @Transactional
+    public Venue saveVenue(@NotNull Venue venue) {
+       return venueRepository.save(venue);
     }
+
+
 
 }

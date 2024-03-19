@@ -1,6 +1,6 @@
 package com.footystars.foot8.api.service.datafetcher;
 
-import com.footystars.foot8.api.model.countries.CountriesDto;
+import com.footystars.foot8.api.model.countries.Countries;
 import com.footystars.foot8.buisness.service.CountryService;
 import com.footystars.foot8.exception.CountryException;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +25,12 @@ public class CountriesFetcher {
     public ResponseEntity<String> fetchCountries() throws CountryException {
         try {
             var params = new HashMap<String, String>();
-            var countriesResponse = dataFetcher.fetch(COUNTRIES, params, CountriesDto.class);
-            var countries = countriesResponse.getCountries();
+            var countries = dataFetcher.fetch(COUNTRIES, params, Countries.class).getCountryList();
             countries.forEach(countryService::save);
-            ResponseEntity.ok("Countries fetched successfully");
+            return ResponseEntity.ok("Countries fetched successfully");
         } catch (IOException e) {
             throw new CountryException(e, e.getMessage());
         }
-        return ResponseEntity.ok("Countries fetched successfully");
     }
 
 }

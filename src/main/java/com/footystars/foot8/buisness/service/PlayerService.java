@@ -1,6 +1,7 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.persistence.entities.players.Player;
+
+import com.footystars.foot8.persistence.entities.players.player.Player;
 import com.footystars.foot8.persistence.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,13 +12,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PlayerService {
 
-    private final PlayerRepository playerEntityRepository;
+    private final PlayerRepository playerRepository;
 
     public Optional<Player> findById(Long id) {
-        return playerEntityRepository.findById(id);
+        return playerRepository.findById(id);
     }
 
-    public void save(Player playerEntity) {
-        playerEntityRepository.save(playerEntity);
+    public Player save(Player player) {
+        return playerRepository.save(player);
     }
 }
+

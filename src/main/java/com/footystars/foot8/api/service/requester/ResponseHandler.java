@@ -2,7 +2,6 @@ package com.footystars.foot8.api.service.requester;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,5 @@ public class ResponseHandler {
         var jsonData = Objects.requireNonNull(response.body()).string();
         return objectMapper.readValue(jsonData, responseType);
     }
-
 
 }

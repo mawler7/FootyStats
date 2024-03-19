@@ -1,6 +1,7 @@
 package com.footystars.foot8.persistence.entities.teams.statistics;
 
-import com.footystars.foot8.api.model.teams.statistics.model.lineups.Lineup;
+import com.footystars.foot8.api.model.teams.statistics.statistic.lineups.lineup.Lineup;
+import com.footystars.foot8.persistence.entities.teams.seasons.TeamSeason;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -9,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -25,8 +27,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 @Entity
-@Table(name = "team_stats")
 @AllArgsConstructor
+@Table(name = "team_stats")
 public class TeamStats {
 
     @Id
@@ -34,6 +36,7 @@ public class TeamStats {
     private Long id;
 
     private String form;
+
     //biggest
     private Integer biggestGoalsForHome;
     private Integer biggestGoalsForAway;
@@ -46,6 +49,7 @@ public class TeamStats {
     private Integer biggestStreakDraws;
     private Integer biggestStreakLoses;
     private Integer biggestStreakWins;
+
     //cards
     private String redCardFrom0To15Percentage;
     private Integer redCardFrom0To15Total;
@@ -79,6 +83,7 @@ public class TeamStats {
     private Integer yellowCardFrom91To105Total;
     private String yellowCardFrom106To120Percentage;
     private Integer yellowCardFrom106To120Total;
+
     //cleanSheets
     private Integer cleanSheetsHome;
     private Integer cleanSheetsAway;
@@ -146,23 +151,22 @@ public class TeamStats {
     //league
     private Long leagueId;
     private String leagueName;
-    private String leagueType;
+    private String country;
     private String leagueLogo;
     private Integer seasonYear;
     //lineups
     @ElementCollection
-    @CollectionTable(name = "team_lineups", joinColumns = @JoinColumn(name = "team_statistics_id"))
+    @CollectionTable(name = "team_lineups", joinColumns = @JoinColumn(name = "team_stats_id"))
     private List<Lineup> lineups;
-    //team
-    private Long teamId;
-    private String teamName;
-    private String teamLogo;
+
     //penalty
     private Integer penaltiesTotal;
-    private Integer penaltiesScoredTotal;
+    private String penaltiesScoredTotal;
     private String penaltiesScoredPercentage;
     private Integer penaltiesMissedTotal;
     private String penaltiesMissedPercentage;
+
+
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 

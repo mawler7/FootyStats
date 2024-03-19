@@ -1,19 +1,17 @@
 package com.footystars.foot8.buisness.service;
 
-
-import com.footystars.foot8.api.model.league.LeagueResponse;
-import com.footystars.foot8.api.model.league.SeasonDto;
-import com.footystars.foot8.persistence.entities.countries.CountryDto;
-import com.footystars.foot8.persistence.entities.leagues.League;
-import com.footystars.foot8.persistence.entities.leagues.LeagueDomainMapper;
-import com.footystars.foot8.persistence.entities.leagues.LeagueDto;
-import com.footystars.foot8.persistence.entities.leagues.LeagueMapper;
+import com.footystars.foot8.persistence.entities.countries.CountryMapper;
+import com.footystars.foot8.persistence.entities.leagues.league.League;
+import com.footystars.foot8.persistence.entities.leagues.league.LeagueDto;
+import com.footystars.foot8.persistence.entities.leagues.league.LeagueMapper;
 import com.footystars.foot8.persistence.repository.LeagueRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 
@@ -22,68 +20,35 @@ import java.util.Optional;
 public class LeagueService {
 
     private final LeagueRepository leagueRepository;
+    private final LeagueSeasonService leagueSeasonService;
     private final LeagueMapper leagueMapper;
-    private final LeagueDomainMapper leagueDomainMapper;
-
-    private static void updateSeasonAndCountry(@NotNull SeasonDto season, @NotNull CountryDto country, Integer seasonYear, @NotNull LeagueDto leagueDto) {
-        leagueDto.setSeasonYear(seasonYear);
-        leagueDto.setStartDate(season.getStartDate());
-        leagueDto.setEndDate(season.getEndDate());
-        leagueDto.setCountryName(country.getName());
-        leagueDto.setCountryCode(country.getCode());
-        leagueDto.setCountryFlag(country.getFlag());
-    }
-
-    public void createLeagueFromResponse(@NotNull LeagueResponse leagueResponse) {
-        var season = leagueResponse.getSeasons().get(0);
-        var country = leagueResponse.getCountry();
-        var seasonYear = leagueResponse.getSeasons().get(0).getYear();
-        var leagueDto = leagueDomainMapper.toDto(leagueResponse);
-        updateSeasonAndCountry(season, country, seasonYear, leagueDto);
-        var league = leagueMapper.toEntity(leagueDto);
-        leagueRepository.save(league);
-    }
+    private final CountryService countryService;
+    private final CountryMapper countryMapper;
 
     @Transactional
-    public void updateFromResponse(@NotNull LeagueResponse leagueResponse) {
-        CountryDto country = leagueResponse.getCountry();
-        var leagueId = leagueResponse.getLeagueInfo().getLeagueId();
-        var seasonYear = leagueResponse.getSeasons().get(0).getYear();
+    @Async
+    public void fetchResponse(@NotNull LeagueDto leagueDto) {
+        var optionalLeague = leagueRepository.findById(leagueDto.getLeagueInfo().getId());
+        var seasons = leagueDto.getSeasons();
+        var countryName = leagueDto.getCountry().getName();
+        var country = countryService.findByName(countryName);
+        if(country.isEmpty()) {
+            countryService.save(leagueDto.getCountry());
+        }
 
-        var season = leagueResponse.getSeasons().get(0);
-
-        if (leagueId != null && seasonYear != null) {
-            Optional<League> league = getByLeagueIdAndSeasonYear(leagueId, seasonYear);
-            if (league.isPresent()) {
-                League leagueEntity = league.get();
-                if (leagueEntity.getSeasonYear() == null || leagueEntity.getStartDate() == null || leagueEntity.getEndDate() == null) {
-                    leagueEntity.setSeasonYear(seasonYear);
-                    leagueEntity.setStartDate(season.getStartDate());
-                    leagueEntity.setEndDate(season.getEndDate());
-                }
-                if (leagueEntity.getCountryName() == null && country != null) {
-                    leagueEntity.setCountryName(country.getName());
-                    leagueEntity.setCountryCode(country.getCode());
-                    leagueEntity.setCountryFlag(country.getFlag());
-                }
-                LeagueDto leagueDto = leagueMapper.toDto(leagueEntity);
-                leagueDomainMapper.partialUpdate(leagueResponse, leagueDto);
-                League updatedEntity = leagueMapper.toEntity(leagueDto);
-                save(updatedEntity);
-            } else {
-
-                createLeagueFromResponse(leagueResponse);
-            }
+        if (optionalLeague.isPresent()) {
+            var leagueEntity = optionalLeague.get();
+            leagueSeasonService.updateSeasons(leagueEntity,seasons);
+        } else {
+            var newLeague = leagueMapper.toEntity(leagueDto);
+            newLeague.setSeasons(new HashSet<>());
+            var league = leagueRepository.saveAndFlush(newLeague);
+            leagueSeasonService.updateSeasons(league, seasons);
         }
     }
 
-    public Optional<League> getByLeagueIdAndSeasonYear(@NotNull Long leagueId, @NotNull Integer seasonYear) {
-        return leagueRepository.findByLeagueIdAndSeasonYear(leagueId, seasonYear);
+
+    public Optional<League> findById(Long id) {
+        return leagueRepository.findById(id);
     }
-
-    public void save(League leagueEntity) {
-        leagueRepository.save(leagueEntity);
-    }
-
-
 }

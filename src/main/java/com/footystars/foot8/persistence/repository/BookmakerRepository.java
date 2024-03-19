@@ -1,14 +1,8 @@
 package com.footystars.foot8.persistence.repository;
 
-import com.footystars.foot8.persistence.entities.odds.bookmakers.BookmakerEntity;
-import org.jetbrains.annotations.NotNull;
+import com.footystars.foot8.persistence.entities.bookmakers.bookmaker.Bookmaker;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
-
-public interface BookmakerRepository extends JpaRepository<BookmakerEntity, Long> {
-
-    @NotNull
-    Optional<BookmakerEntity> findById(@NotNull Long id);
+public interface BookmakerRepository extends JpaRepository<Bookmaker, Long> {
 }

@@ -1,27 +1,32 @@
 package com.footystars.foot8.persistence.entities.teams.statistics;
 
+import com.footystars.foot8.api.model.teams.statistics.statistic.TeamStatistic;
+import com.footystars.foot8.persistence.entities.teams.seasons.TeamSeasonMapper;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {TeamSeasonMapper.class})
 public interface TeamStatsMapper {
 
-    //biggest
 
-    @Mapping(source = "biggest.biggestGoals._for.home", target = "biggestGoalsForHome")
-    @Mapping(source = "biggest.biggestGoals._for.away", target = "biggestGoalsForAway")
-    @Mapping(source = "biggest.biggestGoals.against.home", target = "biggestGoalsAgainstHome")
-    @Mapping(source = "biggest.biggestGoals.against.away", target = "biggestGoalsAgainstAway")
-    @Mapping(source = "biggest.biggestWin.home", target = "biggestWinHome")
-    @Mapping(source = "biggest.biggestWin.home", target = "biggestWinAway")
-    @Mapping(source = "biggest.biggestLost.away", target = "biggestLostHome")
-    @Mapping(source = "biggest.biggestLost.away", target = "biggestLostAway")
-    @Mapping(source = "biggest.biggestStreak.draws", target = "biggestStreakDraws")
-    @Mapping(source = "biggest.biggestStreak.loses", target = "biggestStreakLoses")
-    @Mapping(source = "biggest.biggestStreak.wins", target = "biggestStreakWins")
+    TeamStats toEntity(TeamStatsDto teamStatsDto);
+
+    @Mapping(source = "biggest.goals.goalsFor.home", target = "biggestGoalsForHome")
+    @Mapping(source = "biggest.goals.goalsFor.away", target = "biggestGoalsForAway")
+    @Mapping(source = "biggest.goals.against.home", target = "biggestGoalsAgainstHome")
+    @Mapping(source = "biggest.goals.against.away", target = "biggestGoalsAgainstAway")
+    @Mapping(source = "biggest.wins.home", target = "biggestWinHome")
+    @Mapping(source = "biggest.wins.home", target = "biggestWinAway")
+    @Mapping(source = "biggest.loses.away", target = "biggestLostHome")
+    @Mapping(source = "biggest.loses.away", target = "biggestLostAway")
+    @Mapping(source = "biggest.streak.draws", target = "biggestStreakDraws")
+    @Mapping(source = "biggest.streak.loses", target = "biggestStreakLoses")
+    @Mapping(source = "biggest.streak.wins", target = "biggestStreakWins")
     @Mapping(source = "cards.red.from0To15.percentage", target = "redCardFrom0To15Percentage")
     @Mapping(source = "cards.red.from0To15.total", target = "redCardFrom0To15Total")
     @Mapping(source = "cards.red.from16To30.percentage", target = "redCardFrom16To30Percentage")
@@ -60,27 +65,27 @@ public interface TeamStatsMapper {
     @Mapping(source = "failedToScore.home", target = "failedToScoreHome")
     @Mapping(source = "failedToScore.away", target = "failedToScoreAway")
     @Mapping(source = "failedToScore.total", target = "failedToScoreTotal")
-    @Mapping(source = "goals._for.average.home", target = "goalsScoredAverageHome")
-    @Mapping(source = "goals._for.average.away", target = "goalsScoredAverageAway")
-    @Mapping(source = "goals._for.average.total", target = "goalsScoredAverageTotal")
-    @Mapping(source = "goals._for.minute.from0To15.percentage", target = "goalsScoredFrom0To15Percentage")
-    @Mapping(source = "goals._for.minute.from0To15.total", target = "goalsScoredFrom0To15Total")
-    @Mapping(source = "goals._for.minute.from16To30.percentage", target = "goalsScoredFrom16To30Percentage")
-    @Mapping(source = "goals._for.minute.from16To30.total", target = "goalsScoredFrom16To30Total")
-    @Mapping(source = "goals._for.minute.from31To45.percentage", target = "goalsScoredFrom31To45Percentage")
-    @Mapping(source = "goals._for.minute.from31To45.total", target = "goalsScoredFrom31To45Total")
-    @Mapping(source = "goals._for.minute.from46To60.percentage", target = "goalsScoredFrom46To60Percentage")
-    @Mapping(source = "goals._for.minute.from46To60.total", target = "goalsScoredFrom46To60Total")
-    @Mapping(source = "goals._for.minute.from61To75.percentage", target = "goalsScoredFrom61To75Percentage")
-    @Mapping(source = "goals._for.minute.from61To75.total", target = "goalsScoredFrom61To75Total")
-    @Mapping(source = "goals._for.minute.from76To90.percentage", target = "goalsScoredFrom76To90Percentage")
-    @Mapping(source = "goals._for.minute.from76To90.total", target = "goalsScoredFrom76To90Total")
-    @Mapping(source = "goals._for.minute.from91To105.percentage", target = "goalsScoredFrom91To105Percentage")
-    @Mapping(source = "goals._for.minute.from91To105.total", target = "goalsScoredFrom91To105Total")
-    @Mapping(source = "goals._for.minute.from106To120.percentage", target = "goalsScoredFrom106To120Percentage")
-    @Mapping(source = "goals._for.minute.from106To120.total", target = "goalsScoredFrom106To120Total")
-    @Mapping(source = "goals._for.total.home", target = "goalsScoredTotalHome")
-    @Mapping(source = "goals._for.total.away", target = "goalsScoredTotalAway")
+    @Mapping(source = "goals.goalsFor.average.home", target = "goalsScoredAverageHome")
+    @Mapping(source = "goals.goalsFor.average.away", target = "goalsScoredAverageAway")
+    @Mapping(source = "goals.goalsFor.average.total", target = "goalsScoredAverageTotal")
+    @Mapping(source = "goals.goalsFor.minute.from0To15.percentage", target = "goalsScoredFrom0To15Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from0To15.total", target = "goalsScoredFrom0To15Total")
+    @Mapping(source = "goals.goalsFor.minute.from16To30.percentage", target = "goalsScoredFrom16To30Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from16To30.total", target = "goalsScoredFrom16To30Total")
+    @Mapping(source = "goals.goalsFor.minute.from31To45.percentage", target = "goalsScoredFrom31To45Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from31To45.total", target = "goalsScoredFrom31To45Total")
+    @Mapping(source = "goals.goalsFor.minute.from46To60.percentage", target = "goalsScoredFrom46To60Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from46To60.total", target = "goalsScoredFrom46To60Total")
+    @Mapping(source = "goals.goalsFor.minute.from61To75.percentage", target = "goalsScoredFrom61To75Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from61To75.total", target = "goalsScoredFrom61To75Total")
+    @Mapping(source = "goals.goalsFor.minute.from76To90.percentage", target = "goalsScoredFrom76To90Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from76To90.total", target = "goalsScoredFrom76To90Total")
+    @Mapping(source = "goals.goalsFor.minute.from91To105.percentage", target = "goalsScoredFrom91To105Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from91To105.total", target = "goalsScoredFrom91To105Total")
+    @Mapping(source = "goals.goalsFor.minute.from106To120.percentage", target = "goalsScoredFrom106To120Percentage")
+    @Mapping(source = "goals.goalsFor.minute.from106To120.total", target = "goalsScoredFrom106To120Total")
+    @Mapping(source = "goals.goalsFor.total.home", target = "goalsScoredTotalHome")
+    @Mapping(source = "goals.goalsFor.total.away", target = "goalsScoredTotalAway")
     @Mapping(source = "goals.against.average.home", target = "goalsConcededAverageHome")
     @Mapping(source = "goals.against.average.away", target = "goalsConcededAverageAway")
     @Mapping(source = "goals.against.average.total", target = "goalsConcededAverageTotal")
@@ -111,28 +116,25 @@ public interface TeamStatsMapper {
     @Mapping(source = "fixtures.played.total", target = "playedTotal")
     @Mapping(source = "fixtures.played.home", target = "playedHome")
     @Mapping(source = "fixtures.played.away", target = "playedAway")
-    @Mapping(source = "fixtures.wins.total", target = "winsTotal")
     @Mapping(source = "fixtures.wins.home", target = "winsHome")
     @Mapping(source = "fixtures.wins.away", target = "winsAway")
+    @Mapping(source = "fixtures.wins.total", target = "winsTotal")
     @Mapping(source = "league.leagueId", target = "leagueId")
-    @Mapping(source = "league.leagueName", target = "leagueName")
-    @Mapping(source = "league.leagueLogo", target = "leagueLogo")
-    @Mapping(source = "league.leagueType", target = "leagueType")
-    @Mapping(source = "league.seasonYear", target = "seasonYear")
-    @Mapping(source = "penalty.totalPenalties", target = "penaltiesTotal")
-    @Mapping(source = "penalty.missed.penaltyMissedPercentage", target = "penaltiesMissedPercentage")
-    @Mapping(source = "penalty.missed.penaltyMissedTotal", target = "penaltiesMissedTotal")
-    @Mapping(source = "penalty.scored.penaltyScoredTotal", target = "penaltiesScoredTotal")
-    @Mapping(source = "penalty.scored.penaltyScoredPercentage", target = "penaltiesScoredPercentage")
+    @Mapping(source = "league.name", target = "leagueName")
+    @Mapping(source = "league.logo", target = "leagueLogo")
+    @Mapping(source = "league.country", target = "country")
+    @Mapping(source = "league.season", target = "seasonYear")
+    @Mapping(source = "penalty.total", target = "penaltiesTotal")
+    @Mapping(source = "penalty.missed.percentage", target = "penaltiesMissedPercentage")
+    @Mapping(source = "penalty.missed.total", target = "penaltiesMissedTotal")
+    @Mapping(source = "penalty.scored.percentage", target = "penaltiesScoredTotal")
+    @Mapping(source = "penalty.scored.total", target = "penaltiesScoredPercentage")
     @Mapping(source = "team.teamId", target = "teamId")
     @Mapping(source = "team.logo", target = "teamLogo")
     @Mapping(source = "team.name", target = "teamName")
-    TeamStats toEntity(TeamStatsDto teamStatisticsDto);
+    TeamStatsDto toDto(TeamStatistic teamStatistic);
 
-    TeamStatsDto toDto(TeamStats teamStatistics);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    TeamStats partialUpdate(TeamStatsDto teamStatisticsDto, @MappingTarget TeamStats teamStatistics);
-
-
+    TeamStats partialUpdate(TeamStatistic teamStatistic, @MappingTarget TeamStats teamStats);
 }

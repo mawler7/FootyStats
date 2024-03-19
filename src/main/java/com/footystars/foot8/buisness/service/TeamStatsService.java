@@ -1,43 +1,51 @@
 package com.footystars.foot8.buisness.service;
 
 
+import com.footystars.foot8.api.model.teams.statistics.statistic.TeamStatistic;
 import com.footystars.foot8.persistence.entities.teams.statistics.TeamStats;
-import com.footystars.foot8.persistence.entities.teams.statistics.TeamStatsDto;
 import com.footystars.foot8.persistence.entities.teams.statistics.TeamStatsMapper;
 import com.footystars.foot8.persistence.repository.TeamStatsRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TeamStatsService {
 
-    private final TeamStatsRepository teamStatisticsRepository;
+    private final TeamStatsRepository teamStatsRepository;
     private final TeamStatsMapper teamStatsMapper;
+    private final TeamSeasonService teamSeasonService;
 
 
     @Transactional
-    public void updateFromDto(@NotNull TeamStatsDto teamStatisticsDto) {
-        var id = teamStatisticsDto.getTeam().getTeamId();
-        var leagueId = teamStatisticsDto.getLeague().getLeagueId();
-        var season = teamStatisticsDto.getLeague().getSeasonYear();
+    @Async
+    public void fetchTeamStats(@NotNull TeamStatistic teamStatistic) {
 
-        var stats = findByTeamIdSeasonAdnLeagueId(id, Long.valueOf(season), leagueId);
-        if(stats.isPresent()) {
-//sprawdzic czy jest to current season i zrobic update jesli tak
+        var teamId = teamStatistic.getTeam().getTeamId();
+        var leagueId = teamStatistic.getLeague().getLeagueId();
+        var season = teamStatistic.getLeague().getSeason();
+
+        var optionalTeamSeason = teamSeasonService.findByTeamIdLeagueIdAndSeasonYear(teamId, leagueId, season);
+        if (optionalTeamSeason.isPresent()) {
+            var teamSeason = optionalTeamSeason.get();
+            if (teamSeason.getTeamStats() == null) {
+                var teamStatsDto = teamStatsMapper.toDto(teamStatistic);
+                var teamStats = teamStatsMapper.toEntity(teamStatsDto);
+                var savedStats = save(teamStats);
+                teamSeason.setTeamStats(savedStats);
+            } else {
+                var teamStats = teamSeason.getTeamStats();
+                teamStatsMapper.partialUpdate(teamStatistic, teamStats);
+            }
         }
-
-        var teamStats = teamStatsMapper.toEntity(teamStatisticsDto);
-        teamStatisticsRepository.save(teamStats);
     }
 
-    public Optional<TeamStats> findByTeamIdSeasonAdnLeagueId(Long teamId, Long season, Long leagueId) {
-        return teamStatisticsRepository.findByTeamIdAndLeagueAndLeagueSeason(teamId, season, leagueId); //
+    @Transactional
+    public TeamStats save(TeamStats teamStats) {
+        return teamStatsRepository.save(teamStats);
     }
 
 }

@@ -1,22 +1,27 @@
 package com.footystars.foot8.persistence.entities.countries;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import lombok.Setter;
+import lombok.Value;
 
+import java.io.Serial;
 import java.io.Serializable;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
+@Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountryDto implements Serializable {
-    @NotNull
-    private String name;
-    private String code;
-    private String flag;
+  private  Long id;
+  private  String name;
+  private  String code;
+  private  String flag;
 }
