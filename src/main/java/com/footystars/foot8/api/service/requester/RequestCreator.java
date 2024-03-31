@@ -16,15 +16,6 @@ public class RequestCreator {
 
     private final RapidApiConfig rapidApiConfig;
 
-    public Request createRequest(@NotNull String pathSegments, @NotNull Map<String, String> queryParams) {
-        var url = getUrl(pathSegments, queryParams);
-        return new Request.Builder()
-                .url(url)
-                .addHeader(PathSegment.RAPID_API_HOST_HEADER, rapidApiConfig.getApiHost())
-                .addHeader(PathSegment.RAPID_API_KEY_HEADER, rapidApiConfig.getApiKey())
-                .get()
-                .build();
-    }
     @NotNull
     private static HttpUrl getUrl(@NotNull String pathSegments, @NotNull Map<String, String> queryParams) {
         var urlBuilder = new HttpUrl.Builder()
@@ -35,6 +26,16 @@ public class RequestCreator {
             queryParams.forEach(urlBuilder::addQueryParameter);
         }
         return urlBuilder.build();
+    }
+
+    public Request createRequest(@NotNull String pathSegments, @NotNull Map<String, String> queryParams) {
+        var url = getUrl(pathSegments, queryParams);
+        return new Request.Builder()
+                .url(url)
+                .addHeader(PathSegment.RAPID_API_HOST_HEADER, rapidApiConfig.getApiHost())
+                .addHeader(PathSegment.RAPID_API_KEY_HEADER, rapidApiConfig.getApiKey())
+                .get()
+                .build();
     }
 
 }

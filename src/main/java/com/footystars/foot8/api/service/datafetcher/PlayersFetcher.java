@@ -1,22 +1,18 @@
 package com.footystars.foot8.api.service.datafetcher;
 
-import com.footystars.foot8.api.model.players.Players;
-import com.footystars.foot8.api.model.players.player.PlayerStatistics;
-import com.footystars.foot8.buisness.service.LeagueSeasonService;
+import com.footystars.foot8.api.model.players.PlayersApiResponse;
 import com.footystars.foot8.buisness.service.PlayerInfoService;
-import com.footystars.foot8.buisness.service.PlayerService;
-import com.footystars.foot8.exception.PlayerStatisticsException;
 import com.footystars.foot8.exception.TeamInfoException;
 import com.footystars.foot8.utils.SelectedLeagues;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.scheduling.annotation.Async;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
@@ -30,7 +26,8 @@ public class PlayersFetcher {
 
     private final ApiDataFetcher dataFetcher;
     private final PlayerInfoService playerInfoService;
-    private final LeagueSeasonService leagueSeasonService;
+
+    private final Logger logger = LoggerFactory.getLogger(PlayersFetcher.class);
 
     @NotNull
     private static Map<String, String> createParamsMap(Long league, Long season) {
@@ -44,41 +41,40 @@ public class PlayersFetcher {
     public void fetchPlayersStats(@NotNull Long league, @NotNull Long season) throws TeamInfoException {
         try {
             var params = createParamsMap(league, season);
-            var players = dataFetcher.fetch(PLAYERS, params, Players.class);
-            var response = dataFetcher.fetch(PLAYERS, params, Players.class).getPlayerList();
-            var pages = players.getPaging().getTotal();
+            var playersApiResponse = dataFetcher.fetch(PLAYERS, params, PlayersApiResponse.class);
+            if (playersApiResponse != null && playersApiResponse.getResponse() != null) {
+                var players = playersApiResponse.getResponse();
+                var totalPages = playersApiResponse.getPaging().getTotal();
+                players.forEach(playerInfoService::fetchPlayers);
 
-            response.forEach(playerInfoService::fetchPlayers);
-
-            for (int i = 2; i <= pages; i++) {
-                params.put(PAGE, String.valueOf(i));
-                var responses = dataFetcher.fetch(PLAYERS, params, Players.class).getPlayerList();
-                responses.forEach(playerInfoService::fetchPlayers);
+                for (int i = 2; i <= totalPages; i++) {
+                    params.put(PAGE, String.valueOf(i));
+                    playersApiResponse = dataFetcher.fetch(PLAYERS, params, PlayersApiResponse.class);
+                    if (playersApiResponse != null && playersApiResponse.getResponse() != null) {
+                        playersApiResponse.getResponse().forEach(playerInfoService::fetchPlayers);
+                    }
+                }
+            } else {
+                logger.warn("No players data found for the given league and season.");
             }
         } catch (IOException e) {
-            throw new TeamInfoException(e, "Failed to fetch team information");
+            logger.error("Could not fetch players!", e);
+            throw new TeamInfoException("Failed to fetch team information", e);
         }
     }
 
     @Transactional
     public void fetchSelectedLeaguesPlayers() {
-
-        try {
-            var id = SelectedLeagues.PREMIER_LEAGUE.getId();
-            var year = 2023;
-            fetchPlayersStats(id, (long) year);
-        } catch (TeamInfoException e) {
-            throw new RuntimeException(e);
-        }
-
-//        var leagueSeasonsYears = leagueSeasonService.getLeagueSeasonsYears(id);
-//        leagueSeasonsYears.forEach(year -> {
-//            try {
-//                fetchPlayersStats(id, Long.valueOf(year));
-//            } catch (Exception e) {
-//                throw new PlayerStatisticsException(e, "Could not get team statistics");
-//            }
-//        });
+        var leagueId = SelectedLeagues.PREMIER_LEAGUE.getId();
+        Long seasonYear = 2023L;
+        fetchPlayersStats(leagueId, seasonYear);
     }
-
 }
+//    @Transactional
+//    public void fetchSelectedLeaguesPlayers() {
+//        var europeansTop5LeaguesIds = SelectedLeagues.getEuropeansTop5LeaguesIds();
+//        europeansTop5LeaguesIds.forEach(id -> {
+//            var years = seasonService.findByLeagueId(id);
+//            years.forEach(year -> fetchPlayersStats(id, Long.valueOf(year)));
+//        });
+//    }

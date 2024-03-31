@@ -1,7 +1,7 @@
 package com.footystars.foot8.api.model.teams.statistics.statistic.lineups;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.footystars.foot8.api.model.teams.statistics.statistic.lineups.lineup.Lineup;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@Embeddable
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Lineups implements Serializable {
 
     private List<Lineup> lineupList;

@@ -21,6 +21,7 @@ import java.io.Serializable;
 public class Goals implements Serializable {
 
     @JsonProperty("for")
-    private Integer forGoals;
-    private Integer against;
+    private Integer goalsFor;
+    @JsonProperty("against")
+    private Integer goalsAgainst;
 }

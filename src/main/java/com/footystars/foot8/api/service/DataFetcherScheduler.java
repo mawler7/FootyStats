@@ -3,7 +3,7 @@ package com.footystars.foot8.api.service;
 import com.footystars.foot8.api.service.datafetcher.CountriesFetcher;
 import com.footystars.foot8.api.service.datafetcher.FixturesFetcher;
 import com.footystars.foot8.api.service.datafetcher.LeaguesFetcher;
-import com.footystars.foot8.api.service.datafetcher.TeamInfoFetcher;
+import com.footystars.foot8.api.service.datafetcher.TeamFetcher;
 import com.footystars.foot8.api.service.datafetcher.TeamStatsFetcher;
 import com.footystars.foot8.api.service.datafetcher.VenuesFetcher;
 import com.footystars.foot8.exception.CountryException;
@@ -17,14 +17,13 @@ import org.springframework.stereotype.Component;
 
 public class DataFetcherScheduler {
 
+    private static final Logger logger = LoggerFactory.getLogger(DataFetcherScheduler.class);
     private final CountriesFetcher countryDataFetcher;
     private final LeaguesFetcher leaguesDataFetcher;
-    private final TeamInfoFetcher teamInfoDataFetcher;
+    private final TeamFetcher teamInfoDataFetcher;
     private final TeamStatsFetcher teamStatsDataFetcher;
     private final VenuesFetcher venuesDataFetcher;
     private final FixturesFetcher fixturesDataFetcher;
-
-    private static final Logger logger = LoggerFactory.getLogger(DataFetcherScheduler.class);
 
 //    @PostConstruct
 //    void init() throws TeamInfoException, TeamStatsException, CountryException, VenueException, LeagueException, FixtureException {
@@ -35,13 +34,13 @@ public class DataFetcherScheduler {
     //        @Scheduled(cron = "0 0 1 */6 * *")
     public void fetchCountries() throws CountryException {
 //        logger.info("Fetching countries...");
-        countryDataFetcher.fetchCountries();
+        countryDataFetcher.fetchAllCountries();
     }
 
     //    @Scheduled(cron = "0 0 1 */6 * *")
     public void fetchVenues() {
         logger.info("Fetching venues...");
-        venuesDataFetcher.fetchVenuesForTopFiveEuropeanLeagues();
+//        venuesDataFetcher.fetchVenuesForTopFiveEuropeanLeagues();
     }
 
     //        @Scheduled(cron = "0 0 1 */6  * *")

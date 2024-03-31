@@ -1,9 +1,9 @@
 package com.footystars.foot8.api.model.players.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.footystars.foot8.api.model.players.info.PlayerInfo;
-import com.footystars.foot8.api.model.players.statistics.PlayerStatistic;
-import jakarta.persistence.Embeddable;
+import com.footystars.foot8.api.model.players.statistics.PlayerStatisticApi;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,11 +18,11 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@Embeddable
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PlayerStatistics implements Serializable {
 
     @JsonProperty("player")
     private PlayerInfo playerInfo;
 
-    private List<PlayerStatistic> statistics;
+    private List<PlayerStatisticApi> statistics;
 }

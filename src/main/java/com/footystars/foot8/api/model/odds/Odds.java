@@ -1,23 +1,27 @@
 package com.footystars.foot8.api.model.odds;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.footystars.foot8.api.model.fixtures.fixture.league.League;
-import com.footystars.foot8.api.model.fixtures.Fixtures;
+import com.footystars.foot8.api.model.odds.odd.Odd;
+import com.footystars.foot8.api.model.players.paging.Paging;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Odds {
-    private Fixtures fixture;
-    private League league;
-    private String update;
-    @JsonProperty("bookmakers")
-    private List<BookmakerApi> bookmakers;
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Odds implements Serializable {
+    @JsonProperty("response")
+    private List<Odd> oddList;
+    private Paging paging;
 }

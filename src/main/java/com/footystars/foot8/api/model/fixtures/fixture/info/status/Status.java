@@ -1,7 +1,7 @@
 package com.footystars.foot8.api.model.fixtures.fixture.info.status;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +13,16 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Embeddable
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Status implements Serializable {
 
     @JsonProperty("long")
-    private String longName;
+    private String fullStatus;
+
     @JsonProperty("short")
-    private String shortName;
+    private String status;
+
     private String elapsed;
+
 
 }

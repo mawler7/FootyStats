@@ -6,9 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.List;
-
 import java.util.stream.Collectors;
-
 
 import static com.footystars.foot8.utils.LeagueType.CUP;
 import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
@@ -17,13 +15,13 @@ import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
 @RequiredArgsConstructor
 public enum SelectedLeagues {
 
-    PREMIER_LEAGUE(39L, "Premier League", "England",  CUP.getName()),
+    PREMIER_LEAGUE(39L, "Premier League", "England", CUP.getName()),
     FA_CUP(45L, "FA Cup", "England", CUP.getName()),
     EFL_TROPHY(46L, "EFL Trophy", "England", CUP.getName()),
     FA_TROPHY(47L, "FA Trophy", "England", CUP.getName()),
     CHAMPIONSHIP(40L, "Championship", "England", CUP.getName()),
 
-    LIGUE_1(61L, "Ligue 1", "France",  LEAGUE ),
+    LIGUE_1(61L, "Ligue 1", "France", LEAGUE),
     LIGUE_2(62L, "Ligue 2", "France", CUP.getName()),
     COUPE_DE_FRANCE(66L, "Coupe de France", "France", CUP.getName()),
 

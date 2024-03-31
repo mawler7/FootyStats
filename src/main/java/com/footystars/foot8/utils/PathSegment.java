@@ -2,8 +2,6 @@ package com.footystars.foot8.utils;
 
 import lombok.Getter;
 
-import java.util.List;
-
 
 @Getter
 public class PathSegment {

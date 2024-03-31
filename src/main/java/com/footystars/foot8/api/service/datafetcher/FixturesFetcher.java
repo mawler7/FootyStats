@@ -2,18 +2,15 @@ package com.footystars.foot8.api.service.datafetcher;
 
 import com.footystars.foot8.api.model.fixtures.Fixtures;
 import com.footystars.foot8.buisness.service.FixtureService;
-import com.footystars.foot8.buisness.service.LeagueSeasonService;
+import com.footystars.foot8.buisness.service.SeasonService;
 import com.footystars.foot8.exception.FixtureException;
 import lombok.RequiredArgsConstructor;
-
 import org.jetbrains.annotations.NotNull;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
@@ -28,19 +25,19 @@ public class FixturesFetcher {
 
     private final ApiDataFetcher dataFetcher;
     private final FixtureService fixtureService;
-    private final LeagueSeasonService leagueSeasonService;
+    private final SeasonService seasonService;
 
     @NotNull
-    private static Map<String, String> createParamsMap(Long league, Long season) {
+    private static Map<String, String> createParamsMap(@NotNull Long leagueId, @NotNull int season) {
         var params = new HashMap<String, String>();
-        params.put(LEAGUE, String.valueOf(league));
-        params.put(SEASON, String.valueOf(season));
+        params.put(LEAGUE,   leagueId.toString()) ;
+        params.put(SEASON, String.valueOf(season)) ;
         return params;
     }
 
-    public void fetchFixtures(@NotNull Long league, @NotNull Long season) throws FixtureException {
+    public void fetchFixtures(@NotNull Long leagueId, @NotNull int season) throws FixtureException {
         try {
-            var params = createParamsMap(league, season);
+            var params = createParamsMap(leagueId, season);
             var fixtures = dataFetcher.fetch(FIXTURES, params, Fixtures.class).getFixtureList();
             fixtures.forEach(fixtureService::fetchFixture);
         } catch (IOException e) {
@@ -50,15 +47,28 @@ public class FixturesFetcher {
 
     @Transactional
     public void fetchSelected() {
-
         var leagueId = PREMIER_LEAGUE.getId();
-        List<Integer> seasonsYears = List.of(2020, 2022);
-//        List<Integer> seasonsYears = leagueSeasonService.getLeagueSeasonsYears(leagueId);
-        try {
-                seasonsYears.forEach(seasonYear -> fetchFixtures(leagueId, Long.valueOf(seasonYear)));
-            } catch (FixtureException e) {
-                e.printStackTrace();
-            }
-        }
+        var year = 2023;
+        fetchFixtures(leagueId, year);
+
+
     }
 
+    //    @Transactional
+//    public void fetchSelected() {
+//        var europeansTop5LeaguesIds = SelectedLeagues.getEuropeansTop5LeaguesIds();
+//        europeansTop5LeaguesIds.forEach(leagueId -> {
+//            var years = seasonService.findByLeagueId(leagueId);
+//            years.forEach(year -> {
+//                        try {
+//                            fetchFixtures(leagueId, Long.valueOf(year));
+//                        } catch (FixtureException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//            );
+//        });
+//    }
+
+
+}

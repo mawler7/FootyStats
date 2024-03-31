@@ -1,6 +1,5 @@
 package com.footystars.foot8.api.service.requester;
 
-import com.footystars.foot8.exception.RequestExecutorException;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,7 +17,7 @@ public class RequestExecutor {
 
     @NotNull
     public Response executeRequest(@NotNull Request request) throws IOException {
-            return httpClient.newCall(request).execute();
+        return httpClient.newCall(request).execute();
     }
 
 }

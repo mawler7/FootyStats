@@ -1,7 +1,6 @@
 package com.footystars.foot8.api.model.fixtures.fixture;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.footystars.foot8.api.model.fixtures.fixture.goals.Goals;
 import com.footystars.foot8.api.model.fixtures.fixture.info.FixtureInfo;
 import com.footystars.foot8.api.model.fixtures.fixture.league.League;
@@ -22,10 +21,11 @@ import java.io.Serializable;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LeagueFixture implements Serializable {
-    @JsonProperty("fixture")
-    private FixtureInfo fixtureInfo;
+
+    private FixtureInfo fixture;
+    private League league;
+    private Teams teams;
     private Goals goals;
     private Score score;
-    private Teams teams;
-    private League league;
+
 }

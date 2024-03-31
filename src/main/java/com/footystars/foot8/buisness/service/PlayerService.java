@@ -1,7 +1,7 @@
 package com.footystars.foot8.buisness.service;
 
 
-import com.footystars.foot8.persistence.entities.players.player.Player;
+import com.footystars.foot8.persistence.entity.players.player.Player;
 import com.footystars.foot8.persistence.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

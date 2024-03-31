@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.footystars.foot8.api.model.fixtures.fixture.teams.team.AwayTeam;
 import com.footystars.foot8.api.model.fixtures.fixture.teams.team.HomeTeam;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +17,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Teams implements Serializable {
 

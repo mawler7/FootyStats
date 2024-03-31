@@ -2,7 +2,7 @@ package com.footystars.foot8.api.model.coaches;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.footystars.foot8.persistence.entities.coachs.coach.CoachDto;
+import com.footystars.foot8.persistence.entity.coachs.CoachDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

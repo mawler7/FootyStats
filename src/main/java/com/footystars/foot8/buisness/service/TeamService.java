@@ -1,6 +1,6 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.persistence.entities.teams.team.Team;
+import com.footystars.foot8.persistence.entity.teams.team.Team;
 import com.footystars.foot8.persistence.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,8 +11,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TeamService {
-    private final TeamRepository teamRepository;
 
+    private final TeamRepository teamRepository;
 
     @Transactional
     public Team save(Team team) {
@@ -23,5 +23,12 @@ public class TeamService {
         return teamRepository.findById(teamId);
     }
 
+    public Optional<Team> getCurrentSeasonTeamByClubId(Long clubId) {
+        return teamRepository.findByCompetitionsSeasonCurrentTrueAndClubId(clubId);
+    }
+
+    public Optional<Team> getByClubIdLeagueIdAndLeagueSeason(Long clubId, Long leagueId, Integer season) {
+        return teamRepository.findByClubIdAndCompetitionsLeagueIdAndCompetitionsSeasonYear(clubId, leagueId, season);
+    }
 
 }

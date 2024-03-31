@@ -22,4 +22,5 @@ public class Fixtures implements Serializable {
 
     @JsonProperty("response")
     private List<LeagueFixture> fixtureList;
+
 }

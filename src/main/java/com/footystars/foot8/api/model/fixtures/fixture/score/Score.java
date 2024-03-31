@@ -5,7 +5,6 @@ import com.footystars.foot8.api.model.fixtures.fixture.score.extra_time.ExtraTim
 import com.footystars.foot8.api.model.fixtures.fixture.score.full_time.FullTime;
 import com.footystars.foot8.api.model.fixtures.fixture.score.half_time.HalfTime;
 import com.footystars.foot8.api.model.fixtures.fixture.score.penalty.Penalty;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +18,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Score implements Serializable {
 

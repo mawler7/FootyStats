@@ -22,11 +22,11 @@ public class CountriesFetcher {
     private final CountryService countryService;
 
     @GetMapping
-    public ResponseEntity<String> fetchCountries() throws CountryException {
+    public ResponseEntity<String> fetchAllCountries() throws CountryException {
         try {
             var params = new HashMap<String, String>();
             var countries = dataFetcher.fetch(COUNTRIES, params, Countries.class).getCountryList();
-            countries.forEach(countryService::save);
+            countries.forEach(countryService::fetchCountry);
             return ResponseEntity.ok("Countries fetched successfully");
         } catch (IOException e) {
             throw new CountryException(e, e.getMessage());

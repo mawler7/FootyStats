@@ -1,6 +1,6 @@
 package com.footystars.foot8.api.model.fixtures.fixture.goals;
 
-import jakarta.persistence.Embeddable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,9 +15,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Embeddable
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Goals implements Serializable {
 
     private Integer home;
     private Integer away;
+
 }

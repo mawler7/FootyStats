@@ -1,26 +1,18 @@
 package com.footystars.foot8.buisness.service;
 
 import com.footystars.foot8.api.model.players.player.PlayerStatistics;
-import com.footystars.foot8.api.model.players.statistics.PlayerStatistic;
-import com.footystars.foot8.persistence.entities.players.player.Player;
-import com.footystars.foot8.persistence.entities.players.player.PlayerDto;
-import com.footystars.foot8.persistence.entities.players.player.PlayerMapper;
-import com.footystars.foot8.persistence.entities.players.seaon.PlayerSeason;
-import com.footystars.foot8.persistence.entities.players.statistics.PlayerStats;
-import com.footystars.foot8.persistence.entities.players.statistics.PlayerStatsMapper;
-import com.footystars.foot8.persistence.entities.teams.seasons.TeamSeason;
+import com.footystars.foot8.api.model.players.statistics.PlayerStatisticApi;
+import com.footystars.foot8.persistence.entity.competitions.Competition;
+import com.footystars.foot8.persistence.entity.players.player.PlayerMapper;
+import com.footystars.foot8.persistence.entity.teams.team.Team;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -28,138 +20,71 @@ public class PlayerInfoService {
 
     private final PlayerMapper playerMapper;
     private final PlayerService playerService;
-    private final PlayerStatsMapper playerStatsMapper;
-    private final TeamSeasonService teamSeasonService;
-    private final PlayerSeasonService playerSeasonService;
     private final PlayerStatsService playerStatsService;
+    private final CompetitionService competitionService;
+    private final TeamService teamService;
+    private final ZodiacService zodiacService;
 
-    private Logger logger = LoggerFactory.getLogger(PlayerInfoService.class);
+
+    private final Logger logger = LoggerFactory.getLogger(PlayerInfoService.class);
 
     @Transactional
-    @Async
     public void fetchPlayers(@NotNull PlayerStatistics playerStatistics) {
-        // Extract necessary information
-        var statistics = playerStatistics.getStatistics().get(0);
-        var playerId = playerStatistics.getPlayerInfo().getId();
-        var teamId = statistics.getTeam().getTeamId();
-        var leagueId = statistics.getLeague().getLeagueId();
-        var season = statistics.getLeague().getSeason();
+        var statistic = playerStatistics.getStatistics().get(0);
+        var clubId = statistic.getClub().getClubId();
+        var leagueId = statistic.getLeague().getLeagueId();
+        var season = statistic.getLeague().getSeason();
+        var playerId = playerStatistics.getPlayerInfo().getPlayerId();
 
-        // Retrieve team season
-        var optionalTeamSeason = teamSeasonService.findByTeamIdLeagueIdAndSeasonYear(teamId, leagueId, season);
-        if (optionalTeamSeason.isPresent()) {
-            var teamSeason = optionalTeamSeason.get();
-            List<PlayerSeason> playerSeasons = teamSeason.getPlayerSeasons();
 
-            // Check if player exists in team season
-            if (playerSeasons.stream().noneMatch(playerSeason -> playerSeason.getPlayer().getId().equals(playerId))) {
-                // Save new player if not found
-                saveNewPlayer(playerId, playerStatistics, teamSeason, statistics);
+        var optionalCompetition = competitionService.getByLeagueAndSeasonYear(leagueId, season);
+        if (optionalCompetition.isPresent()) {
+            var competition = optionalCompetition.get();
+            var optionalPlayer = playerService.findById(playerId);
+            if (optionalPlayer.isPresent()) {
+                playerStatsService.updatePlayerStatistics(playerId, statistic, competition);
             } else {
-                // Update player statistics if already exists
-                updatePlayerStatistics(statistics, playerSeasons);
+                var optionalTeam = competition.getTeams().stream().filter(t -> t.getClub().getId().equals(clubId)).findFirst();
+                if (optionalTeam.isPresent()) {
+                    var team = optionalTeam.get();
+                    saveNewPlayer(playerId, playerStatistics, competition, statistic, team);
+                    logger.info("Saved new player {}", playerId);
+                }
             }
         }
     }
 
-    private void saveNewPlayer(Long playerId, PlayerStatistics playerStatistics, TeamSeason teamSeason, PlayerStatistic playerStatistic) {
-        // Retrieve player
-        Optional<Player> optionalPlayer = playerService.findById(playerId);
+    private void saveNewPlayer(@NotNull Long playerId, @NotNull PlayerStatistics playerStatistics,
+                               @NotNull Competition competition, @NotNull PlayerStatisticApi statistic,
+                               @NotNull Team team) {
+
+        var optionalPlayer = playerService.findById(playerId);
         if (optionalPlayer.isEmpty()) {
-            // Save player
-            PlayerDto playerDto = playerMapper.playerInfoToDto(playerStatistics.getPlayerInfo());
-            Player playerEntity = playerMapper.toEntity(playerDto);
-            Player savedPlayer = playerService.save(playerEntity);
+            var competitions = new HashSet<Competition>();
+            competitions.add(competition);
+            var teams = new HashSet<Team>();
+            teams.add(team);
+            var playerDto = playerMapper.playerInfoToDto(playerStatistics.getPlayerInfo());
+            var playerEntity = playerMapper.toEntity(playerDto);
+            var birthDate = playerEntity.getBirth().getBirthDate();
+            if(birthDate != null) {
+            var zodiac = zodiacService.getZodiacSign(birthDate);
+                playerEntity.setZodiac(String.valueOf(zodiac));
+            }
+            playerEntity.setCompetitions(competitions);
+            playerEntity.setTeams(teams);
+            var savedPlayer = playerService.save(playerEntity);
+            logger.info("Saved player {}", savedPlayer.getName());
+            playerStatsService.updatePlayerStatistics(playerId, statistic, competition);
 
-            // Save player statistics
-            PlayerStats playerStatsEntity = playerStatsMapper.toEntity(playerStatsMapper.toDto(playerStatistic));
-            PlayerStats savedStats = playerStatsService.save(playerStatsEntity);
-
-            // Save player season
-            PlayerSeason playerSeason = PlayerSeason.builder()
-                    .player(savedPlayer)
-                    .playerStats(savedStats)
-
-                    .build();
-            PlayerSeason savedPlayerSeason = playerSeasonService.save(playerSeason);
-            teamSeason.getPlayerSeasons().add(savedPlayerSeason);
-
-            // Update team season
-            teamSeasonService.save(teamSeason);
+            competition.getPlayers().add(savedPlayer);
+            team.getPlayers().add(savedPlayer);
+            teamService.save(team);
+            competitionService.save(competition);
         }
     }
 
-    private void updatePlayerStatistics(PlayerStatistic statistics, @NotNull List<PlayerSeason> playerSeasons) {
-        // Update player statistics
-        PlayerStats playerStatsEntity = playerStatsMapper.toEntity(playerStatsMapper.toDto(statistics));
-        PlayerStats savedStats = playerStatsService.save(playerStatsEntity);
 
-        // Collect modifications
-        List<PlayerSeason> modifiedPlayerSeasons = new ArrayList<>();
-        playerSeasons.forEach(playerSeason -> {
-            playerSeason.setPlayerStats(savedStats);
-            modifiedPlayerSeasons.add(playerSeason);
-        });
-
-        // Apply modifications
-        modifiedPlayerSeasons.forEach(playerSeasonService::save);
-    }
-
-
-
-//    @Transactional
-//    public void fetchPlayers(@NotNull PlayerStatistics playerStatistics) {
-//        var statistics = playerStatistics.getStatistics().get(0);
-//        var playerId = playerStatistics.getPlayerInfo().getId();
-//        var teamId = statistics.getTeam().getTeamId();
-//        var leagueId = statistics.getLeague().getLeagueId();
-//        var season = statistics.getLeague().getSeason();
-//        var optionalTeamSeason = teamSeasonService.findByTeamIdLeagueIdAndSeasonYear(teamId, leagueId, season);
-//
-//        if (optionalTeamSeason.isPresent()) {
-//            var teamSeason = optionalTeamSeason.get();
-//
-//            var playerSeasons = teamSeason.getPlayerSeasons();
-//
-//            if (playerSeasons.stream().noneMatch(playerSeason -> playerSeason.getPlayer().getId().equals(playerId))) {
-//                var optionalPlayer = playerService.findById(playerId);
-//
-//                if (optionalPlayer.isEmpty()) {
-//                    var playerInfo = playerStatistics.getPlayerInfo();
-//                    var playerDto = playerMapper.playerInfoToDto(playerInfo);
-//                    var playerEntity = playerMapper.toEntity(playerDto);
-//                    var savedPlayer = playerService.save(playerEntity);
-//                    var playerStatistic = playerStatistics.getStatistics().get(0);
-//                    var playerStatsDto = playerStatsMapper.toDto(playerStatistic);
-//                    var playerStatsEntity = playerStatsMapper.toEntity(playerStatsDto);
-//
-//                    var savedStats = playerStatsService.save(playerStatsEntity);
-//
-//                    var playerSeason = PlayerSeason.builder()
-//                            .player(savedPlayer)
-//                            .playerStats(savedStats)
-//                            .teamSeason(teamSeason)
-//                            .build();
-//                    var savedPlayerSeason = playerSeasonService.save(playerSeason);
-//                    playerSeasons.add(savedPlayerSeason);
-//
-//                    teamSeasonService.save(teamSeason);
-//                }
-//            } else {
-//                var playerStatsDto = playerStatsMapper.toDto(statistics);
-//                var playerStats = playerStatsMapper.toEntity(playerStatsDto);
-//                PlayerStats savedStats = playerStatsService.save(playerStats);
-//                playerSeasons.stream()
-//                        .forEach(playerSeason -> {
-//                                    playerSeason.setPlayerStats(playerStats);
-//                                    playerSeasonService.save(playerSeason);
-//
-////                                    teamSeasonService.save(teamSeason);
-//                                }
-//                        );
-//            }
-//        }
-//    }
 }
 
 

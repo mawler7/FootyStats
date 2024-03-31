@@ -2,7 +2,7 @@ package com.footystars.foot8.api.model.leagues;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.footystars.foot8.persistence.entities.leagues.league.LeagueDto;
+import com.footystars.foot8.api.model.leagues.league.LeagueApi;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +20,5 @@ import java.util.List;
 public class Leagues {
 
     @JsonProperty("response")
-    private List<LeagueDto> leagueList;
+    private List<LeagueApi> leagueList;
 }

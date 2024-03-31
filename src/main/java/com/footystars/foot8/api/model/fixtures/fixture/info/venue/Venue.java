@@ -2,7 +2,6 @@ package com.footystars.foot8.api.model.fixtures.fixture.info.venue;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +16,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Embeddable
 public class Venue implements Serializable {
 
     @JsonProperty("id")
