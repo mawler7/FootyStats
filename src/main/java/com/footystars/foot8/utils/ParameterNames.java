@@ -35,6 +35,7 @@ public class ParameterNames {
     public static final String FROM = "from";
     public static final String TO = "to";
     public static final String DATE = "date";
+
     private ParameterNames() {
 
     }

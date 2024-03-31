@@ -29,7 +29,7 @@ public class RequestCreator {
     }
 
     public Request createRequest(@NotNull String pathSegments, @NotNull Map<String, String> queryParams) {
-        HttpUrl url = getUrl(pathSegments, queryParams);
+        var url = getUrl(pathSegments, queryParams);
         return new Request.Builder()
                 .url(url)
                 .addHeader(PathSegment.RAPID_API_HOST_HEADER, rapidApiConfig.getApiHost())

@@ -1,8 +1,8 @@
 package com.footystars.foot8.exception;
 
-public class PlayerStatisticsException extends Exception {
+public class PlayerStatisticsException extends RuntimeException {
 
-    public PlayerStatisticsException(String s, Exception e) {
+    public PlayerStatisticsException(Exception e, String s) {
         super("Cannot save player!", e);
     }
 }

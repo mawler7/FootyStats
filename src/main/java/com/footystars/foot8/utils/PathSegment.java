@@ -2,8 +2,6 @@ package com.footystars.foot8.utils;
 
 import lombok.Getter;
 
-import java.util.List;
-
 
 @Getter
 public class PathSegment {
@@ -184,15 +182,14 @@ public class PathSegment {
 
     }
 
-    public List<String> getAllPaths() {
-        List<String> pathSegments;
-        pathSegments = List.of(TIMEZONE, PREDICTIONS, FIXTURES, FIXTURES_H2H, FIXTURES_ROUNDS, FIXTURES_EVENTS, FIXTURES_LINEUPS,
-                FIXTURES_STATISTICS, TEAMS_INFORMATION, TEAMS_STATISTICS, TEAMS_COUNTRIES, TEAMS_SEASONS, LEAGUES, ODDS, BETS, BOOKMAKERS,
-                ODDS_MAPPING, STANDINGS, PLAYERS, PLAYERS_SEASONS, TOP_SCORERS, TOP_ASSISTS, TOP_YELLOW_CARDS, TOP_RED_CARDS,
-                TROPHIES, SIDELINED, TRANSFERS, VENUES, INJURIES, COACHS);
-        return pathSegments;
-
-    }
+//    public List<String> getAllPaths() {
+//        List<String> pathSegments;
+//        pathSegments = List.of(TIMEZONE, PREDICTIONS, FIXTURES, FIXTURES_H2H, FIXTURES_ROUNDS, FIXTURES_EVENTS, FIXTURES_LINEUPS,
+//                FIXTURES_STATISTICS, TEAMS_INFORMATION, TEAMS_STATISTICS, TEAMS_COUNTRIES, TEAMS_SEASONS, LEAGUES, ODDS, BETS, BOOKMAKERS,
+//                ODDS_MAPPING, STANDINGS, PLAYERS, PLAYERS_SEASONS, TOP_SCORERS, TOP_ASSISTS, TOP_YELLOW_CARDS, TOP_RED_CARDS,
+//                TROPHIES, SIDELINED, TRANSFERS, VENUES, INJURIES, COACHS);
+//        return pathSegments;
+//    }
 
 
 }

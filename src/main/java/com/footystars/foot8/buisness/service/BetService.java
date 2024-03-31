@@ -1,9 +1,10 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.persistence.entities.odds.bets.BetEntity;
+import com.footystars.foot8.persistence.entity.bet.Bet;
 import com.footystars.foot8.persistence.repository.BetRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,7 +15,13 @@ public class BetService {
 
     private final BetRepository betRepository;
 
-    public Optional<BetEntity> findById(Long id) {
+    private final Log logger = LogFactory.getLog(BetService.class);
+
+    public Optional<Bet> findById(Long id) {
         return betRepository.findById(id);
     }
+    public Bet save(Bet bet) {
+        return betRepository.save(bet);
+    }
+
 }

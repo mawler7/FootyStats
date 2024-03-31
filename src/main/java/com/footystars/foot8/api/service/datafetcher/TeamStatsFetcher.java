@@ -1,28 +1,26 @@
 package com.footystars.foot8.api.service.datafetcher;
 
 
-import com.footystars.foot8.api.model.teams.statistics.response.TeamsStatsDto;
-import com.footystars.foot8.buisness.service.TeamService;
+import com.footystars.foot8.api.model.teams.statistics.TeamStatistics;
+import com.footystars.foot8.buisness.service.CompetitionService;
 import com.footystars.foot8.buisness.service.TeamStatsService;
-import com.footystars.foot8.exception.TeamInfoException;
 import com.footystars.foot8.exception.TeamStatsException;
-import com.footystars.foot8.persistence.entities.teams.Team;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
 import static com.footystars.foot8.utils.ParameterNames.SEASON;
 import static com.footystars.foot8.utils.ParameterNames.TEAM;
 import static com.footystars.foot8.utils.PathSegment.TEAMS_STATISTICS;
-import static com.footystars.foot8.utils.Seasons.getAllSeasons;
-import static com.footystars.foot8.utils.SelectedLeagues.getEuropeansTop5LeaguesIds;
+import static com.footystars.foot8.utils.SelectedLeagues.PREMIER_LEAGUE;
 
 @Service
 @RequiredArgsConstructor
@@ -30,77 +28,79 @@ public class TeamStatsFetcher {
 
     private final ApiDataFetcher dataFetcher;
     private final TeamStatsService teamStaticsService;
-    private final TeamService teamService;
+    private final CompetitionService competitionService;
+
+    private final Logger logger = LoggerFactory.getLogger(TeamStatsFetcher.class);
+
 
     @NotNull
-    private static Map<String, String> createParamsMap(Long id, Long league, Long season) {
+    private static Map<String, String> createParamsMap(Long id, Long league, Integer season) {
         var params = new HashMap<String, String>();
         params.put(TEAM, String.valueOf(id));
         params.put(LEAGUE, String.valueOf(league));
         params.put(SEASON, String.valueOf(season));
-
         return params;
     }
 
     @Transactional
-    public void fetchTeamStatistics(Long id, Long league, Long season) throws TeamStatsException {
+    public void fetchTeamStatistics(@NotNull Long teamId, @NotNull Long league, @NotNull Integer season) throws TeamStatsException {
         try {
-            var params = createParamsMap(id, league, season);
-            var teamsStatsDto = getTeamsStatsDto(params).getTeamStatsDto();
+            var params = createParamsMap(teamId, league, season);
+            var teamsStatsDto = dataFetcher.fetch(TEAMS_STATISTICS, params, TeamStatistics.class).getStatistic();
             if (teamsStatsDto != null) {
-                teamStaticsService.updateFromDto(teamsStatsDto);
+                teamStaticsService.fetchTeamStats(teamsStatsDto, params);
             }
         } catch (IOException e) {
+            logger.error("Failed to fetch team statistics", e);
             throw new TeamStatsException(e, "Failed to fetch team statistics");
         }
     }
 
-    private TeamsStatsDto getTeamsStatsDto(Map<String, String> params) throws IOException {
-        try {
-            return dataFetcher.fetch(TEAMS_STATISTICS, params, TeamsStatsDto.class);
-        } catch (Exception e) {
-            throw new TeamStatsException(e, "Could not fetch teams statistics from API: " + e.getMessage());
+
+    @Transactional
+    public void fetchSelectedLeaguesTeamsStats() {
+        var leagueId = PREMIER_LEAGUE.getId();
+        var year = 2023;
+        var optionalCompetition = competitionService.getByLeagueAndSeasonYear(leagueId, year);
+        if (optionalCompetition.isPresent()) {
+            var competition = optionalCompetition.get();
+            var teams = competition.getTeams();
+            if (!teams.isEmpty()) {
+                teams.forEach(team -> {
+                    var id = team.getClub().getId();
+                    fetchTeamStatistics(id, leagueId,  year);
+                });
+            }
         }
     }
 
-    @Transactional
-    public void fetchTeamStatsFromTop5EuropeanLeagues() {
-        var allSeasons = getAllSeasons();
-        var seasons = allSeasons.stream().filter(s -> s < 2024).toList();
-        var top5LeaguesIds = getEuropeansTop5LeaguesIds();
+//    @Transactional
 
-        seasons.forEach(s -> top5LeaguesIds.forEach(l -> {
-            var teams = teamService.findTeamsByLeagueIdAndSeason(l, s);
-            teams.forEach(t -> {
-                var teamId = t.getTeamId();
-                try {
-                    fetchTeamStatistics(teamId, l, Long.valueOf(s));
-                } catch (Exception e) {
-                    throw new TeamStatsException(e, "Could not get team statistics");
-                }
-            });
-        }));
-    }
-//        seasons.forEach(season -> top5LeaguesIds.parallelStream().forEach(leagueId -> {
-//            try {
-//                var teams = teamService.findTeamsByLeagueIdAndSeason(leagueId, season);
-//                teams.parallelStream().forEach(team -> {
-//                    var teamId = team.getTeamId();
-//                    try {
-//                        fetchTeamStatistics(teamId, leagueId, Long.valueOf(season));
-//                    } catch (TeamInfoException e) {
-//                        handleException(e);
+//    public void fetchSelectedLeaguesTeamsStats() {
+//        var europeansTop5LeaguesIds = SelectedLeagues.getEuropeansTop5LeaguesIds();
+//        europeansTop5LeaguesIds.forEach(leagueId -> {
+//            var years = seasonService.findByLeagueId(leagueId);
+//            years.forEach(year -> {
+//                var optionalCompetition = competitionService.getByLeagueAndSeasonYear(leagueId, year);
+//                if (optionalCompetition.isPresent()) {
+//                    var competition = optionalCompetition.get();
+//                    Set<Team> teams = competition.getTeams();
+//                    if (!teams.isEmpty()) {
+//                        teams.forEach(team -> {
+//                            var id = team.getClub().getId();
+//                            if (id != null) {
+//                                fetchTeamStatistics(id, leagueId, Long.valueOf(year));
+//                            }
+//                        });
+//                    } else {
+//                        logger.warn("No teams were found for league " + leagueId + " in season " + year);
 //                    }
-//                });
-//            } catch (TeamInfoException e) {
-//                handleException(e);
-//            }
-//        }));
+//                }
+//            });
+//        });
 //    }
 
-
 }
-
 
 
 

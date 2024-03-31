@@ -23,6 +23,7 @@ public class ApiDataFetcher {
         var request = creator.createRequest(pathSegments, params);
         var response = executor.executeRequest(request);
         return handler.getObjectFromJson(response, responseType);
+
     }
 
 }
