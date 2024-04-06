@@ -1,7 +1,7 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.persistence.entity.bet.Bet;
-import com.footystars.foot8.persistence.repository.BetRepository;
+import com.footystars.foot8.buisness.model.entity.Bet;
+import com.footystars.foot8.repository.BetRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -1,11 +1,11 @@
 package com.footystars.foot8.buisness.service;
 
 import com.footystars.foot8.api.model.teams.TeamApi;
-import com.footystars.foot8.persistence.entity.club.Club;
-import com.footystars.foot8.persistence.entity.club.ClubMapper;
-import com.footystars.foot8.persistence.entity.countries.Country;
-import com.footystars.foot8.persistence.entity.teams.team.Team;
-import com.footystars.foot8.persistence.repository.ClubRepository;
+import com.footystars.foot8.buisness.model.entity.Club;
+import com.footystars.foot8.mapper.ClubMapper;
+import com.footystars.foot8.buisness.model.entity.Country;
+import com.footystars.foot8.buisness.model.entity.Team;
+import com.footystars.foot8.repository.ClubRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
-import static com.footystars.foot8.utils.ParameterNames.SEASON;
+import static com.footystars.foot8.utils.ParameterName.LEAGUE;
+import static com.footystars.foot8.utils.ParameterName.SEASON;
 
 @Service
 @RequiredArgsConstructor

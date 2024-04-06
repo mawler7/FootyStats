@@ -1,9 +1,9 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.persistence.entity.coachs.Coach;
-import com.footystars.foot8.persistence.entity.coachs.CoachDto;
-import com.footystars.foot8.persistence.entity.coachs.CoachMapper;
-import com.footystars.foot8.persistence.repository.CoachRepository;
+import com.footystars.foot8.buisness.model.entity.Coach;
+import com.footystars.foot8.buisness.model.dto.CoachDto;
+import com.footystars.foot8.mapper.CoachMapper;
+import com.footystars.foot8.repository.CoachRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;

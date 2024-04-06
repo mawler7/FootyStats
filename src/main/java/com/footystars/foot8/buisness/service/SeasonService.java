@@ -1,9 +1,9 @@
 package com.footystars.foot8.buisness.service;
 
 import com.footystars.foot8.api.model.leagues.league.season.SeasonApi;
-import com.footystars.foot8.persistence.entity.seasons.Season;
-import com.footystars.foot8.persistence.entity.seasons.SeasonMapper;
-import com.footystars.foot8.persistence.repository.SeasonRepository;
+import com.footystars.foot8.buisness.model.entity.Season;
+import com.footystars.foot8.mapper.SeasonMapper;
+import com.footystars.foot8.repository.SeasonRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;

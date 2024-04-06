@@ -7,7 +7,6 @@ import com.footystars.foot8.api.service.requester.ResponseHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Map;
 
 
@@ -19,11 +18,10 @@ public class ApiDataFetcher {
     private final RequestCreator creator;
     private final ResponseHandler handler;
 
-    public <T> T fetch(String pathSegments, Map<String, String> params, Class<T> responseType) throws IOException {
+    public <T> T fetch(String pathSegments, Map<String, String> params, Class<T> responseType) {
         var request = creator.createRequest(pathSegments, params);
         var response = executor.executeRequest(request);
         return handler.getObjectFromJson(response, responseType);
-
     }
 
 }

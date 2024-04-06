@@ -20,6 +20,8 @@ public class Player implements Serializable {
 
     @JsonProperty("id")
     private Long playerId;
-    private String name;
+
+    @JsonProperty("name")
+    private String  playerName;
 
 }

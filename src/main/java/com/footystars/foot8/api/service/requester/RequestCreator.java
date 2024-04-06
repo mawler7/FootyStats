@@ -1,5 +1,6 @@
 package com.footystars.foot8.api.service.requester;
 
+import com.footystars.foot8.exception.RequestCreatorException;
 import com.footystars.foot8.config.RapidApiConfig;
 import com.footystars.foot8.utils.PathSegment;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +30,17 @@ public class RequestCreator {
     }
 
     public Request createRequest(@NotNull String pathSegments, @NotNull Map<String, String> queryParams) {
-        var url = getUrl(pathSegments, queryParams);
-        return new Request.Builder()
-                .url(url)
-                .addHeader(PathSegment.RAPID_API_HOST_HEADER, rapidApiConfig.getApiHost())
-                .addHeader(PathSegment.RAPID_API_KEY_HEADER, rapidApiConfig.getApiKey())
-                .get()
-                .build();
+        try {
+            var url = getUrl(pathSegments, queryParams);
+            return new Request.Builder()
+                    .url(url)
+                    .addHeader(PathSegment.RAPID_API_HOST_HEADER, rapidApiConfig.getApiHost())
+                    .addHeader(PathSegment.RAPID_API_KEY_HEADER, rapidApiConfig.getApiKey())
+                    .get()
+                    .build();
+        } catch (Exception e) {
+            throw new RequestCreatorException("Could not create request");
+        }
     }
 
 }

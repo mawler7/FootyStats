@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.footystars.foot8.api.model.fixtures.statistics.statistic.Statistic;
 import com.footystars.foot8.api.model.fixtures.statistics.team.Team;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -22,7 +23,8 @@ import java.util.List;
 public class Statistics implements Serializable {
 
     @JsonProperty("statistics")
-    private List<Statistic> statisticList;
+    private ArrayList<Statistic> stats;
+    @Transient
     private Team team;
 
 }

@@ -19,8 +19,11 @@ import java.io.Serializable;
 public class AwayTeam implements Serializable {
 
     @JsonProperty("id")
-    private Long teamId;
-    private String name;
-    private String logo;
-    private Boolean winner;
+    private Long awayTeamId;
+    @JsonProperty("name")
+    private String awayTeamName;
+    @JsonProperty("logo")
+    private String awayTeamLogo;
+    @JsonProperty("winner")
+    private Boolean awayTeamWinner;
 }

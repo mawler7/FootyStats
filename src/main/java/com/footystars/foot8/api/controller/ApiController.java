@@ -2,10 +2,14 @@ package com.footystars.foot8.api.controller;
 
 import com.footystars.foot8.api.service.datafetcher.CoachesFetcher;
 import com.footystars.foot8.api.service.datafetcher.CountriesFetcher;
+import com.footystars.foot8.api.service.datafetcher.FixtureEventsFetcher;
+import com.footystars.foot8.api.service.datafetcher.FixtureLineupsFetcher;
+import com.footystars.foot8.api.service.datafetcher.FixtureStatisticsFetcher;
 import com.footystars.foot8.api.service.datafetcher.FixturesFetcher;
 import com.footystars.foot8.api.service.datafetcher.LeaguesFetcher;
 import com.footystars.foot8.api.service.datafetcher.OddsFetcher;
 import com.footystars.foot8.api.service.datafetcher.PlayersFetcher;
+import com.footystars.foot8.api.service.datafetcher.PredictionsFetcher;
 import com.footystars.foot8.api.service.datafetcher.StandingsFetcher;
 import com.footystars.foot8.api.service.datafetcher.TeamFetcher;
 import com.footystars.foot8.api.service.datafetcher.TeamStatsFetcher;
@@ -32,23 +36,25 @@ public class ApiController {
     private final FixturesFetcher fixturesFetcher;
     private final PlayersFetcher playersFetcher;
     private final StandingsFetcher standingsFetcher;
+    private final FixtureStatisticsFetcher fixtureStatisticsFetcher;
+    private final FixtureEventsFetcher fixtureEventsFetcher;
+    private final FixtureLineupsFetcher fixtureLineupsFetcher;
+    private final PredictionsFetcher predictionsFetcher;
 
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
     @GetMapping("/countries")
-    public void getCountries() throws CountryException {
+    public void getCountries() {
         countriesFetcher.fetchAllCountries();
     }
 
     @GetMapping("/leagues/all")
     public void getAllLeagues() {
-        logger.info("Fetching all leagues from the Server");
         leaguesFetcher.fetchAll();
     }
 
     @GetMapping("/leagues/selected")
     public void getSelectedLeagues() {
-        logger.info("Fetching selected leagues from the Server");
         leaguesFetcher.fetchSelected();
     }
 
@@ -99,5 +105,24 @@ public class ApiController {
         standingsFetcher.fetchSelected();
     }
 
+    @GetMapping("/fixture/stats/selected")
+    public void getFixtureStats()   {
+        fixtureStatisticsFetcher.fetchSelected();
+    }
+
+    @GetMapping("/fixture/events/selected")
+    public void getFixtureEvents()   {
+        fixtureEventsFetcher.fetchSelected();
+    }
+
+    @GetMapping("/fixture/lineups/selected")
+    public void getFixtureLineups()   {
+        fixtureLineupsFetcher.fetchSelected();
+    }
+
+    @GetMapping("/prediction/selected")
+    public void getFixturePrediction()   {
+        predictionsFetcher.fetchSelected();
+    }
 
 }

@@ -2,10 +2,10 @@ package com.footystars.foot8.buisness.service;
 
 
 import com.footystars.foot8.api.model.teams.statistics.statistic.TeamStatisticApi;
-import com.footystars.foot8.persistence.entity.competitions.Competition;
-import com.footystars.foot8.persistence.entity.teams.statistics.TeamStatsMapper;
-import com.footystars.foot8.persistence.entity.teams.team.Team;
-import com.footystars.foot8.persistence.repository.TeamStatsRepository;
+import com.footystars.foot8.buisness.model.entity.Competition;
+import com.footystars.foot8.mapper.TeamStatsMapper;
+import com.footystars.foot8.buisness.model.entity.Team;
+import com.footystars.foot8.repository.TeamStatsRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Map;
 
-import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
-import static com.footystars.foot8.utils.ParameterNames.SEASON;
-import static com.footystars.foot8.utils.ParameterNames.TEAM;
+import static com.footystars.foot8.utils.ParameterName.LEAGUE;
+import static com.footystars.foot8.utils.ParameterName.SEASON;
+import static com.footystars.foot8.utils.ParameterName.TEAM;
 
 @Service
 @RequiredArgsConstructor

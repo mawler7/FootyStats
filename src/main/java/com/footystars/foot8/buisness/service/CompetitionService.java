@@ -1,13 +1,14 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.persistence.entity.competitions.Competition;
-import com.footystars.foot8.persistence.repository.CompetitionRepository;
+import com.footystars.foot8.buisness.model.entity.Competition;
+import com.footystars.foot8.repository.CompetitionRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +38,10 @@ public class CompetitionService {
 
     public Competition save(@NotNull Competition competition) {
         return competitionRepository.save(competition);
+    }
+
+    public List<Competition> getByLeagueId (Long leagueId) {
+        return competitionRepository.findByLeagueId(leagueId);
     }
 
 }

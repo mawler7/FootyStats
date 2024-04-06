@@ -21,7 +21,6 @@ public class League implements Serializable {
     @JsonProperty("id")
     private Long leagueId;
     private String name;
-    private String country;
     private String logo;
     private String flag;
     private Integer season;

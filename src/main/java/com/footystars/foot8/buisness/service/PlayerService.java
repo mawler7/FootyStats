@@ -1,8 +1,8 @@
 package com.footystars.foot8.buisness.service;
 
 
-import com.footystars.foot8.persistence.entity.players.player.Player;
-import com.footystars.foot8.persistence.repository.PlayerRepository;
+import com.footystars.foot8.buisness.model.entity.Player;
+import com.footystars.foot8.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +21,7 @@ public class PlayerService {
     public Player save(Player player) {
         return playerRepository.save(player);
     }
+
+
 }
 

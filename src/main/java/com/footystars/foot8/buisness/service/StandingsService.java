@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.footystars.foot8.utils.ParameterNames.LEAGUE;
-import static com.footystars.foot8.utils.ParameterNames.SEASON;
+import static com.footystars.foot8.utils.ParameterName.LEAGUE;
+import static com.footystars.foot8.utils.ParameterName.SEASON;
 
 @Service
 @RequiredArgsConstructor

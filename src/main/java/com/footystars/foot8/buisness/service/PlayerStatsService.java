@@ -1,11 +1,11 @@
 package com.footystars.foot8.buisness.service;
 
 import com.footystars.foot8.api.model.players.statistics.PlayerStatisticApi;
-import com.footystars.foot8.persistence.entity.competitions.Competition;
-import com.footystars.foot8.persistence.entity.players.player.Player;
-import com.footystars.foot8.persistence.entity.players.statistics.PlayerStats;
-import com.footystars.foot8.persistence.entity.players.statistics.PlayerStatsMapper;
-import com.footystars.foot8.persistence.repository.PlayerStatsRepository;
+import com.footystars.foot8.buisness.model.entity.Competition;
+import com.footystars.foot8.buisness.model.entity.Player;
+import com.footystars.foot8.buisness.model.entity.PlayerStats;
+import com.footystars.foot8.mapper.PlayerStatsMapper;
+import com.footystars.foot8.repository.PlayerStatsRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -29,7 +29,8 @@ public class PlayerStatsService {
     @Transactional
     public void updatePlayerStatistics(Long playerId, PlayerStatisticApi playerStatisticApi, Competition competition) {
         var optionalPlayer = playerService.findById(playerId);
-        optionalPlayer.ifPresentOrElse(player -> {
+        if (optionalPlayer.isPresent()) {
+            var player = optionalPlayer.get();
             var playerStatsList = player.getStatistics();
             if (playerStatsList == null) {
                 playerStatsList = new ArrayList<>();
@@ -42,13 +43,14 @@ public class PlayerStatsService {
                 var playerStats = existingStatsForCompetition.get();
                 var playerStatsDto = playerStatsMapper.apiToDto(playerStatisticApi);
                 playerStatsMapper.partialUpdate(playerStatsDto, playerStats);
-                playerStats.setDefaults();
                 playerStatsRepository.save(playerStats);
                 competitionService.save(competition);
             } else {
                 createPlayerStats(playerStatisticApi, competition, player);
             }
-        }, () -> logger.warn("Player not found with ID: {}", playerId));
+        } else {
+            logger.warn("Player not found with ID: {}", playerId);
+        }
     }
 
 
@@ -57,7 +59,6 @@ public class PlayerStatsService {
         var playerStats = playerStatsMapper.toEntity(playerStatsDto);
         playerStats.setPlayer(player);
         playerStats.setCompetition(competition);
-        playerStats.setDefaults();
         var savedStats = save(playerStats);
         competition.getPlayerStatistics().add(savedStats);
         competitionService.save(competition);

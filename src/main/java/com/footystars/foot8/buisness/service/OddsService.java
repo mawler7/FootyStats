@@ -2,8 +2,8 @@ package com.footystars.foot8.buisness.service;
 
 
 import com.footystars.foot8.api.model.odds.odd.Odd;
-import com.footystars.foot8.persistence.entity.bet.BetDto;
-import com.footystars.foot8.persistence.entity.bet.BetMapper;
+import com.footystars.foot8.buisness.model.dto.BetDto;
+import com.footystars.foot8.mapper.BetMapper;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;

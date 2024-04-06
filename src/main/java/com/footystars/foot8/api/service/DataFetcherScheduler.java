@@ -5,7 +5,6 @@ import com.footystars.foot8.api.service.datafetcher.FixturesFetcher;
 import com.footystars.foot8.api.service.datafetcher.LeaguesFetcher;
 import com.footystars.foot8.api.service.datafetcher.TeamFetcher;
 import com.footystars.foot8.api.service.datafetcher.TeamStatsFetcher;
-import com.footystars.foot8.api.service.datafetcher.VenuesFetcher;
 import com.footystars.foot8.exception.CountryException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ public class DataFetcherScheduler {
     private final LeaguesFetcher leaguesDataFetcher;
     private final TeamFetcher teamInfoDataFetcher;
     private final TeamStatsFetcher teamStatsDataFetcher;
-    private final VenuesFetcher venuesDataFetcher;
     private final FixturesFetcher fixturesDataFetcher;
 
 //    @PostConstruct
@@ -32,7 +30,7 @@ public class DataFetcherScheduler {
 //    }
 
     //        @Scheduled(cron = "0 0 1 */6 * *")
-    public void fetchCountries() throws CountryException {
+    public void fetchCountries() {
 //        logger.info("Fetching countries...");
         countryDataFetcher.fetchAllCountries();
     }

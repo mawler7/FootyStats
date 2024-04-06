@@ -1,10 +1,10 @@
 package com.footystars.foot8.buisness.service;
 
 import com.footystars.foot8.api.model.fixtures.fixture.LeagueFixture;
-import com.footystars.foot8.persistence.entity.competitions.Competition;
-import com.footystars.foot8.persistence.entity.fixtures.fixture.Fixture;
-import com.footystars.foot8.persistence.entity.fixtures.fixture.FixtureMapper;
-import com.footystars.foot8.persistence.repository.FixtureRepository;
+import com.footystars.foot8.buisness.model.entity.Competition;
+import com.footystars.foot8.buisness.model.entity.Fixture;
+import com.footystars.foot8.mapper.FixtureMapper;
+import com.footystars.foot8.repository.FixtureRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -23,6 +23,7 @@ public class FixtureService {
     private final CompetitionService competitionService;
     private final VenueService venueService;
     private final ClubService clubService;
+    private final TeamService teamService;
 
     private final Logger logger = LoggerFactory.getLogger(FixtureService.class);
 
@@ -37,7 +38,7 @@ public class FixtureService {
                 logger.info("Updated fixture");
             } else {
                 createFromDto(leagueFixture);
-                logger.info("Created fixture with fixtureId: {fixtureId}");
+                logger.info("Created fixture with fixtureId: {}", fixtureId);
             }
         }
     }
@@ -45,10 +46,13 @@ public class FixtureService {
     public void createFromDto(@NotNull LeagueFixture leagueFixture) {
         var leagueId = leagueFixture.getLeague().getLeagueId();
         var venueId = leagueFixture.getFixture().getVenue().getId();
-        var homeTeamId = leagueFixture.getTeams().getHomeTeam().getTeamId();
-        var awayTeamId = leagueFixture.getTeams().getAwayTeam().getTeamId();
-        var optionalHomeTeam = clubService.findById(homeTeamId);
-        var optionalAwayTeam = clubService.findById(awayTeamId);
+        var season = leagueFixture.getLeague().getSeason();
+
+        var homeTeamId = leagueFixture.getTeams().getHomeTeam().getHomeTeamId();
+        var awayTeamId = leagueFixture.getTeams().getAwayTeam().getAwayTeamId();
+        var optionalHomeTeam = teamService.getByClubIdLeagueIdAndLeagueSeason(homeTeamId, leagueId,season);
+        var optionalAwayTeam = teamService.getByClubIdLeagueIdAndLeagueSeason(awayTeamId, leagueId,season);
+
         if (optionalHomeTeam.isPresent() && optionalAwayTeam.isPresent()) {
             var homeTeam = optionalHomeTeam.get();
             var awayTeam = optionalAwayTeam.get();

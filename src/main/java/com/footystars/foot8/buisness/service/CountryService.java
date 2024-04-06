@@ -1,9 +1,9 @@
 package com.footystars.foot8.buisness.service;
 
-import com.footystars.foot8.persistence.entity.countries.Country;
-import com.footystars.foot8.persistence.entity.countries.CountryDto;
-import com.footystars.foot8.persistence.entity.countries.CountryMapper;
-import com.footystars.foot8.persistence.repository.CountryRepository;
+import com.footystars.foot8.buisness.model.entity.Country;
+import com.footystars.foot8.buisness.model.dto.CountryDto;
+import com.footystars.foot8.mapper.CountryMapper;
+import com.footystars.foot8.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class CountryService {
             var country = countryMapper.toEntity(countryDto);
             save(country);
         } else {
-            logger.warn("Country " + countryDto.getName() + "already exists");
+            logger.warn("Country {} }already exists", countryDto.getName());
         }
     }
 

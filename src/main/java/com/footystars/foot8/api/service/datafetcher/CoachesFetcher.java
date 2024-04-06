@@ -10,10 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.HashMap;
 
-import static com.footystars.foot8.utils.ParameterNames.TEAM;
+import static com.footystars.foot8.utils.ParameterName.TEAM;
 import static com.footystars.foot8.utils.PathSegment.COACHS;
 import static com.footystars.foot8.utils.SelectedLeagues.PREMIER_LEAGUE;
 
@@ -30,14 +29,10 @@ public class CoachesFetcher {
 
     @Transactional
     public void fetchByTeamId(Long teamId) {
-        try {
-            var params = new HashMap<String, String>();
-            params.put(TEAM, String.valueOf(teamId));
-            var coachesDto = dataFetcher.fetch(COACHS, params, Coaches.class).getCoachesDto();
-            coachesDto.forEach(coachService::fetchCoach);
-        } catch (IOException e) {
-            throw new FetchLeaguesException("Could not fetch coach for teamId: " + teamId, e);
-        }
+        var params = new HashMap<String, String>();
+        params.put(TEAM, String.valueOf(teamId));
+        var coachesDto = dataFetcher.fetch(COACHS, params, Coaches.class).getCoachesDto();
+        coachesDto.forEach(coachService::fetchCoach);
     }
 
     @Transactional
@@ -58,25 +53,3 @@ public class CoachesFetcher {
         });
     }
 }
-//    @Transactional
-//    public void fetchSelected() {
-//        List<Long> europeansTop5LeaguesIds = SelectedLeagues.getEuropeansTop5LeaguesIds();
-//        europeansTop5LeaguesIds.forEach(leagueId -> {
-//            var years = seasonService.findByLeagueId(leagueId);
-//            years.forEach(year -> {
-//                Optional<Competition> optionalCompetition = competitionService.getByLeagueAndSeasonYear(leagueId, year);
-//                if (optionalCompetition.isPresent()) {
-//                    var competition = optionalCompetition.get();
-//                    var teams = competition.getTeams();
-//                    teams.forEach(team -> {
-//                        var teamId = team.getId();
-//                        try {
-//                            fetchByTeamId(teamId);
-//                        } catch (FetchLeaguesException e) {
-//                            e.printStackTrace();
-//                        }
-//                    });
-//                }
-//            });
-//        });
-//    }

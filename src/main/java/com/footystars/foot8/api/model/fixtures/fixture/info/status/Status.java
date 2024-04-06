@@ -20,9 +20,7 @@ public class Status implements Serializable {
     private String fullStatus;
 
     @JsonProperty("short")
-    private String status;
-
+    private String shortStatus;
     private String elapsed;
-
 
 }

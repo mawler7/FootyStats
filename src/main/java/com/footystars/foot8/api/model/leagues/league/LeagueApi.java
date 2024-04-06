@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.footystars.foot8.api.model.leagues.league.info.LeagueInfo;
 import com.footystars.foot8.api.model.leagues.league.season.SeasonApi;
-import com.footystars.foot8.persistence.entity.countries.CountryDto;
+import com.footystars.foot8.buisness.model.dto.CountryDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

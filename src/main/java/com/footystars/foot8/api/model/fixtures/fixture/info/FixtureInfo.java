@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.footystars.foot8.api.model.fixtures.fixture.info.periods.Periods;
 import com.footystars.foot8.api.model.fixtures.fixture.info.status.Status;
-import com.footystars.foot8.persistence.entity.venues.VenueDto;
+import com.footystars.foot8.buisness.model.dto.VenueDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

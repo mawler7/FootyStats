@@ -2,9 +2,9 @@ package com.footystars.foot8.buisness.service;
 
 import com.footystars.foot8.api.model.players.player.PlayerStatistics;
 import com.footystars.foot8.api.model.players.statistics.PlayerStatisticApi;
-import com.footystars.foot8.persistence.entity.competitions.Competition;
-import com.footystars.foot8.persistence.entity.players.player.PlayerMapper;
-import com.footystars.foot8.persistence.entity.teams.team.Team;
+import com.footystars.foot8.buisness.model.entity.Competition;
+import com.footystars.foot8.mapper.PlayerMapper;
+import com.footystars.foot8.buisness.model.entity.Team;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -48,7 +48,6 @@ public class PlayerInfoService {
                 if (optionalTeam.isPresent()) {
                     var team = optionalTeam.get();
                     saveNewPlayer(playerId, playerStatistics, competition, statistic, team);
-                    logger.info("Saved new player {}", playerId);
                 }
             }
         }

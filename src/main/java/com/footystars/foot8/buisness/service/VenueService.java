@@ -1,10 +1,10 @@
 package com.footystars.foot8.buisness.service;
 
 import com.footystars.foot8.api.model.teams.TeamApi;
-import com.footystars.foot8.persistence.entity.venues.Venue;
-import com.footystars.foot8.persistence.entity.venues.VenueDto;
-import com.footystars.foot8.persistence.entity.venues.VenueMapper;
-import com.footystars.foot8.persistence.repository.VenueRepository;
+import com.footystars.foot8.buisness.model.entity.Venue;
+import com.footystars.foot8.buisness.model.dto.VenueDto;
+import com.footystars.foot8.mapper.VenueMapper;
+import com.footystars.foot8.repository.VenueRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
