@@ -1,8 +1,8 @@
 package com.footystars.foot8.mapper;
 
 import com.footystars.foot8.api.model.predictions.response.PredictionApi;
-import com.footystars.foot8.buisness.model.dto.PredictionDto;
-import com.footystars.foot8.buisness.model.entity.Prediction;
+import com.footystars.foot8.business.model.dto.PredictionDto;
+import com.footystars.foot8.business.model.entity.Prediction;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

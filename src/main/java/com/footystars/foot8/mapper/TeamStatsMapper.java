@@ -1,8 +1,8 @@
 package com.footystars.foot8.mapper;
 
 import com.footystars.foot8.api.model.teams.statistics.statistic.TeamStatisticApi;
-import com.footystars.foot8.buisness.model.entity.TeamStats;
-import com.footystars.foot8.buisness.model.dto.TeamStatsDto;
+import com.footystars.foot8.business.model.entity.TeamStats;
+import com.footystars.foot8.business.model.dto.TeamStatsDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -121,23 +121,22 @@ public interface TeamStatsMapper {
     @Mapping(source = "fixtures.wins.away", target = "winsAway")
     @Mapping(source = "fixtures.wins.total", target = "winsTotal")
     @Mapping(source = "league.leagueId", target = "leagueId")
-    @Mapping(source = "league.name", target = "leagueName")
-    @Mapping(source = "league.logo", target = "leagueLogo")
+    @Mapping(source = "league.leagueName", target = "leagueName")
+    @Mapping(source = "league.leagueLogo", target = "leagueLogo")
     @Mapping(source = "league.country", target = "country")
-    @Mapping(source = "league.season", target = "seasonYear")
+    @Mapping(source = "league.year", target = "seasonYear")
     @Mapping(source = "penalty.total", target = "penaltiesTotal")
     @Mapping(source = "penalty.missed.percentage", target = "penaltiesMissedPercentage")
     @Mapping(source = "penalty.missed.total", target = "penaltiesMissedTotal")
     @Mapping(source = "penalty.scored.percentage", target = "penaltiesScoredTotal")
     @Mapping(source = "penalty.scored.total", target = "penaltiesScoredPercentage")
-    @Mapping(source = "club.id", target = "clubId")
-    @Mapping(source = "club.logo", target = "clubLogo")
-    @Mapping(source = "club.name", target = "clubName")
+    @Mapping(source = "team.id", target = "clubId")
+    @Mapping(source = "team.logo", target = "clubLogo")
+    @Mapping(source = "team.name", target = "clubName")
     TeamStatsDto toDto(TeamStatisticApi teamStatistic);
 
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    TeamStats partialUpdate(TeamStatisticApi teamStatistic, @MappingTarget TeamStats teamStats);
+
 
     TeamStatsDto toDto(TeamStats teamStats);
 

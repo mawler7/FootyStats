@@ -1,6 +1,7 @@
 package com.footystars.foot8.api.model.standings.standing.team;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @Builder
 @Getter
 @Setter
+@Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StandingTeam implements Serializable {
     private Long id;

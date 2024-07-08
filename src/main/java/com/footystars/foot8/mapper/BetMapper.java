@@ -1,8 +1,8 @@
 package com.footystars.foot8.mapper;
 
 import com.footystars.foot8.api.model.odds.bets.bet.BetApi;
-import com.footystars.foot8.buisness.model.entity.Bet;
-import com.footystars.foot8.buisness.model.dto.BetDto;
+import com.footystars.foot8.business.model.entity.Bet;
+import com.footystars.foot8.business.model.dto.BetDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

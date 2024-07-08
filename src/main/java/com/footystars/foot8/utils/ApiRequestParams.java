@@ -24,4 +24,8 @@ public enum ApiRequestParams {
     private final String endpoint;
     private final List<String> params;
 
+    public static final String REQUEST_REMAINING = "x-ratelimit-requests-remaining";
+    public static final String REQUEST_LIMIT = "x-ratelimit-requests-limit";
+
+
 }

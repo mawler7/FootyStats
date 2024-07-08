@@ -2,7 +2,7 @@ package com.footystars.foot8.api.model.players;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.footystars.foot8.api.model.players.paging.Paging;
-import com.footystars.foot8.api.model.players.player.PlayerStatistics;
+import com.footystars.foot8.api.model.players.player.PlayerApi;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +20,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PlayersApiResponse implements Serializable {
 
-    private List<PlayerStatistics> response;
+    private List<PlayerApi> response;
     private Paging paging;
 
 }

@@ -1,6 +1,7 @@
 package com.footystars.foot8.api.model.players.statistics.duels;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,8 @@ import java.io.Serializable;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Duels implements Serializable {
-
-    private Integer total;
-    private Integer won;
+@JsonProperty("total")
+    private Integer duelsTotal;
+    @JsonProperty("won")
+    private Integer duelsWon;
 }

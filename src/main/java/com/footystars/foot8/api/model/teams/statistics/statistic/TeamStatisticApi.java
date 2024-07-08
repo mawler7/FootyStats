@@ -11,7 +11,7 @@ import com.footystars.foot8.api.model.teams.statistics.statistic.goals.Goals;
 import com.footystars.foot8.api.model.teams.statistics.statistic.league.League;
 import com.footystars.foot8.api.model.teams.statistics.statistic.lineups.lineup.Lineup;
 import com.footystars.foot8.api.model.teams.statistics.statistic.penalty.Penalty;
-import com.footystars.foot8.buisness.model.dto.ClubDto;
+import com.footystars.foot8.business.model.dto.ClubDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +41,6 @@ public class TeamStatisticApi implements Serializable {
     private League league;
     private List<Lineup> lineups;
     private Penalty penalty;
-    @JsonProperty("team")
-    private ClubDto club;
+    private ClubDto team;
 
 }

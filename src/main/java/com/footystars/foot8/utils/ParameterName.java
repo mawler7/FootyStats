@@ -11,6 +11,7 @@ public class ParameterName {
     public static final String SEASON = "season";
     public static final String TEAM = "team";
     public static final String LEAGUE = "league";
+    public static final String CUP = "cup";
     public static final String PLAYER = "player";
     public static final String COACH = "coach";
     public static final String VENUE = "venue";
@@ -35,7 +36,31 @@ public class ParameterName {
     public static final String FROM = "from";
     public static final String TO = "to";
     public static final String DATE = "date";
+    public static final String WORLD = "World";
+    public static final String PREMIER_LEAGUE = "Premier League";
+    public static final String LIGUE_1 = "Ligue 1";
+    public static final String SERIE_A = "Serie A";
+    public static final String BUNDESLIGA = "Bundesliga";
+    public static final String LA_LIGA = "La Liga";
 
+    public static final String UEFA_SUPER_CUP = "UEFA Super Cup";
+    public static final String UEFA_CHAMPIONS_LEAGUE = "UEFA Champions League";
+    public static final String UEFA_EUROPA_LEAGUE = "UEFA Europa League";
+    public static final String UEFA_EUROPA_CONFERENCE_LEAGUE = "UEFA Europa Conference League";
+
+    public static final String COMMUNITY_SHIELD = "Community Shield";
+    public static final String COPPA_ITALIA = "Coppa Italia";
+    public static final String COPA_DEL_REY = "Copa del Rey";
+    public static final String COUPE_DE_FRANCE = "Coupe de France";
+    public static final String DFB_POKAL = "DFB Pokal";
+    public static final String EFL_TROPHY = "EFL Trophy";
+    public static final String FA_CUP = "FA Cup";
+    public static final String FA_TROPHY = "FA Trophy";
+    public static final String PREMIER_LEAGUE_CUP = "Premier League Cup";
+    public static final String SUPER_CUP_GERMANY = "Super Cup";
+    public static final String SUPER_CUP_ITALY = "Super Cup";
+    public static final String SUPER_CUP_PRIMAVERA = "Super Cup Primavera";
+    public static final String TROPHEE_DES_CHAMPIONS = "Trophée des Champions";
     private ParameterName() {
     }
 

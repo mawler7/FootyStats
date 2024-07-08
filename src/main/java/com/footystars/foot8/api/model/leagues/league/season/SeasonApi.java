@@ -2,6 +2,8 @@ package com.footystars.foot8.api.model.leagues.league.season;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.footystars.foot8.api.model.leagues.league.coverage.Coverage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,5 +25,7 @@ public class SeasonApi implements Serializable {
     @JsonProperty("end")
     private String endDate;
     private Boolean current;
+    private Coverage coverage;
+
 
 }

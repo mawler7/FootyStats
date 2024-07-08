@@ -2,6 +2,7 @@ package com.footystars.foot8.api.model.teams.statistics.statistic.team;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,12 +16,15 @@ import java.io.Serializable;
 @Builder
 @Getter
 @Setter
+@Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Club implements Serializable {
 
     @JsonProperty("id")
     private Long clubId;
-    private String logo;
-    private String name;
+    @JsonProperty("logo")
+    private String clubLogo;
+    @JsonProperty("name")
+    private String clubName;
 
 }

@@ -1,0 +1,85 @@
+package com.footystars.foot8.api.service.fetcher;
+
+import com.footystars.foot8.api.model.standings.StandingsApi;
+import com.footystars.foot8.api.service.requester.ParamsProvider;
+import com.footystars.foot8.business.service.SeasonService;
+import com.footystars.foot8.business.service.StandingsService;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+
+import static com.footystars.foot8.utils.PathSegment.STANDINGS;
+import static com.footystars.foot8.utils.SelectedLeagues.getEuropeanCups;
+import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
+import static com.footystars.foot8.utils.SelectedLeagues.getSelectedCups;
+
+@Service
+@RequiredArgsConstructor
+public class StandingsFetcher {
+
+    private final ApiDataFetcher dataFetcher;
+    private final StandingsService standingsService;
+    private final SeasonService seasonService;
+    private final ParamsProvider paramsProvider;
+
+    private final Logger log = LoggerFactory.getLogger(StandingsFetcher.class);
+
+    @Async
+    public void fetchStandings(@NotNull Long leagueId, @NotNull Integer season) {
+        try {
+            var params = paramsProvider.getLeagueAndSeasonParamsMap(leagueId, season);
+            var standingApis = dataFetcher.fetch(STANDINGS, params, StandingsApi.class);
+            standingsService.fetchStandings(standingApis, params);
+        } catch (Exception e) {
+            log.error("Error fetching standings for league {} and season {}: {}", leagueId, season, e.getMessage());
+        }
+    }
+
+    @Async
+    public void fetchStandingsByLeagueId(@NotNull Long leagueId) {
+        var optionalSeasons = seasonService.findByLeagueId(leagueId);
+        optionalSeasons.stream()
+                .filter(s -> s.getCurrent().equals(Boolean.TRUE))
+                .forEach(season -> {
+                    var year = season.getYear();
+                    fetchStandings(leagueId, year);
+                });
+        log.info("Standings fetched by league id: {}", leagueId);
+    }
+
+
+    @Async
+    public void fetchSelectedLeaguesCurrentSeasonStandings(@NotNull Long leagueId) {
+        var optionalSeason = seasonService.findCurrentSeasonByLeagueId(leagueId);
+        if (optionalSeason.isPresent()) {
+            var season = optionalSeason.get().getYear();
+            fetchStandings(leagueId, season);
+        }
+    }
+
+    public void fetchCurrentSeasonsStandings() {
+        var allIds = new ArrayList<Long>();
+        var leaguesIds = getFavoritesLeaguesAndCups();
+        var cupsIds = getSelectedCups();
+        allIds.addAll(leaguesIds);
+        allIds.addAll(cupsIds);
+        allIds.forEach(this::fetchSelectedLeaguesCurrentSeasonStandings);
+    }
+
+    public void fetchStandings() {
+        ArrayList<Long> ids = new ArrayList<>();
+        var leaguesIds = getFavoritesLeaguesAndCups();
+        var cupsIds = getSelectedCups();
+        var clubsCupsIds = getEuropeanCups();
+        ids.addAll(leaguesIds);
+        ids.addAll(cupsIds);
+        ids.addAll(clubsCupsIds);
+        ids.forEach(this::fetchStandingsByLeagueId);
+    }
+
+}

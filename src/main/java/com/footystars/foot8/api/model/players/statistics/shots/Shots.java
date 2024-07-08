@@ -19,7 +19,8 @@ import java.io.Serializable;
 public class Shots implements Serializable {
 
     @JsonProperty("on")
-    private Integer onTarget;
-    private Integer total;
+    private Integer shotsOnTarget;
+    @JsonProperty("total")
+    private Integer shotsTotal;
 
 }

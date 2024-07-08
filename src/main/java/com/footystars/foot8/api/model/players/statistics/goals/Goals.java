@@ -1,6 +1,7 @@
 package com.footystars.foot8.api.model.players.statistics.goals;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,8 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Goals implements Serializable {
 
-    private Integer total;
+    @JsonProperty("total")
+    private Integer goalsTotal;
     private Integer conceded;
     private Integer assists;
     private Integer saves;

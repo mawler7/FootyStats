@@ -11,6 +11,6 @@ public enum LeagueType {
     CUP("cup"),
     LEAGUE("league");
 
-    private final String name;
+    private final String type;
 
 }

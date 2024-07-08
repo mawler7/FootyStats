@@ -17,9 +17,13 @@ import java.io.Serializable;
 public class Penalty implements Serializable {
 
     @JsonProperty("commited")
-    private Integer committed;
-    private Integer scored;
-    private Integer missed;
-    private Integer saved;
-    private Integer won;
+    private Integer penaltiesCommitted;
+    @JsonProperty("scored")
+    private Integer penaltiesScored;
+    @JsonProperty("missed")
+    private Integer penaltiesMissed;
+    @JsonProperty("saved")
+    private Integer penaltiesSaved;
+    @JsonProperty("won")
+    private Integer penaltiesWon;
 }
