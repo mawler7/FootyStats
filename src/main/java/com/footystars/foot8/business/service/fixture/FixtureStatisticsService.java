@@ -1,4 +1,4 @@
-package com.footystars.foot8.business.service;
+package com.footystars.foot8.business.service.fixture;
 
 import com.footystars.foot8.api.model.fixtures.statistics.Statistics;
 import com.footystars.foot8.api.model.fixtures.statistics.statistic.Statistic;

@@ -14,8 +14,6 @@ public class LineupsController {
 
     private final LineupsFetcher fixtureLineupsFetcher;
 
-
-
     @GetMapping("/all/{leagueId}")
     public void getAllSeasonsLineupsForLeagueId(@PathVariable Long leagueId) {
         fixtureLineupsFetcher.fetchAllSeasonsLineupsByLeagueId(leagueId);

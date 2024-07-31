@@ -25,21 +25,20 @@ public class EventsController {
         eventsFetcher.fetchEventsByLeagueIdAndSeason(leagueId, seasonYear);
         logger.info(EVENTS_FETCHED, leagueId, seasonYear);
     }
+
     @GetMapping("/{leagueId}")
     public void getEventsByLeagueId(@PathVariable Long leagueId) {
         eventsFetcher.fetchEventsForAllSeasonsByLeagueId(leagueId);
-        logger.info("Fetched fixture events for leagueId {}", leagueId);
-    }
-
-    @GetMapping("/selected")
-    public void getAllEventsForSelectedLeagues() {
-        eventsFetcher.fetchEventsFroAllSelectedLeagues();
     }
 
     @GetMapping("/current")
-    public void getCurrentSeasonEventsForSelectedLeagues() {
-        eventsFetcher.fetchEventsForCurrentSeason();
+    public void getCurrentSeasonEventsForTopLeagues() {
+        eventsFetcher.fetchTopLeagueEventsInCurrentSeason();
     }
 
+    @GetMapping("")
+    public void getEventsForTopLeagues() {
+        eventsFetcher.fetchTopLeagueEvents();
+    }
 
 }

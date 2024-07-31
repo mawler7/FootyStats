@@ -1,13 +1,11 @@
 package com.footystars.foot8.api.service.fetcher;
 
-import com.footystars.foot8.api.controller.OddsController;
 import com.footystars.foot8.api.model.odds.OddsApi;
 import com.footystars.foot8.api.model.odds.odd.Odd;
 import com.footystars.foot8.api.service.requester.ParamsProvider;
-import com.footystars.foot8.business.service.FixtureService;
-import com.footystars.foot8.business.service.OddsService;
 import com.footystars.foot8.business.service.SeasonService;
-import com.footystars.foot8.utils.LogsNames;
+import com.footystars.foot8.business.service.bets.OddsService;
+import com.footystars.foot8.business.service.fixture.FixtureService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -19,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,11 +25,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.footystars.foot8.utils.ParameterName.LEAGUE;
 import static com.footystars.foot8.utils.ParameterName.PAGE;
-import static com.footystars.foot8.utils.ParameterName.SEASON;
 import static com.footystars.foot8.utils.PathSegment.ODDS;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,24 +47,22 @@ public class OddsFetcher {
 
     private static final Log logger = LogFactory.getLog(OddsFetcher.class);
 
-
     private final Bucket bucket = Bucket4j.builder()
             .addLimit(Bandwidth.classic(MAX_REQUESTS_PER_MINUTE, Refill.intervally(MAX_REQUESTS_PER_MINUTE, Duration.ofMinutes(1))))
             .build();
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-
     public void fetchByAllLeagues() {
-        getFavoritesLeaguesAndCups()
-                .forEach(this::fetchOddsByLeagueId);
+        getTopLeaguesIds().forEach(this::fetchOddsByLeagueId);
     }
 
     @Async
     public void fetchOddsByLeagueId(@NotNull Long leagueId) {
-
         var optionalSeasons = seasonService.findByLeagueId(leagueId);
-        optionalSeasons.stream().filter(s -> s.getCoverage().isOdds()).forEach(season -> {
+        optionalSeasons.stream()
+                .filter(s -> s.getCoverage().isOdds())
+                .forEach(season -> {
             try {
                 fetchOddsByLeagueAndYear(leagueId, season.getYear());
             } catch (Exception e) {
@@ -90,9 +83,8 @@ public class OddsFetcher {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error((e.getMessage()), e);
         }
-
     }
 
     private void consumeBucket() throws InterruptedException {
@@ -102,9 +94,6 @@ public class OddsFetcher {
     private void fetchResponsePage(@NotNull Map<String, String> params, @NotNull OddsApi oddsApi) {
         int totalPages = oddsApi.getPaging().getTotal();
         var response = oddsApi.getResponse();
-
-        var year = params.get(SEASON);
-        var leagueId = params.get(LEAGUE);
 
         response.forEach(this::processOdds);
 

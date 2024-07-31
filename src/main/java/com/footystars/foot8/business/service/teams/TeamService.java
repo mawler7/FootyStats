@@ -1,7 +1,8 @@
-package com.footystars.foot8.business.service;
+package com.footystars.foot8.business.service.teams;
 
 import com.footystars.foot8.api.model.teams.TeamApi;
 import com.footystars.foot8.business.model.entity.Team;
+import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.mapper.TeamMapper;
 import com.footystars.foot8.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.footystars.foot8.utils.LogsNames.FETCH_CLUBS_ERROR;
-import static com.footystars.foot8.utils.LogsNames.HOME_OR_AWAY_TEAM_ERROR;
 import static com.footystars.foot8.utils.LogsNames.NO_SEASON_ERROR;
 import static com.footystars.foot8.utils.LogsNames.TEAM_SAVED;
 import static com.footystars.foot8.utils.LogsNames.TEAM_UPDATED;

@@ -1,9 +1,8 @@
-package com.footystars.foot8.business.service;
+package com.footystars.foot8.business.service.player;
 
 import com.footystars.foot8.api.model.players.player.PlayerApi;
-import com.footystars.foot8.api.model.players.statistics.PlayerStats;
-import com.footystars.foot8.business.model.dto.PlayerDto;
 import com.footystars.foot8.business.model.entity.Player;
+import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.exception.PlayerStatisticsException;
 import com.footystars.foot8.mapper.PlayerMapper;
 import com.footystars.foot8.repository.PlayerRepository;
@@ -13,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.footystars.foot8.utils.LogsNames.PLAYER_STATS_ERROR;
 

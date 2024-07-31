@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -22,6 +23,6 @@ import java.util.List;
 public class Odd implements Serializable {
     private FixtureInfo fixture;
     private League league;
-    private String update;
+    private ZonedDateTime update;
     private List<Bookmaker> bookmakers;
 }

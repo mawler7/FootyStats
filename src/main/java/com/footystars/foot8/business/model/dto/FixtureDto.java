@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -18,7 +19,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FixtureDto implements Serializable {
     private Long id;
-    private String date;
+    private ZonedDateTime date;
     private String referee;
     private String elapsed;
     private String status;

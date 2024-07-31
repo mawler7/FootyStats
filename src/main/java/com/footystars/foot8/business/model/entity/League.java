@@ -12,12 +12,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Index;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -29,12 +28,14 @@ import java.util.Set;
 public class League implements Serializable {
 
     @Id
+    @Index(name = "idx_league_id")
     private Long id;
 
     private String logo;
     private String leagueName;
     private String type;
 
+    @Index(name = "idx_country_name")
     private String countryName;
     private String countryCode;
     private String flag;

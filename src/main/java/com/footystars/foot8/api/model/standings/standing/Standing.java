@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.ZonedDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -69,6 +70,6 @@ public class Standing implements Serializable {
     @JsonProperty("away")
     private AwayStat awayStats;
 
-    private Date update;
+    private ZonedDateTime update;
 
 }

@@ -1,8 +1,8 @@
 package com.footystars.foot8.business.controller;
 
 import com.footystars.foot8.business.model.dto.FixtureDetailsDto;
-import com.footystars.foot8.business.service.FixtureService;
-import com.footystars.foot8.mapper.FixtureMapper;
+import com.footystars.foot8.business.model.dto.FixturePredictionDto;
+import com.footystars.foot8.business.service.fixture.FixtureService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +19,10 @@ import java.util.List;
 @RequestMapping("/fixtures")
 public class FixtureController {
 
+    private final FixtureService fixtureService;
+
     private static final Logger logger = LoggerFactory.getLogger(FixtureController.class);
 
-    private final FixtureService fixtureService;
-    private final FixtureMapper fixtureMapper;
-
-//
-
-    //
     @GetMapping("/{leagueId}/{year}")
     public ResponseEntity<List<FixtureDetailsDto>> getFixturesByLeagueAndSeason(@PathVariable String leagueId, @PathVariable Integer year) {
         var list = fixtureService.findBySeasonsLeagueIdAndSeasonsYear(Long.valueOf(leagueId), year);
@@ -39,15 +35,19 @@ public class FixtureController {
         return ResponseEntity.ok(fixtureService.getFixtureDetailsByFixtureId(fixtureId));
     }
 
-//    @GetMapping("/{leagueId}/{seasonYear}")
-//    public void getFixturesByLeagueIdAndSeason(@PathVariable Long leagueId, @PathVariable Integer seasonYear) {
-//        fixtureService.findBySeasonsLeagueIdAndSeasonsYear(leagueId, seasonYear);
-//    }
-
-    @GetMapping("/today")
-    public void getTodayFixturesForSelectedLeagues() {
-        fixtureService.findTodayFixtures();
+    @GetMapping("/predictions/today")
+    public ResponseEntity<List<FixturePredictionDto>> getTodayFixturesPredictions() {
+        return ResponseEntity.ok(fixtureService.findTodayFixturesPredictions());
     }
 
+    @GetMapping("/predictions/{date}")
+    public ResponseEntity<List<FixturePredictionDto>> getFixturesPredictionsByDate(@PathVariable String date) {
+        return ResponseEntity.ok(fixtureService.findFixturesPredictionsByDate(date));
+    }
+
+    @GetMapping("/byDate/{date}")
+    public ResponseEntity<List<FixtureDetailsDto>> getFixturesByDate(@PathVariable String date) {
+        return ResponseEntity.ok(fixtureService.findByDate(date));
+    }
 
 }

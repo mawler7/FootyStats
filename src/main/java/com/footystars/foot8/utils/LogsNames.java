@@ -17,6 +17,7 @@ public class LogsNames {
     public static final String CLUB_SEASON_FETCHED = "Fetched season: {} for club: {}";
 
     public static final String COACHES_FETCHED = "Coaches fetched!";
+    public static final String COACH_FETCHED = "Coach: {} fetched!";
     public static final String COACHES_ERROR = "Error fetching coaches for league {}: {}";
 
     public static final String COMPETITION_ALREADY_EXISTS = "Competition already exists";
@@ -31,6 +32,7 @@ public class LogsNames {
     public static final String FIXTURE_CREATED = "Fixture for league {} in season {} created with id: {}";
     public static final String FIXTURE_ID_UPDATED = "Updated fixtureId: {}";
     public static final String FIXTURE_FETCHING_ERROR = "Error fetching fixtures for league {} and season {}: {}";
+    public static final String FIXTURE_ID_FETCHING_ERROR = "Error fetching fixture {}: {}";
     public static final String FIXTURE_SAVED = "FixtureId: {} saved";
     public static final String FIXTURE_LINEUP_FETCHED = "Fixture: {} lineups fetched";
     public static final String FIXTURE_UPDATED = "Fixture: {} updated";

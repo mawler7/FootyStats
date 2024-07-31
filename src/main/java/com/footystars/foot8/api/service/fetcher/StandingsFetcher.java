@@ -11,12 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 
 import static com.footystars.foot8.utils.PathSegment.STANDINGS;
-import static com.footystars.foot8.utils.SelectedLeagues.getEuropeanCups;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
-import static com.footystars.foot8.utils.SelectedLeagues.getSelectedCups;
+
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +50,6 @@ public class StandingsFetcher {
         log.info("Standings fetched by league id: {}", leagueId);
     }
 
-
     @Async
     public void fetchSelectedLeaguesCurrentSeasonStandings(@NotNull Long leagueId) {
         var optionalSeason = seasonService.findCurrentSeasonByLeagueId(leagueId);
@@ -63,23 +60,14 @@ public class StandingsFetcher {
     }
 
     public void fetchCurrentSeasonsStandings() {
-        var allIds = new ArrayList<Long>();
-        var leaguesIds = getFavoritesLeaguesAndCups();
-        var cupsIds = getSelectedCups();
-        allIds.addAll(leaguesIds);
-        allIds.addAll(cupsIds);
-        allIds.forEach(this::fetchSelectedLeaguesCurrentSeasonStandings);
+        var leaguesIds = getTopLeaguesIds();
+        leaguesIds.forEach(this::fetchSelectedLeaguesCurrentSeasonStandings);
     }
 
+    @Async
     public void fetchStandings() {
-        ArrayList<Long> ids = new ArrayList<>();
-        var leaguesIds = getFavoritesLeaguesAndCups();
-        var cupsIds = getSelectedCups();
-        var clubsCupsIds = getEuropeanCups();
-        ids.addAll(leaguesIds);
-        ids.addAll(cupsIds);
-        ids.addAll(clubsCupsIds);
-        ids.forEach(this::fetchStandingsByLeagueId);
+        var ids = getTopLeaguesIds();
+        ids.parallelStream().forEach(this::fetchStandingsByLeagueId);
     }
 
 }

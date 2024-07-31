@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static com.footystars.foot8.utils.ParameterName.COACH;
 import static com.footystars.foot8.utils.ParameterName.FIXTURE;
+import static com.footystars.foot8.utils.ParameterName.ID;
 import static com.footystars.foot8.utils.ParameterName.LEAGUE;
 import static com.footystars.foot8.utils.ParameterName.PLAYER;
 import static com.footystars.foot8.utils.ParameterName.SEASON;
@@ -31,6 +32,13 @@ public class ParamsProvider {
     public Map<String, String> getFixtureParamsMap(@NotNull Long fixtureId) {
         var params = new HashMap<String, String>();
         params.put(FIXTURE, fixtureId.toString());
+        return params;
+    }
+
+    @NotNull
+    public Map<String, String> getFixtureIdParamsMap(@NotNull Long fixtureId) {
+        var params = new HashMap<String, String>();
+        params.put(ID, fixtureId.toString());
         return params;
     }
 

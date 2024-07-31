@@ -1,6 +1,7 @@
 package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.api.model.standings.StandingsApi;
+import com.footystars.foot8.api.model.standings.standing.Standing;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -46,5 +47,9 @@ public class StandingsService {
                 log.info("Saved standings for league {} and season {}", leagueId, season);
             });
         }
+    }
+
+    public List<Standing> getStandingsByLeagueId(Long leagueId) {
+        return seasonService.findCurrentSeasonByLeagueId(leagueId).orElse(null).getStandings();
     }
 }

@@ -2,7 +2,7 @@ package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.sidelined.SidelinedResponse;
 import com.footystars.foot8.api.service.requester.ParamsProvider;
-import com.footystars.foot8.business.service.PlayerService;
+import com.footystars.foot8.business.service.player.PlayerService;
 import com.footystars.foot8.business.service.SeasonService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -12,11 +12,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 
 import static com.footystars.foot8.utils.LogsNames.PLAYERS_SIDELINED;
 import static com.footystars.foot8.utils.PathSegment.SIDELINED;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class SidelinedFetcher {
 
     @Async
     public void fetchFavorites() {
-        var allIds = getFavoritesLeaguesAndCups();
+        var allIds = getTopLeaguesIds();
         allIds.forEach(this::fetchByLeagueId);
     }
     @Async
@@ -67,8 +66,8 @@ public class SidelinedFetcher {
                                 }
                                 playerService.save(player);
                             });
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
                         }
                     });
 

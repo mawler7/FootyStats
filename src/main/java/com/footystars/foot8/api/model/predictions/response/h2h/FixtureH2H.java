@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,7 +21,7 @@ import java.io.Serializable;
 public class FixtureH2H implements Serializable {
 
     private Long id;
-    private String date;
+    private ZonedDateTime date;
     private String referee;
     private VenueDto venue;
     private Status status;

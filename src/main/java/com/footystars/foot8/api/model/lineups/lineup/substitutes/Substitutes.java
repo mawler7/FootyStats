@@ -1,7 +1,7 @@
 package com.footystars.foot8.api.model.lineups.lineup.substitutes;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.footystars.foot8.api.model.lineups.lineup.player.LineupPlayer;
+import com.footystars.foot8.api.model.lineups.lineup.players.player.LineupPlayer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -2,7 +2,7 @@ package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.fixtures.statistics.FixtureStatistics;
 import com.footystars.foot8.api.service.requester.ParamsProvider;
-import com.footystars.foot8.business.service.FixtureStatisticsService;
+import com.footystars.foot8.business.service.fixture.FixtureStatisticsService;
 import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.exception.FixtureStatisticsException;
 import com.footystars.foot8.utils.LogsNames;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 import static com.footystars.foot8.utils.PathSegment.FIXTURES_STATISTICS;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class FixtureStatisticsFetcher {
     }
 
     public void fetchFavorites() {
-        var allIds = getFavoritesLeaguesAndCups();
+        var allIds = getTopLeaguesIds();
         allIds.forEach(this::fetchByLeagueId);
     }
 

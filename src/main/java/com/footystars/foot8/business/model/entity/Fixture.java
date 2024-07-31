@@ -8,8 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -22,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
@@ -35,8 +34,8 @@ public class Fixture implements Serializable {
 
     @Id
     private Long id;
-
-    private String date;
+    @Column(columnDefinition = "TIMESTAMPTZ")
+    private ZonedDateTime date;
     private String referee;
     private String elapsed;
     private String status;
@@ -76,7 +75,7 @@ public class Fixture implements Serializable {
     @JoinColumn(name = "season_id")
     private Season season;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY )
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Lineup> lineups;
 
     @ManyToOne
@@ -87,7 +86,7 @@ public class Fixture implements Serializable {
     @JoinColumn(name = "away_team_id")
     private Team awayTeam;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Bet> bets;
 
     @ManyToOne

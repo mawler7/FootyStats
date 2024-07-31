@@ -19,14 +19,12 @@ public class SeasonService {
     @Transactional(readOnly = true)
     public Optional<Season> findByLeagueIdAndYear(Long leagueId, int year) {
         return seasonRepository.findByLeagueIdAndYear(leagueId, year);
-
     }
 
     @Transactional(readOnly = true)
     public List<Season> findByLeagueId(Long leagueId) {
         return seasonRepository.findAllByLeagueId(leagueId);
     }
-
 
     @Transactional(readOnly = true)
     public Optional<Season> findCurrentSeasonByLeagueId(Long leagueId) {

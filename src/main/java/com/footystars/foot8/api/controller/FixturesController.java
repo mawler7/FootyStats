@@ -1,7 +1,6 @@
 package com.footystars.foot8.api.controller;
 
 import com.footystars.foot8.api.service.fetcher.FixturesFetcher;
-import com.footystars.foot8.business.service.FixtureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,17 +17,13 @@ public class FixturesController {
 
     @GetMapping("/{leagueId}")
     public void getFixturesByLeagueId(@PathVariable Long leagueId) {
-        fixturesFetcher.fetchFixturesForAllSeasonsByLeagueId(leagueId);
+        fixturesFetcher.fetchAllSeasonsFixturesByLeagueId(leagueId);
     }
 
-    @GetMapping
-    public void getAllFixturesForSelectedLeagues() {
-        fixturesFetcher.fetchFixturesForAllSelectedLeagues();
-    }
 
     @GetMapping("/current")
     public void getCurrentSeasonFixturesForSelectedLeagues() {
-        fixturesFetcher.fetchCurrentSeasonsFixtures();
+        fixturesFetcher.fetchTopLeaguesAndCupsCurrentSeasonsNotFinishedFixtures();
     }
 
     @GetMapping("/{leagueId}/{seasonYear}")
@@ -36,11 +31,21 @@ public class FixturesController {
         fixturesFetcher.fetchFixturesByLeagueAndSeason(leagueId, seasonYear);
     }
 
-
-
     @GetMapping("/team/{teamId}")
     public void getFixturesByTeamId(@PathVariable Long teamId) {
         fixturesFetcher.fetchFixturesByLeagueId(teamId);
     }
+
+    @GetMapping("/today")
+    public void getTodayFixtures() {
+        fixturesFetcher.fetchTodayFixtures();
+    }
+
+
+    @GetMapping("/{year}/{leagueId}/")
+    public void getFixtures(@PathVariable Integer year, @PathVariable Long leagueId) {
+        fixturesFetcher.fetchTopLeaguesFixtures(year, leagueId);
+    }
+
 
 }

@@ -15,9 +15,9 @@ public class LeaguesController {
 
     private final LeaguesFetcher leaguesFetcher;
 
-    @GetMapping("/selected")
+    @GetMapping("/fav")
     public void getSelectedLeagues() {
-        leaguesFetcher.fetchSelectedLeagues();
+        leaguesFetcher.fetchTopLeaguesAndCups();
     }
 
     @GetMapping

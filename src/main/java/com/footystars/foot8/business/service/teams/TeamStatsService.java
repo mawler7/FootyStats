@@ -1,21 +1,21 @@
-package com.footystars.foot8.business.service;
+package com.footystars.foot8.business.service.teams;
 
 
 import com.footystars.foot8.api.model.teams.statistics.statistic.TeamStatisticApi;
 import com.footystars.foot8.business.model.entity.Team;
 import com.footystars.foot8.business.model.entity.TeamStats;
+import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.mapper.TeamStatsMapper;
 import com.footystars.foot8.repository.TeamStatsRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import static com.footystars.foot8.utils.LogsNames.TEAM_NOT_FOUND_EXCEPTION;
@@ -59,7 +59,7 @@ public class TeamStatsService {
                     if (season == currentSeason) {
                         var teamStatsDto = teamStatsMapper.toDto(teamStatistic);
                         teamStatsMapper.partialUpdate(teamStatsDto, statistics);
-                        statistics.setLastUpdated(LocalDateTime.now());
+                        statistics.setLastUpdated(ZonedDateTime.now());
                         teamStatsRepository.save(statistics);
                         logger.info(TEAM_UPDATED, team.getName(), leagueId, season);
                     }

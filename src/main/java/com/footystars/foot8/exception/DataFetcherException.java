@@ -14,4 +14,5 @@ public class DataFetcherException extends RuntimeException {
     public DataFetcherException(IOException cause) {
         super(cause);
     }
+
 }

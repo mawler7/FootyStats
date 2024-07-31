@@ -1,7 +1,8 @@
 package com.footystars.foot8.mapper;
 
-import com.footystars.foot8.api.model.fixtures.fixture.LeagueFixture;
+import com.footystars.foot8.api.model.fixtures.fixture.FixtureApi;
 import com.footystars.foot8.business.model.dto.FixtureDto;
+import com.footystars.foot8.business.model.dto.FixturePredictionDto;
 import com.footystars.foot8.business.model.entity.Fixture;
 import com.footystars.foot8.business.model.dto.FixtureDetailsDto;
 import org.mapstruct.BeanMapping;
@@ -16,13 +17,11 @@ import org.mapstruct.ReportingPolicy;
         uses = {TeamMapper.class, SeasonMapper.class, LineupMapper.class, BetMapper.class, PredictionMapper.class})
 public interface FixtureMapper {
 
-
     @Mapping(source = "homeTeam.venue.name", target = "homeTeam.venue")
     @Mapping(source = "homeTeam.venue.city", target = "homeTeam.city")
     @Mapping(source = "awayTeam.venue.name", target = "awayTeam.venue")
     @Mapping(source = "awayTeam.venue.city", target = "awayTeam.city")
     Fixture toEntity(FixtureDto fixtureDto);
-
 
     @Mapping(source = "fixture.fixtureId", target = "id")
     @Mapping(source = "fixture.date", target = "date")
@@ -44,8 +43,7 @@ public interface FixtureMapper {
     @Mapping(source = "score.penalty.away", target = "awayPT")
     @Mapping(source = "league.name", target = "leagueName")
     @Mapping(source = "league.round", target = "round")
-    FixtureDto toDto(LeagueFixture leagueFixture);
-
+    FixtureDto toDto(FixtureApi leagueFixture);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "homeTeam.venue.name", target = "homeTeam.venue")
@@ -54,6 +52,8 @@ public interface FixtureMapper {
     @Mapping(source = "awayTeam.venue.city", target = "awayTeam.city")
     Fixture partialUpdate(FixtureDto fixtureDto, @MappingTarget Fixture fixture);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Fixture partialUpdateDetails(FixtureDetailsDto fixtureDto, @MappingTarget Fixture fixture);
 
     @Mapping(source = "homeTeam.venue", target = "homeTeam.venue.name")
     @Mapping(source = "homeTeam.city", target = "homeTeam.venue.city")
@@ -61,12 +61,25 @@ public interface FixtureMapper {
     @Mapping(source = "awayTeam.city", target = "awayTeam.venue.city")
     FixtureDto toDto(Fixture fixture);
 
-    Fixture toEntity(FixtureDetailsDto fixtureDto);
+    @Mapping(source = "homeTeam.venue", target = "homeTeam.venue.name")
+    @Mapping(source = "homeTeam.city", target = "homeTeam.venue.city")
+    @Mapping(source = "awayTeam.venue", target = "awayTeam.venue.name")
+    @Mapping(source = "awayTeam.city", target = "awayTeam.venue.city")
+    FixtureDto detailsToDto(FixtureDetailsDto fixtureDto);
 
-    FixtureDetailsDto toDto1(Fixture fixture);
+    @Mapping(source = "date", target = "date")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "homeTeam.name", target = "home")
+    @Mapping(source = "awayTeam.name", target = "away")
+    @Mapping(source = "prediction.predictions.goals.homeGoalsPrediction", target = "homePrediction")
+    @Mapping(source = "prediction.predictions.goals.awayGoalsPrediction", target = "awayPrediction")
+    @Mapping(source = "prediction.predictions.underOver", target = "underOver")
+    @Mapping(source = "prediction.predictions.advice", target = "advice")
+    FixturePredictionDto toPredictionDto(Fixture fixture);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Fixture partialUpdate(FixtureDetailsDto fixtureDto, @MappingTarget Fixture fixture);
 
     FixtureDetailsDto toDetailsDto(Fixture fixture);
+
 }

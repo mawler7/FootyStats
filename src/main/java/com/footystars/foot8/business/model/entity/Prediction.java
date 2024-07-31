@@ -41,7 +41,7 @@ public class Prediction implements Serializable {
     private Comparison comparison;
 
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "prediction", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Fixture> fixturesH2H;
 
 }

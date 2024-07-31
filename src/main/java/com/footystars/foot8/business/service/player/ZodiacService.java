@@ -1,4 +1,4 @@
-package com.footystars.foot8.business.service;
+package com.footystars.foot8.business.service.player;
 
 import com.footystars.foot8.utils.ZodiacSign;
 import lombok.RequiredArgsConstructor;

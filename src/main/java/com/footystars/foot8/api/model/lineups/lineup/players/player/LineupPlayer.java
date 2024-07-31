@@ -1,4 +1,4 @@
-package com.footystars.foot8.api.model.lineups.lineup.player;
+package com.footystars.foot8.api.model.lineups.lineup.players.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -16,11 +16,9 @@ import java.io.Serializable;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LineupPlayer implements Serializable {
-
     private Long id;
     private String name;
     private Integer number;
     private String pos;
     private String grid;
-
 }

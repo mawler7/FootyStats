@@ -2,14 +2,11 @@ package com.footystars.foot8.business.model.entity;
 
 import com.footystars.foot8.api.model.coaches.carrer.Career;
 import com.footystars.foot8.api.model.players.info.birth.Birth;
-import com.footystars.foot8.api.model.trophies.Trophies;
-import jakarta.persistence.CascadeType;
+import com.footystars.foot8.api.model.trophies.Trophy;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -53,7 +50,7 @@ public class Coach implements Serializable {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "coaches_trophies", joinColumns = @JoinColumn(name = "coach_id"))
-    private List<Trophies> trophies;
+    private List<Trophy> trophies;
 
 
 }

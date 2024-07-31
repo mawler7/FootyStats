@@ -2,8 +2,10 @@ package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.business.model.dto.CoachDto;
 import com.footystars.foot8.business.model.entity.Coach;
+import com.footystars.foot8.business.service.teams.TeamService;
 import com.footystars.foot8.mapper.CoachMapper;
 import com.footystars.foot8.repository.CoachRepository;
+import com.footystars.foot8.utils.LogsNames;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ public class CoachService {
             var optionalCoach = findById(coachId);
             if (optionalCoach.isPresent()) {
                 var coach = optionalCoach.get();
-                coachMapper.partialUpdate(coachDto, coach); // Update fields, not ID
+                coachMapper.partialUpdate(coachDto, coach);
                 coachRepository.save(coach);
             } else {
                 var teams = teamService.getCurrentSeasonTeamsByClubId(clubId);
@@ -43,23 +45,12 @@ public class CoachService {
                     }
                 });
             }
+            logger.info(LogsNames.COACH_FETCHED, coachDto.getName());
         }
     }
 
     public Optional<Coach> findById(Long id) {
         return coachRepository.findById(id);
-    }
-
-    public void saveCoachIfNotExist(@NotNull CoachDto coachDto) {
-        var coachId = coachDto.getId();
-        if (coachId != null) {
-            logger.info("Checking existence for Coach ID: {}", coachId);
-            if (coachRepository.findById(coachId).isEmpty()) {
-                logger.info("Saving new Coach with ID: {}", coachId);
-                var coach = coachMapper.toEntity(coachDto);
-                coachRepository.save(coach);
-            }
-        }
     }
 
     public void save(Coach coach) {

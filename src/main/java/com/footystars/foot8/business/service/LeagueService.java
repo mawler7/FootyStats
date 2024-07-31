@@ -1,6 +1,7 @@
 package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.api.model.leagues.league.LeagueApi;
+import com.footystars.foot8.business.model.dto.LeagueDto;
 import com.footystars.foot8.business.model.entity.League;
 import com.footystars.foot8.mapper.LeagueMapper;
 import com.footystars.foot8.mapper.SeasonMapper;
@@ -69,8 +70,13 @@ public class LeagueService {
         return leagueRepository.findById(id);
     }
 
+    public List<LeagueDto> findAllLeaguesDto() {
+        return leagueRepository.findAll().stream().map(leagueMapper::toDto).toList();
+    }
+
     @Transactional(readOnly = true)
     public List<League> findAll() {
         return leagueRepository.findAll();
     }
+
 }

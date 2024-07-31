@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.footystars.foot8.api.model.players.info.birth.Birth;
 import com.footystars.foot8.api.model.players.statistics.PlayerStats;
 import com.footystars.foot8.api.model.sidelined.SidelinedApi;
-import com.footystars.foot8.api.model.trophies.Trophies;
+import com.footystars.foot8.api.model.trophies.Trophy;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +35,6 @@ public class PlayerDto implements Serializable {
     private List<PlayerStats> statistics;
     private String zodiac;
     private List<SidelinedApi> sidelined;
-    private List<Trophies> trophies;
+    private List<Trophy> trophies;
 
 }

@@ -2,7 +2,7 @@ package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.api.model.predictions.response.PredictionApi;
 import com.footystars.foot8.business.model.entity.Fixture;
-import com.footystars.foot8.exception.PredictionFetchException;
+import com.footystars.foot8.business.service.fixture.FixtureService;
 import com.footystars.foot8.mapper.PredictionMapper;
 import com.footystars.foot8.repository.PredictionRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 
-import static com.footystars.foot8.utils.LogsNames.COULD_NOT_FETCH_PREDICTIONS;
-import static com.footystars.foot8.utils.LogsNames.PREDICTION_ALREADY_EXISTS;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +29,6 @@ public class PredictionService {
             if (optionalFixture.isPresent()) {
                 var fixtureEntity = optionalFixture.get();
 
-                if (fixtureEntity.getPrediction() == null) {
-
                     var h2h = new HashSet<Fixture>();
                     predictionApi.getH2h().forEach(f -> {
                         var id = f.getFixture().getId();
@@ -45,19 +41,29 @@ public class PredictionService {
                     });
 
                     var predictionDto = predictionMapper.apiToDto(predictionApi);
-                    var prediction = predictionMapper.toEntity(predictionDto);
-                    prediction.setFixturesH2H(h2h);
-                    var savedPrediction = predictionRepository.save(prediction);
+                    var newPrediction  = predictionMapper.toEntity(predictionDto);
+                    newPrediction.setFixturesH2H(h2h);
+
+                if (fixtureEntity.getPrediction() == null) {
+                    var savedPrediction = predictionRepository.save(newPrediction);
                     fixtureEntity.setPrediction(savedPrediction);
                     fixtureService.save(fixtureEntity);
                     log.info("Predictions saved for fixture id {}", fixtureId);
                 } else {
-                    log.info(PREDICTION_ALREADY_EXISTS, fixtureId);
+                    var existingPrediction = fixtureEntity.getPrediction();
+                    if (!existingPrediction.equals(newPrediction)) {
+                        newPrediction.setId(existingPrediction.getId());
+                        var savedPrediction = predictionRepository.save(newPrediction);
+                        fixtureEntity.setPrediction(savedPrediction);
+                        fixtureService.save(fixtureEntity);
+                        log.info("Predictions updated for fixture id {}", fixtureId);
+                    } else {
+                        log.info("Predictions are identical, no update required for fixture id {}", fixtureId);
+                    }
                 }
             }
         } catch (Exception e) {
-            throw new PredictionFetchException(COULD_NOT_FETCH_PREDICTIONS);
+           log.error(e.getMessage(), e);
         }
     }
-
 }

@@ -7,17 +7,15 @@ import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.utils.FixtureStatuses;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.Map;
+import java.time.ZonedDateTime;
 
-import static com.footystars.foot8.utils.ParameterName.getFixturesParams;
-import static com.footystars.foot8.utils.ParameterName.getPredictionsParam;
 import static com.footystars.foot8.utils.PathSegment.PREDICTIONS;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
-import static com.footystars.foot8.utils.SelectedLeagues.getSelectedCups;
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +26,7 @@ public class PredictionsFetcher {
     private final SeasonService seasonService;
     private final ParamsProvider paramsProvider;
 
+    private final Logger logger = LoggerFactory.getLogger(PredictionsFetcher.class);
 
     public void fetchFixturePrediction(Long fixtureId) {
         var param = paramsProvider.getFixtureParamsMap(fixtureId);
@@ -37,8 +36,8 @@ public class PredictionsFetcher {
                 var predictions = response.getResponse();
                 predictions.forEach(p -> predictionService.fetchPredictions(p, fixtureId));
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -47,7 +46,7 @@ public class PredictionsFetcher {
         var seasons = seasonService.findByLeagueId(leagueId);
         seasons.stream()
                 .filter(s -> s.getLeague().getId().equals(leagueId))
-                .filter(s-> s.getCoverage().isPredictions())
+                .filter(s -> s.getCoverage().isPredictions())
                 .forEach(s -> {
                     var fixtures = s.getFixtures();
                     fixtures.forEach(fixture ->
@@ -61,16 +60,17 @@ public class PredictionsFetcher {
         var optionalSeason = seasonService.findCurrentSeasonByLeagueId(leagueId);
         if (optionalSeason.isPresent()) {
             var season = optionalSeason.get();
-            var fixtures =season.getFixtures();
-                fixtures.stream()
-                        .filter(f -> f.getStatus().equals(FixtureStatuses.NS.toString()))
-                        .forEach(fixture -> fetchFixturePrediction(fixture.getId()));
-            }
+            var fixtures = season.getFixtures();
+            fixtures.stream()
+                    .filter(f -> f.getStatus().equals(FixtureStatuses.NS.toString()))
+                    .filter(f -> !f.getDate().isAfter(ZonedDateTime.now().plusDays(5)))
+                    .forEach(fixture -> fetchFixturePrediction(fixture.getId()));
         }
+    }
 
 
     public void fetchCurrentSeasonPredictions() {
-        var leaguesIds = getFavoritesLeaguesAndCups();
+        var leaguesIds = getTopLeaguesIds();
         leaguesIds.forEach(this::fetchCurrentSeasonPredictionsByLeagueId);
     }
 }

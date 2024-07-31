@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -146,6 +146,6 @@ public class TeamStatsDto implements Serializable {
     private List<Lineup> lineups;
 
     @Column(name = "last_updated")
-    private LocalDateTime lastUpdated;
+    private ZonedDateTime lastUpdated;
 
 }

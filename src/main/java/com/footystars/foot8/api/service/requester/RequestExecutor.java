@@ -70,7 +70,6 @@ public class RequestExecutor {
         throw new RequestExecutorException(LogsNames.FAILED_EXECUTE_MAX_RETRIES);
     }
 
-
     private void sleepBeforeRetry() {
         try {
             Thread.sleep(RETRY_DELAY_MS);
@@ -91,7 +90,7 @@ public class RequestExecutor {
         return response;
     }
 
-    private void handleTooManyRequests(@NotNull Response response) throws IOException {
+    private void handleTooManyRequests(@NotNull Response response)  {
         String retryAfterHeader = response.header(RETRY_AFTER);
         int retryAfter = retryAfterHeader != null ? Integer.parseInt(retryAfterHeader) : 1;
 
@@ -102,7 +101,7 @@ public class RequestExecutor {
             Thread.currentThread().interrupt();
         }
 
-        throw new IOException(LogsNames.RECEIVED_429_TOO_MANY_REQUESTS);
+        logger.error(LogsNames.RECEIVED_429_TOO_MANY_REQUESTS);
     }
 
     private boolean handleIOException(IOException e) {
@@ -128,7 +127,7 @@ public class RequestExecutor {
             } else {
                 synchronized (this) {
                     try {
-                        wait(1000);
+                        wait(10000);
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
                         throw new RequestExecutorException(ex, LogsNames.THREAD_INTERRUPTED_RATE_LIMITING);
@@ -137,5 +136,4 @@ public class RequestExecutor {
             }
         }
     }
-
 }

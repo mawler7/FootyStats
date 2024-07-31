@@ -3,20 +3,18 @@ package com.footystars.foot8.api.service.fetcher;
 import com.footystars.foot8.api.model.teams.Teams;
 import com.footystars.foot8.api.service.requester.ParamsProvider;
 import com.footystars.foot8.business.service.SeasonService;
-import com.footystars.foot8.business.service.TeamService;
+import com.footystars.foot8.business.service.teams.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static com.footystars.foot8.utils.PathSegment.TEAMS_INFORMATION;
-import static com.footystars.foot8.utils.SelectedLeagues.getSelectedCups;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
+
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +27,16 @@ public class TeamFetcher {
 
     private final Logger logger = LoggerFactory.getLogger(TeamFetcher.class);
 
-    @Async
     public void fetchByAllLeagues() {
-        var ids = getFavoritesLeaguesAndCups();
+        var ids = getTopLeaguesIds();
         ids.forEach(this::fetchTeamsByLeagueId);
     }
+
 
     public void fetchTeamsByLeagueId(@NotNull Long leagueId) {
         try {
             var optionalSeasons = seasonService.findByLeagueId(leagueId);
-            optionalSeasons.parallelStream().forEach(season -> {
+            optionalSeasons.forEach(season -> {
                 try {
                     fetchTeamInfoByLeagueAndSeason(leagueId, season.getYear());
                 } catch (Exception e) {
@@ -65,7 +63,7 @@ public class TeamFetcher {
         }
     }
 
-    public void fetchByLeagueId(Long leagueId) {
+    public void fetchCurrentSeasonByLeagueId(Long leagueId) {
         try {
             var optionalSeason = seasonService.findCurrentSeasonByLeagueId(leagueId);
             if (optionalSeason.isPresent()) {
@@ -81,4 +79,16 @@ public class TeamFetcher {
     }
 
 
+    public void fetchCurrentSeasonTeamsInfo() {
+        var leagues = getTopLeaguesIds();
+        leagues.forEach(l ->
+        {
+            var optionalSeason = seasonService.findCurrentSeasonByLeagueId(l);
+            if (optionalSeason.isPresent()) {
+                var season = optionalSeason.get().getYear();
+                fetchTeamInfoByLeagueAndSeason(l, season);
+            }
+        });
+
+    }
 }

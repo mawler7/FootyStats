@@ -47,6 +47,7 @@ public class ParameterName {
     public static final String UEFA_CHAMPIONS_LEAGUE = "UEFA Champions League";
     public static final String UEFA_EUROPA_LEAGUE = "UEFA Europa League";
     public static final String UEFA_EUROPA_CONFERENCE_LEAGUE = "UEFA Europa Conference League";
+    public static final String UEFA_EUROPEAN_CHAMPIONSHIP = "UEFA European Championship";
 
     public static final String COMMUNITY_SHIELD = "Community Shield";
     public static final String COPPA_ITALIA = "Coppa Italia";

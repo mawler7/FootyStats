@@ -1,9 +1,9 @@
-package com.footystars.foot8.business.service;
+package com.footystars.foot8.business.service.player;
 
 import com.footystars.foot8.api.model.players.player.PlayerApi;
 import com.footystars.foot8.business.model.entity.Player;
-import com.footystars.foot8.business.model.entity.Season;
-import com.footystars.foot8.business.model.entity.Team;
+import com.footystars.foot8.business.service.SeasonService;
+import com.footystars.foot8.business.service.teams.TeamService;
 import com.footystars.foot8.mapper.PlayerMapper;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.footystars.foot8.utils.LogsNames.PLAYER_ERROR;
 

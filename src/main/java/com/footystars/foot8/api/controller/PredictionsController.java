@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/predictions")
 public class PredictionsController {
 
     private final PredictionsFetcher predictionsFetcher;
+
     private static final Logger logger = LoggerFactory.getLogger(PredictionsController.class);
 
     @GetMapping("/{leagueId}")
@@ -24,10 +23,9 @@ public class PredictionsController {
         predictionsFetcher.fetchByLeagueId(leagueId);
     }
 
-    @GetMapping
-    public void getAllFixturesPredictions() {
-        var ids = getFavoritesLeaguesAndCups();
-        ids.forEach(predictionsFetcher::fetchByLeagueId);
+    @GetMapping("/current")
+    public void getTopLeaguesAndCupsCurrentSeasonsFixturesPredictions() {
+        predictionsFetcher.fetchCurrentSeasonPredictions();
     }
 
 }

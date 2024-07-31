@@ -2,7 +2,6 @@ package com.footystars.foot8.business.model.entity;
 
 import com.footystars.foot8.api.model.leagues.league.coverage.Coverage;
 import com.footystars.foot8.api.model.standings.standing.Standing;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
@@ -24,9 +23,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -56,8 +53,6 @@ public class Season implements Serializable {
     @ElementCollection
     @CollectionTable(name = "seasons_standings", joinColumns = @JoinColumn(name = "season_id"))
     private List<Standing> standings = new ArrayList<>();
-
-
 
     @Embedded
     private Coverage coverage;

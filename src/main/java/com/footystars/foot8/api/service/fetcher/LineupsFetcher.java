@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ import static com.footystars.foot8.utils.LogsNames.LEAGUE_SEASON_FETCHED;
 import static com.footystars.foot8.utils.LogsNames.LINEUPS_LEAGUE_FETCHED;
 import static com.footystars.foot8.utils.LogsNames.LINEUP_ERROR;
 import static com.footystars.foot8.utils.PathSegment.FIXTURES_LINEUPS;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 
 @Service
@@ -36,7 +35,7 @@ public class LineupsFetcher {
 
 
     public void fetchFavorites() {
-        var allIds = getFavoritesLeaguesAndCups();
+        var allIds = getTopLeaguesIds();
         allIds.forEach(this::fetchByLeagueId);
     }
 

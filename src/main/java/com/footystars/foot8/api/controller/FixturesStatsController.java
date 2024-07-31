@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class FixturesStatsController {
 
     private final FixtureStatisticsFetcher fixtureStatisticsFetcher;
+
     private static final Logger logger = LoggerFactory.getLogger(FixturesStatsController.class);
+
     @GetMapping("/{leagueId}")
     public void getFixtureStats(@PathVariable Long leagueId) {
         fixtureStatisticsFetcher.fetchByLeagueId(leagueId);

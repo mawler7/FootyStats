@@ -47,12 +47,16 @@ public class PlayersController {
         logger.info("Fetched trophies for leagueId {}", leagueId);
     }
 
-    @GetMapping
-    public void getPlayers() {
-        playersFetcher.fetchByAllLeagues();
+    @GetMapping("/current")
+    public void getCurrentSeasonPlayers() {
+        playersFetcher.fetchCurrentSeasonTopLeaguesPlayers();
 
     }
 
+    @GetMapping("/all")
+    public void getAllPlayers() {
+        playersFetcher.fetchByAllLeagues();
 
+    }
 
 }

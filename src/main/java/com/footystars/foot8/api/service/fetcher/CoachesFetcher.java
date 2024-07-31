@@ -3,22 +3,22 @@ package com.footystars.foot8.api.service.fetcher;
 import com.footystars.foot8.api.model.coaches.Coaches;
 import com.footystars.foot8.business.service.CoachService;
 import com.footystars.foot8.business.service.SeasonService;
-import com.footystars.foot8.business.service.TeamService;
+import com.footystars.foot8.business.service.teams.TeamService;
 import com.footystars.foot8.exception.FetchLeaguesException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.footystars.foot8.utils.LogsNames.COACHES_ERROR;
 import static com.footystars.foot8.utils.ParameterName.TEAM;
 import static com.footystars.foot8.utils.PathSegment.COACHS;
-import static com.footystars.foot8.utils.SelectedLeagues.getFavoritesLeaguesAndCups;
+import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,12 @@ public class CoachesFetcher {
     private final Logger log = LoggerFactory.getLogger(CoachesFetcher.class);
 
 
-    public void fetchByLeagueId(@NotNull Long leagueId) {
+    @Async
+    public void fetchTopLeaguesCoaches() {
+        var ids = getTopLeaguesIds();
+        ids.forEach(this::fetchCoachesByLeagueId);
+    }
+    public void fetchCoachesByLeagueId(@NotNull Long leagueId) {
         var optionalSeason = seasonService.findCurrentSeasonByLeagueId(leagueId);
 
         if (optionalSeason.isPresent()) {
@@ -43,7 +48,7 @@ public class CoachesFetcher {
             teams.parallelStream().forEach(t -> {
                 try {
                     var clubId = t.getClubId();
-                    fetchByClubId(clubId);
+                    fetchCoachByClubId(clubId);
                 } catch (FetchLeaguesException e) {
                     log.error(COACHES_ERROR, leagueId, e.getMessage());
                 }
@@ -51,13 +56,14 @@ public class CoachesFetcher {
         }
     }
 
-    public void fetchByClubId(Long clubId) throws FetchLeaguesException {
+
+    private void fetchCoachByClubId(Long clubId) throws FetchLeaguesException {
         var params = new HashMap<String, String>();
         params.put(TEAM, String.valueOf(clubId));
         try {
             var response = dataFetcher.fetch(COACHS, params, Coaches.class).getResponse();
             if (response != null) {
-                response.parallelStream().forEach(c -> coachService.fetchCoach(c, clubId));
+                response.forEach(c -> coachService.fetchCoach(c, clubId));
                 log.info("Fetched coaches for team {}", clubId);
             }
         } catch (IOException e) {
@@ -65,14 +71,6 @@ public class CoachesFetcher {
         }
     }
 
-    public void fetchSelectedLeagues() {
-        var allIds = new ArrayList<Long>();
-        var leaguesIds = getFavoritesLeaguesAndCups();
-//        var clubsCupsIds = getEuropeanCups();
-        allIds.addAll(leaguesIds);
-//        allIds.addAll(clubsCupsIds);
-        allIds.parallelStream().forEach(this::fetchByLeagueId);
-    }
 
 
 }

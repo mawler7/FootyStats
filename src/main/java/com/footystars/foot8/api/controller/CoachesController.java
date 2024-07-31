@@ -21,13 +21,13 @@ public class CoachesController {
 
     @GetMapping("/{leagueId}")
     public void getCoachesForSelectedTeams(@PathVariable Long leagueId) {
-        coachesFetcher.fetchByLeagueId(leagueId);
+        coachesFetcher.fetchCoachesByLeagueId(leagueId);
         logger.info("Fetched coaches for leagueId {}", leagueId);
     }
 
     @GetMapping
     public void getCoaches() {
-        coachesFetcher.fetchSelectedLeagues();
+        coachesFetcher.fetchTopLeaguesCoaches();
         logger.info(COACHES_FETCHED);
     }
 

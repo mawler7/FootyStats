@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Getter
@@ -156,8 +156,8 @@ public class TeamStats implements Serializable {
     private Long clubId;
 
 
-    @Column(name = "last_updated")
-    private LocalDateTime lastUpdated;
+    @Column(name = "last_updated", columnDefinition = "TIMESTAMPTZ")
+    private ZonedDateTime lastUpdated;
 
     @ElementCollection
     @CollectionTable(name = "teams_lineups", joinColumns = @JoinColumn(name = "team_id"))
@@ -165,7 +165,7 @@ public class TeamStats implements Serializable {
 
     @PrePersist
     public void prePersist() {
-        this.lastUpdated = LocalDateTime.now();
+        this.lastUpdated = ZonedDateTime.now();
     }
 
 
