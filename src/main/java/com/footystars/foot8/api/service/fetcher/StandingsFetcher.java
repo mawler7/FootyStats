@@ -1,7 +1,8 @@
 package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.standings.StandingsApi;
-import com.footystars.foot8.api.service.requester.ParamsProvider;
+import com.footystars.foot8.api.service.params.ParamsProvider;
+import com.footystars.foot8.business.model.entity.Season;
 import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.business.service.StandingsService;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-
 import static com.footystars.foot8.utils.PathSegment.STANDINGS;
-
 import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
 
 @Service
@@ -26,6 +25,18 @@ public class StandingsFetcher {
     private final ParamsProvider paramsProvider;
 
     private final Logger log = LoggerFactory.getLogger(StandingsFetcher.class);
+
+    @Async
+    public void fetchCurrentSeasonsStandings() {
+        var leaguesIds = getTopLeaguesIds();
+        leaguesIds.parallelStream().forEach(this::fetchTopLeaguesCurrentSeasonStandings);
+    }
+
+    @Async
+    public void fetchTopLeaguesCurrentSeasonStandings(@NotNull Long leagueId) {
+        var optionalSeason = seasonService.findCurrentSeasonByLeagueId(leagueId);
+        optionalSeason.stream().map(Season::getYear).parallel().forEach(y -> fetchStandings(leagueId, y));
+    }
 
     @Async
     public void fetchStandings(@NotNull Long leagueId, @NotNull Integer season) {
@@ -48,26 +59,6 @@ public class StandingsFetcher {
                     fetchStandings(leagueId, year);
                 });
         log.info("Standings fetched by league id: {}", leagueId);
-    }
-
-    @Async
-    public void fetchSelectedLeaguesCurrentSeasonStandings(@NotNull Long leagueId) {
-        var optionalSeason = seasonService.findCurrentSeasonByLeagueId(leagueId);
-        if (optionalSeason.isPresent()) {
-            var season = optionalSeason.get().getYear();
-            fetchStandings(leagueId, season);
-        }
-    }
-
-    public void fetchCurrentSeasonsStandings() {
-        var leaguesIds = getTopLeaguesIds();
-        leaguesIds.forEach(this::fetchSelectedLeaguesCurrentSeasonStandings);
-    }
-
-    @Async
-    public void fetchStandings() {
-        var ids = getTopLeaguesIds();
-        ids.parallelStream().forEach(this::fetchStandingsByLeagueId);
     }
 
 }

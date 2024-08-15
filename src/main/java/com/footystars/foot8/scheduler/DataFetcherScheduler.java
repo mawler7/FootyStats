@@ -1,11 +1,13 @@
-package com.footystars.foot8.business.service.scheduler;
+package com.footystars.foot8.scheduler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.footystars.foot8.api.service.fetcher.CoachesFetcher;
 import com.footystars.foot8.api.service.fetcher.FixturesFetcher;
 import com.footystars.foot8.api.service.fetcher.LeaguesFetcher;
 import com.footystars.foot8.api.service.fetcher.OddsFetcher;
 import com.footystars.foot8.api.service.fetcher.PlayersFetcher;
 import com.footystars.foot8.api.service.fetcher.PredictionsFetcher;
+import com.footystars.foot8.api.service.fetcher.StandingsFetcher;
 import com.footystars.foot8.api.service.fetcher.TeamFetcher;
 import com.footystars.foot8.api.service.fetcher.TeamStatsFetcher;
 import com.footystars.foot8.business.model.entity.Fixture;
@@ -19,10 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
-import java.util.stream.Collectors;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,41 +38,13 @@ public class DataFetcherScheduler {
     private final TeamStatsFetcher teamStatsFetcher;
     private final PredictionsFetcher predictionsFetcher;
     private final OddsFetcher oddsFetcher;
-    private final PlayersFetcher playersFetcher;
     private final CoachesFetcher coachesFetcher;
+    private final StandingsFetcher standingsFetcher;
+    private final ObjectMapper objectMapper;
 
     private static final Logger log = LoggerFactory.getLogger(DataFetcherScheduler.class);
 
-
-    @Scheduled(cron = "0 0 * * * *") // Co godzinę
-    @Transactional
-    public void checkAndFetchFixtures() {
-        var now = ZonedDateTime.now();
-        var startOfDay = now.toLocalDate().atStartOfDay(now.getZone());
-        var endOfDay = now.toLocalDate().plusDays(1).atStartOfDay(now.getZone()).minusSeconds(1);
-
-        var ongoingFixtures = fixtureRepository.findNotStartedByDate(startOfDay, endOfDay).stream()
-                .filter(fixture -> fixture.getDate().isBefore(now))
-                .toList();
-
-        var leagueIds = ongoingFixtures.stream()
-                .map(Fixture::getId)
-                .collect(Collectors.toSet());
-
-        leagueIds.forEach(fixturesFetcher::fetchCurrentSeasonsFixturesByLeagueId);
-    }
-
-    @Scheduled(cron = "0 0 15-23 * * *") // Codziennie o 3:11 rano
-    public void getFixtures() {
-        try {
-            fixturesFetcher.fetchTopLeaguesAndCupsCurrentSeasonsNotFinishedFixtures();
-            log.info(LogsNames.ALL_FIXTURES_FETCHED);
-        } catch (Exception e) {
-            throw new FixtureException(LogsNames.FIXTURE_COULD_NOT_BE_FETCHED, e);
-        }
-    }
-    @Scheduled(cron = "0 0/35 18 * * *") // Codziennie o 6 rano
-    @Transactional
+    @Scheduled(cron = "0 0 12 * * *") // Codziennie o 6 rano
     public void fetchLeagues() {
         try {
             leaguesFetcher.fetchTopLeaguesAndCups();
@@ -76,11 +52,9 @@ public class DataFetcherScheduler {
         } catch (Exception e) {
             throw new FetchLeaguesException("Cannot fetch leagues ", e);
         }
-
     }
 
-    @Scheduled(cron = "0 0 19 * * *") // Codziennie o 6 rano
-    @Transactional
+    @Scheduled(cron = "0 0 12 * * *")
     public void fetchTeamsInfo() {
         try {
             teamFetcher.fetchCurrentSeasonTeamsInfo();
@@ -88,22 +62,31 @@ public class DataFetcherScheduler {
         } catch (Exception e) {
             throw new FetchLeaguesException("Cannot fetch teams info ", e);
         }
-
     }
 
-    @Scheduled(cron = "0 0/30 19 * * *") // Codziennie o 8 rano
-    @Transactional
+    @Scheduled(cron = "0 0 12-23 * * *")
     public void fetchTeamsStats() {
         try {
-        teamStatsFetcher.fetchCurrentSeasonsTeamStats();
+        teamStatsFetcher.updateTeamsStats();
             log.info("Fetched teams stats");
         } catch (Exception e) {
             throw new FetchLeaguesException("Cannot fetch teams stats ", e);
         }
     }
 
-    @Scheduled(cron = "0 0/30 19 * * *") // Codziennie o 9 rano
-    public void getCoaches() {
+
+    @Scheduled(cron = "0 0 23 * * *")
+    public void fetchStandings() {
+        try {
+            standingsFetcher.fetchCurrentSeasonsStandings();
+            log.info("Fetched teams info");
+        } catch (Exception e) {
+            throw new FetchLeaguesException("Cannot fetch teams info ", e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 12 * * *")
+    public void fetchCoaches() {
         try {
             coachesFetcher.fetchTopLeaguesCoaches();
             log.info(LogsNames.COACHES_FETCHED);
@@ -112,15 +95,45 @@ public class DataFetcherScheduler {
         }
     }
 
-    @Scheduled(cron = "0 0 20 * * *") // Codziennie o 12 rano
-    public void getFixturesPredictions() {
+    @Scheduled(cron = "0 0 12 * * *") // Codziennie o 10 rano
+    public void fetchInjured() {
         try {
-            predictionsFetcher.fetchCurrentSeasonPredictions();
+        } catch (Exception e) {
+            throw new FixtureException("Cannot fetch coaches ", e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 12 * * *") // Codziennie o 10 rano
+    public void fetchSidelined() {
+        try {
+        } catch (Exception e) {
+            throw new FixtureException("Cannot fetch coaches ", e);
+        }
+    }
+
+
+    @Scheduled(cron = "0 0/15 11-23 * * *") // Codziennie o 3:11 rano
+    public void getFixtures() {
+        try {
+            fixturesFetcher.updateFixtures();
+
+            log.info(LogsNames.ALL_FIXTURES_FETCHED);
+        } catch (Exception e) {
+            throw new FixtureException(LogsNames.FIXTURE_COULD_NOT_BE_FETCHED, e);
+        }
+    }
+
+
+    @Scheduled(cron = "0 0 12-23 * * *") // Codziennie o 12 rano
+    public void getPredictions() {
+        try {
+            predictionsFetcher.fetchTodayPredictions();
             log.info("Predictions fetched");
         } catch (Exception e) {
             throw new PredictionFetchException(e.getMessage());
         }
     }
+
 
     @Scheduled(cron = "0 0/30 20 * * *") // Codziennie o 12 rano
     public void getOdds() {
@@ -132,8 +145,21 @@ public class DataFetcherScheduler {
         }
     }
 
-
+    @Scheduled(cron = "0 0 * * * *") // Co godzinę
+    public void updateMatchData() {
+        try {
+            List<Fixture> matchDataList = fixtureRepository.findTodayFixturesWithDetails();
+            String jsonData = objectMapper.writeValueAsString(matchDataList);
+            Path filePath = Paths.get("src/main/resources/fixtures/today_matches_data.json");
+            Files.writeString(filePath, jsonData);
+            log.info("Today's match data updated successfully.");
+        } catch (Exception e) {
+            log.error("Failed to update today's match data.", e);
+        }
+    }
 }
+
+
 
 
 //        0 0 * * * * = the top of every hour of every day.

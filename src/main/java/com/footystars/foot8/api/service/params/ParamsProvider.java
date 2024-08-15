@@ -1,4 +1,4 @@
-package com.footystars.foot8.api.service.requester;
+package com.footystars.foot8.api.service.params;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

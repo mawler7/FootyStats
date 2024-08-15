@@ -2,7 +2,7 @@ package com.footystars.foot8.business.controller;
 
 import com.footystars.foot8.business.model.dto.FixtureDetailsDto;
 import com.footystars.foot8.business.model.dto.FixturePredictionDto;
-import com.footystars.foot8.business.service.fixture.FixtureService;
+import com.footystars.foot8.business.service.FixtureService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,6 +49,12 @@ public class FixtureController {
     @GetMapping("/byDate/{date}")
     public ResponseEntity<List<FixtureDetailsDto>> getFixturesByDate(@PathVariable String date) {
         return ResponseEntity.ok(fixtureService.findByDate(date));
+    }
+
+    @GetMapping("/today")
+    public CompletableFuture<ResponseEntity<List<FixtureDetailsDto>>> getTodayFixtures() {
+        return fixtureService.findTodayFixturesDetails()
+                .thenApply(ResponseEntity::ok);
     }
 
 }

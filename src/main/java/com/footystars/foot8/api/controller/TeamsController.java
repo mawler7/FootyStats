@@ -63,6 +63,12 @@ public class TeamsController {
         logger.info("Fetched teams stats");
     }
 
+    @GetMapping("/stats/update")
+    public void updateTeamsStats() {
+        teamStatsFetcher.updateTeamsStats();
+        logger.info("Teams stats U P D A T E D ");
+    }
+
     @GetMapping("/stats/{leagueId}")
     public void getTeamsStatsFromSelectedLeagues(@PathVariable Long leagueId) {
         teamStatsFetcher.fetchByLeagueId(leagueId);

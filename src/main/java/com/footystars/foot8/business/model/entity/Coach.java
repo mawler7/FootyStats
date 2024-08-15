@@ -1,5 +1,7 @@
 package com.footystars.foot8.business.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.footystars.foot8.api.model.coaches.carrer.Career;
 import com.footystars.foot8.api.model.players.info.birth.Birth;
 import com.footystars.foot8.api.model.trophies.Trophy;
@@ -28,6 +30,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "coaches")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Coach implements Serializable {
 
     @Id

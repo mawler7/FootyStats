@@ -1,9 +1,8 @@
-package com.footystars.foot8.business.service.bets;
+package com.footystars.foot8.business.service;
 
 
 import com.footystars.foot8.api.model.odds.odd.Odd;
 import com.footystars.foot8.business.model.dto.BetDto;
-import com.footystars.foot8.business.service.fixture.FixtureService;
 import com.footystars.foot8.mapper.BetMapper;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

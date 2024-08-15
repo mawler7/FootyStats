@@ -1,8 +1,7 @@
-package com.footystars.foot8.business.service.teams;
+package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.api.model.teams.TeamApi;
 import com.footystars.foot8.business.model.entity.Team;
-import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.mapper.TeamMapper;
 import com.footystars.foot8.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +30,12 @@ public class TeamService {
     private final Logger logger = LoggerFactory.getLogger(TeamService.class);
 
     public Optional<Team> getByClubIdLeagueIdAndYear(@NotNull Long clubId, @NotNull Long leagueId, @NotNull Integer year) {
-            var optionalSeason = seasonService.findByLeagueIdAndYear(leagueId, year);
-            if (optionalSeason.isPresent()) {
-                var season = optionalSeason.get();
-                return teamRepository.findByClubIdAndSeasonId(clubId, season.getId());
-            }
-            return Optional.empty();
+        var optionalSeason = seasonService.findByLeagueIdAndYear(leagueId, year);
+        if (optionalSeason.isPresent()) {
+            var season = optionalSeason.get();
+            return teamRepository.findByClubIdAndSeasonId(clubId, season.getId());
+        }
+        return Optional.empty();
     }
 
     public void save(Team team) {
@@ -58,7 +57,7 @@ public class TeamService {
     @Transactional
     public void fetchClubs(@NotNull List<TeamApi> teamsApi, @NotNull Long leagueId, @NotNull Integer year) {
         try {
-            teamsApi.forEach(t ->
+            teamsApi.parallelStream().forEach(t ->
                     fetchTeams(leagueId, year, t));
         } catch (Exception e) {
             logger.error(FETCH_CLUBS_ERROR, e);
@@ -85,9 +84,14 @@ public class TeamService {
 
                 if (optionalSeason.isPresent()) {
                     var season = optionalSeason.get();
+
+                    // Ensure season is managed
+                    season = seasonService.attachSeason(season);
+
                     var teamDto = teamMapper.teamApiToTeamDto(teamApi);
                     var teamEntity = teamMapper.toEntity(teamDto);
                     teamEntity.setSeason(season);
+
                     teamRepository.save(teamEntity);
 
                     logger.info(TEAM_SAVED, teamEntity.getName());
@@ -97,6 +101,4 @@ public class TeamService {
             }
         }
     }
-
 }
-

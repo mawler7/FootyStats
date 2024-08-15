@@ -23,6 +23,6 @@ public class Team implements Serializable {
     private Long teamId;
     @JsonProperty("name")
     private String teamName;
-    @Transient
+
     private String logo;
 }

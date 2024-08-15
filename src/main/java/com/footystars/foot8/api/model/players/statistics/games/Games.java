@@ -24,6 +24,6 @@ public class Games implements Serializable {
     private Integer minutes;
     private Integer number;
     private String position;
-    private Double rating;
+    private String rating;
     private Boolean captain;
 }

@@ -1,7 +1,7 @@
 package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.lineups.LineupsApi;
-import com.footystars.foot8.api.service.requester.ParamsProvider;
+import com.footystars.foot8.api.service.params.ParamsProvider;
 import com.footystars.foot8.business.model.entity.Season;
 import com.footystars.foot8.business.service.LineupsService;
 import com.footystars.foot8.business.service.SeasonService;

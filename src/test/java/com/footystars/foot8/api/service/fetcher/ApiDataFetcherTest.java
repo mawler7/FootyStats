@@ -1,22 +1,6 @@
 package com.footystars.foot8.api.service.fetcher;
 
-import com.footystars.foot8.api.service.requester.RequestCreator;
-import com.footystars.foot8.api.service.requester.RequestExecutor;
-import com.footystars.foot8.api.service.requester.ResponseHandler;
-import com.footystars.foot8.exception.DataFetcherException;
-import okhttp3.Request;
-import okhttp3.Response;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ApiDataFetcherTest {
 

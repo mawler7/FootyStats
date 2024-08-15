@@ -2,7 +2,6 @@ package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.business.model.dto.CoachDto;
 import com.footystars.foot8.business.model.entity.Coach;
-import com.footystars.foot8.business.service.teams.TeamService;
 import com.footystars.foot8.mapper.CoachMapper;
 import com.footystars.foot8.repository.CoachRepository;
 import com.footystars.foot8.utils.LogsNames;

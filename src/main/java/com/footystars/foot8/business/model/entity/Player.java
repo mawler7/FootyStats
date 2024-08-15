@@ -22,7 +22,9 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -56,17 +58,17 @@ public class Player implements Serializable {
 
 //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(unique = true)
-@ElementCollection
+@ElementCollection(fetch = FetchType.EAGER)
 @CollectionTable(name = "player_statistics", joinColumns = @JoinColumn(name = "player_id"))
-    private List<PlayerStats> statistics = new ArrayList<>();
+    private Set<PlayerStats> statistics = new HashSet<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "players_sidelined", joinColumns = @JoinColumn(name = "player_id"))
-    private List<SidelinedApi> sidelined;
+    private Set<SidelinedApi> sidelined = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "players_trophies", joinColumns = @JoinColumn(name = "player_id"))
-    private List<Trophy> trophies = new ArrayList<>();
+    private Set<Trophy> trophies = new HashSet<>();
 
 
 }

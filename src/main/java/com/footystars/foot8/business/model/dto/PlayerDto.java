@@ -5,6 +5,7 @@ import com.footystars.foot8.api.model.players.info.birth.Birth;
 import com.footystars.foot8.api.model.players.statistics.PlayerStats;
 import com.footystars.foot8.api.model.sidelined.SidelinedApi;
 import com.footystars.foot8.api.model.trophies.Trophy;
+import com.footystars.foot8.business.model.entity.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

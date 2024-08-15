@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,4 +25,5 @@ public class ClubDto implements Serializable {
     private boolean national;
     private String country;
     private VenueDto venue;
+    private List<PlayerDto> players;
 }

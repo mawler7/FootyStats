@@ -1,4 +1,4 @@
-package com.footystars.foot8.business.service.bets;
+package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.business.model.entity.Bet;
 import com.footystars.foot8.repository.BetRepository;

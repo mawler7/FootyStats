@@ -5,6 +5,7 @@ import com.footystars.foot8.business.service.LeagueService;
 import com.footystars.foot8.exception.DataFetcherException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,8 +23,9 @@ public class LeaguesFetcher {
     private final ApiDataFetcher dataFetcher;
     private final LeagueService leagueService;
 
+    @Async
     public void fetchTopLeaguesAndCups() {
-        getTopLeaguesIds().forEach(this::fetchByLeagueId);
+        getTopLeaguesIds().parallelStream().forEach(this::fetchByLeagueId);
     }
 
 
@@ -50,7 +52,7 @@ public class LeaguesFetcher {
     }
 
 
-
+    @Async
     public void fetchByLeagueId(@NotNull Long leagueId) {
         var params = new HashMap<String, String>();
         params.put(ID, String.valueOf(leagueId));

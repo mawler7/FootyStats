@@ -21,6 +21,6 @@ public class Passes implements Serializable {
     @JsonProperty("total")
     private Integer passesTotal;
     private Integer key;
-    private Integer accuracy;
+    private String accuracy;
 
 }

@@ -27,7 +27,7 @@ public class StandingsController {
 
     @GetMapping
     public void getStandings() {
-        standingsFetcher.fetchStandings();
+        standingsFetcher.fetchCurrentSeasonsStandings();
         logger.info("Fetched standings for leagues and cups");
     }
 

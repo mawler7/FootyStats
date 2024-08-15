@@ -1,5 +1,6 @@
 package com.footystars.foot8.api.service.requester;
 
+import com.footystars.foot8.api.service.limiter.RequestsLimiterService;
 import com.footystars.foot8.exception.RequestExecutorException;
 import com.footystars.foot8.utils.LogsNames;
 import okhttp3.OkHttpClient;

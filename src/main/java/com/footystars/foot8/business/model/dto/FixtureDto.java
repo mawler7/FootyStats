@@ -41,5 +41,6 @@ public class FixtureDto implements Serializable {
     private ClubDto homeTeam;
     private ClubDto awayTeam;
     private List<BetDto> bets;
+    private ZonedDateTime lastUpdated;
 
 }

@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class RapidApiConfig {
 
-    @Value("${RAPIDAPI_KEY}")
+    @Value("${API_KEY}")
     private String apiKey;
 
-    @Value("${RAPIDAPI_HOST}")
+    @Value("${API_HOST}")
     private String apiHost;
 
-    @Value("${RAPIDAPI_TIMEZONE}")
+    @Value("${API_TIMEZONE}")
     private String timezone;
 
 }

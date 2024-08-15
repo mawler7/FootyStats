@@ -14,7 +14,7 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
 
     List<Season> findAllByLeagueId(Long leagueId);
 
-    @Query("SELECT s FROM Season s WHERE s.league.id = :leagueId AND s.current = true")
+    @Query(value = "SELECT * FROM seasons s WHERE s.league_id = :leagueId AND s.current = true AND TO_DATE(s.end_date, 'YYYY-MM-DD') >= CURRENT_DATE", nativeQuery = true)
     Optional<Season> findByLeagueIdAndCurrentTrue(Long leagueId);
 
     Optional<Season> findByYearAndLeagueId(int year, Long leagueId);

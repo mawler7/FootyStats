@@ -1,8 +1,8 @@
 package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.sidelined.SidelinedResponse;
-import com.footystars.foot8.api.service.requester.ParamsProvider;
-import com.footystars.foot8.business.service.player.PlayerService;
+import com.footystars.foot8.api.service.params.ParamsProvider;
+import com.footystars.foot8.business.service.PlayerService;
 import com.footystars.foot8.business.service.SeasonService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

@@ -1,25 +1,24 @@
-package com.footystars.foot8.business.service.fixture;
+package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.api.model.fixtures.fixture.FixtureApi;
 import com.footystars.foot8.business.model.dto.FixtureDetailsDto;
 import com.footystars.foot8.business.model.dto.FixturePredictionDto;
 import com.footystars.foot8.business.model.entity.Fixture;
-import com.footystars.foot8.business.service.SeasonService;
-import com.footystars.foot8.business.service.teams.TeamService;
 import com.footystars.foot8.mapper.FixtureMapper;
 import com.footystars.foot8.repository.FixtureRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static com.footystars.foot8.utils.LogsNames.AWAY_TEAM_NOT_FOUND;
 import static com.footystars.foot8.utils.LogsNames.FIXTURE_CREATED;
@@ -67,6 +66,7 @@ public class FixtureService {
 
     }
 
+    @Transactional
     public void createFixture(@NotNull FixtureApi leagueFixture) {
         var fixtureDto = fixtureMapper.toDto(leagueFixture);
         var fixtureEntity = fixtureMapper.toEntity(fixtureDto);
@@ -92,8 +92,12 @@ public class FixtureService {
     }
 
     public void updateFixture(@NotNull FixtureApi leagueFixture, @NotNull Fixture fixture) {
-        if (!isFinalStatus(fixture.getFullStatus())) {
+        if (isFinalStatus(fixture.getFullStatus())) {
+            if(fixture.getHomeTeam() == null || fixture.getAwayTeam() == null) {
+                setTeamsAndSeason(fixture, leagueFixture, leagueFixture.getLeague().getLeagueId(), fixture.getSeason().getYear());
+            }
             var fixtureDto = fixtureMapper.toDto(leagueFixture);
+            fixtureDto.setLastUpdated(ZonedDateTime.now());
             fixtureMapper.partialUpdate(fixtureDto, fixture);
             logger.info(FIXTURE_UPDATED, fixture.getId());
         }
@@ -101,7 +105,7 @@ public class FixtureService {
     }
 
     public void updateFixtureDetails(@NotNull FixtureDetailsDto fixtureDetailsDto, @NotNull Fixture fixture) {
-        if (!isFinalStatus(fixture.getFullStatus())) {
+        if (isFinalStatus(fixture.getFullStatus())) {
             var fixtureDto = fixtureMapper.detailsToDto(fixtureDetailsDto);
             fixtureMapper.partialUpdate(fixtureDto, fixture);
             logger.info(FIXTURE_UPDATED, fixture.getId());
@@ -109,6 +113,7 @@ public class FixtureService {
         fixtureRepository.save(fixture);
     }
 
+    @Transactional
     public void setTeamsAndSeason(@NotNull Fixture fixture, @NotNull FixtureApi leagueFixture, @NotNull Long leagueId, @NotNull Integer season) {
 
         var homeTeamId = leagueFixture.getTeams().getHomeTeam().getHomeTeamId();
@@ -162,7 +167,7 @@ public class FixtureService {
     }
 
     public boolean isFinalStatus(@NotNull String longStatus) {
-        return longStatus.equals(MATCH_FINISHED) || longStatus.equals(MATCH_CANCELLED);
+        return !longStatus.equals(MATCH_FINISHED) && !longStatus.equals(MATCH_CANCELLED);
     }
 
     public Optional<Fixture> findById(Long id) {
@@ -177,13 +182,20 @@ public class FixtureService {
     }
 
 
-    public List<Fixture> findTodayFixtures() {
-        var zoneId = ZoneId.systemDefault();
-        var today = LocalDate.now();
-        var startOfDay = today.minusDays(5).atStartOfDay(zoneId);
-        var endOfDay = today.plusDays(1).atStartOfDay(zoneId).minusSeconds(1);
-        return fixtureRepository.findNotStartedByDate(startOfDay, endOfDay);
+    public List<Long> findTodayFixturesId() {
+        return fixtureRepository.findTodayFixturesId();
     }
+
+
+    @Async
+    public CompletableFuture<List<FixtureDetailsDto>> findTodayFixturesDetails() {
+        var todayFixtures = fixtureRepository.findTodayFixturesWithDetails();
+        List<FixtureDetailsDto> details = todayFixtures.stream()
+                .map(fixtureMapper::toDetailsDto)
+                .toList();
+        return CompletableFuture.completedFuture(details);
+    }
+
 
     public List<FixtureDetailsDto> findBySeasonsLeagueIdAndSeasonsYear(Long id, Integer year) {
         var fixtures = fixtureRepository.findBySeasonLeagueIdAndSeasonYear(id, year);
@@ -233,5 +245,11 @@ public class FixtureService {
                 .map(fixtureMapper::toPredictionDto)
                 .toList();
     }
+
+    public List<Long> findFixturesLessThen30minBeforeKickOff() {
+        return fixtureRepository.findTodayMatchesLessThen10minToStart();
+    }
+
+
 
 }

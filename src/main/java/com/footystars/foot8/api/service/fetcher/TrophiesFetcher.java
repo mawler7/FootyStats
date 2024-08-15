@@ -1,11 +1,11 @@
 package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.trophies.Trophies;
-import com.footystars.foot8.api.service.requester.ParamsProvider;
+import com.footystars.foot8.api.service.params.ParamsProvider;
 import com.footystars.foot8.business.service.CoachService;
-import com.footystars.foot8.business.service.player.PlayerService;
+import com.footystars.foot8.business.service.PlayerService;
 import com.footystars.foot8.business.service.SeasonService;
-import com.footystars.foot8.business.service.teams.TeamService;
+import com.footystars.foot8.business.service.TeamService;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

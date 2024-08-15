@@ -1,8 +1,11 @@
 package com.footystars.foot8.business.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.footystars.foot8.api.model.predictions.response.Comparison;
 import com.footystars.foot8.api.model.predictions.response.predictions.PredictionDetails;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,6 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Getter
@@ -27,6 +31,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "predictions")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Prediction implements Serializable {
 
     @Id
@@ -43,5 +48,8 @@ public class Prediction implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "prediction", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Fixture> fixturesH2H;
+
+    @Column(name = "last_updated", columnDefinition = "TIMESTAMPTZ")
+    private ZonedDateTime lastUpdated;
 
 }

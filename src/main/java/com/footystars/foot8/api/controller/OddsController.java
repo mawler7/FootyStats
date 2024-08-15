@@ -24,5 +24,15 @@ public class OddsController {
         logger.info("Fetched odds for leagueOd {}", leagueId);
     }
 
+    @GetMapping("/today")
+    public void getTodayFixturesOdds() {
+        oddsFetcher.fetchTodayOdds();
+        logger.info("Fetched today fixtures odds");
+    }    @GetMapping()
+    public void getFixturesOdds() {
+        oddsFetcher.fetchByAllLeagues();
+        logger.info("Fetched today fixtures odds");
+    }
+
 
 }

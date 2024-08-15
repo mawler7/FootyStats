@@ -1,12 +1,15 @@
 package com.footystars.foot8.business.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.footystars.foot8.api.model.fixtures.events.Events;
 import com.footystars.foot8.api.model.fixtures.events.event.FixtureEvent;
 import com.footystars.foot8.api.model.fixtures.statistics.statistic.Statistic;
-import com.footystars.foot8.business.model.entity.LineupDto;
+import com.footystars.foot8.business.model.entity.Prediction;
+import com.footystars.foot8.business.model.entity.TeamStats;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -17,7 +20,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FixtureDetailsDto implements Serializable {
     private Long id;
@@ -59,4 +61,6 @@ public class FixtureDetailsDto implements Serializable {
 
     private List<BetDto> bets;
     private PredictionDto prediction;
+
+
 }

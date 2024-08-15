@@ -62,6 +62,50 @@ public class ParameterName {
     public static final String SUPER_CUP_ITALY = "Super Cup";
     public static final String SUPER_CUP_PRIMAVERA = "Super Cup Primavera";
     public static final String TROPHEE_DES_CHAMPIONS = "Trophée des Champions";
+
+    // Add new leagues
+    public static final String EKSTRAKLASA = "Ekstraklasa";
+    public static final String SUPERLIGA = "Superliga";
+    public static final String SUPER_LEAGUE = "Super League";
+    public static final String WORLD_CUP = "World Cup";
+    public static final String EURO_CHAMPIONSHIP = "Euro Championship";
+    public static final String UEFA_NATIONS_LEAGUE = "UEFA Nations League";
+    public static final String AFRICA_CUP_OF_NATIONS = "Africa Cup of Nations";
+    public static final String FRIENDLIES = "Friendlies";
+    public static final String FIFA_CLUB_WORLD_CUP = "FIFA Club World Cup";
+    public static final String AFRICAN_NATIONS_CHAMPIONSHIP = "African Nations Championship";
+    public static final String INTERNATIONAL_CHAMPIONS_CUP = "International Champions Cup";
+    public static final String WORLD_CUP_QUALIFICATION_AFRICA = "World Cup - Qualification Africa";
+    public static final String WORLD_CUP_QUALIFICATION_ASIA = "World Cup - Qualification Asia";
+    public static final String WORLD_CUP_QUALIFICATION_CONCACAF = "World Cup - Qualification CONCACAF";
+    public static final String WORLD_CUP_QUALIFICATION_EUROPE = "World Cup - Qualification Europe";
+    public static final String WORLD_CUP_QUALIFICATION_OCEANIA = "World Cup - Qualification Oceania";
+    public static final String WORLD_CUP_QUALIFICATION_SOUTH_AMERICA = "World Cup - Qualification South America";
+    public static final String ASIAN_CUP_QUALIFICATION = "Asian Cup - Qualification";
+    public static final String AFRICA_CUP_OF_NATIONS_QUALIFICATION = "Africa Cup of Nations - Qualification";
+    public static final String WORLD_CUP_QUALIFICATION_INTERCONTINENTAL_PLAY_OFFS = "World Cup - Qualification Intercontinental Play-offs";
+    public static final String LEAGUE_CUP = "League Cup";
+    public static final String COUPE_DE_LA_LIGUE = "Coupe de la Ligue";
+    public static final String EREDIVISIE = "Eredivisie";
+    public static final String KNVB_BEKER = "KNVB Beker";
+    public static final String PRIMEIRA_LIGA = "Primeira Liga";
+    public static final String TACA_DE_PORTUGAL = "Taça de Portugal";
+    public static final String TACA_DA_LIGA = "Taça da Liga";
+    public static final String CUP_POLAND = "Cup";
+    public static final String DBU_POKALEN = "DBU Pokalen";
+    public static final String SUPER_LIG = "Süper Lig";
+    public static final String CUP_TURKEY = "Cup";
+    public static final String SCHWEIZER_CUP = "Schweizer Cup";
+    public static final String MAJOR_LEAGUE_SOCCER = "Major League Soccer";
+    public static final String US_OPEN_CUP = "US Open Cup";
+    public static final String OLYMPICS_MEN = "Olympics Men";
+    public static final String SUPER_CUP_NETHERLANDS = "Super Cup Netherlands";
+    public static final String SUPER_CUP_POLAND = "Super Cup Poland";
+    public static final String CONMEBOL_UEFA_FINALISSIMA = "CONMEBOL - UEFA Finalissima";
+    public static final String EMIRATES_CUP = "Emirates Cup";
+    public static final String UEFA_CONFERENCE_LEAGUE = "UEFA Conference League";
+    public static final String KINGS_CUP = "King's Cup";
+
     private ParameterName() {
     }
 
@@ -70,11 +114,8 @@ public class ParameterName {
                 STATUS, IDS, TYPE, SEARCH, CODE, COUNTRY, CURRENT, CITY, FROM, TO, DATE);
     }
 
-
-
     public static List<String> getOddsBetsParams() {
         return List.of(FIXTURE, LEAGUE, BET);
-
     }
 
     public static List<String> getCountriesParams() {
@@ -121,7 +162,6 @@ public class ParameterName {
         return List.of(TEAM, PLAYER, TYPE);
     }
 
-
     public static List<String> getTransfersParams() {
         return List.of(PLAYER, TEAM);
     }
@@ -129,7 +169,6 @@ public class ParameterName {
     public static List<String> getPlayersSquadsParams() {
         return List.of(PLAYER, TEAM);
     }
-
 
     public static List<String> getBookmakersParams() {
         return List.of(ID, SEARCH);
@@ -146,27 +185,4 @@ public class ParameterName {
     public static String getPredictionsParam() {
         return FIXTURE;
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

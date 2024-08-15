@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,7 @@ import static com.footystars.foot8.utils.LogsNames.LEAGUE_FETCHED;
 
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheNames = "leagues")
 public class LeagueService {
 
     private final LeagueRepository leagueRepository;
@@ -53,6 +57,7 @@ public class LeagueService {
         logger.info(LEAGUE_FETCHED, leagueApi.getLeagueInfo().getLeagueName());
     }
 
+    @CacheEvict(allEntries = true)
     @Transactional
     public League saveOrUpdateLeague(@NotNull League league) {
         var existingLeagueOpt = leagueRepository.findById(league.getId());
@@ -65,6 +70,7 @@ public class LeagueService {
         }
     }
 
+    @Cacheable(key = "#id")
     @Transactional(readOnly = true)
     public Optional<League> findById(Long id) {
         return leagueRepository.findById(id);

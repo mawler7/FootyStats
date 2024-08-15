@@ -1,7 +1,11 @@
 package com.footystars.foot8.business.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.footystars.foot8.api.model.leagues.league.coverage.Coverage;
 import com.footystars.foot8.api.model.standings.standing.Standing;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
@@ -32,6 +36,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "seasons", uniqueConstraints = {@UniqueConstraint(columnNames = {"year", "league_id"})})
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Season implements Serializable {
 
     @Id
@@ -44,7 +49,8 @@ public class Season implements Serializable {
     private String endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "league_id")
+    @JoinColumn(name = "league_id", nullable = false)
+    @JsonBackReference
     private League league;
 
     @OneToMany(fetch = FetchType.EAGER)
@@ -57,7 +63,6 @@ public class Season implements Serializable {
     @Embedded
     private Coverage coverage;
 
-    @OneToMany(mappedBy = "season")
+    @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Team> teams = new ArrayList<>();
-
 }

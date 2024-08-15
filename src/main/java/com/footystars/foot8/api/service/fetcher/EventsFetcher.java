@@ -1,8 +1,8 @@
 package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.fixtures.events.Events;
-import com.footystars.foot8.api.service.requester.ParamsProvider;
-import com.footystars.foot8.business.service.fixture.FixtureEventsService;
+import com.footystars.foot8.api.service.params.ParamsProvider;
+import com.footystars.foot8.business.service.FixtureEventsService;
 import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.exception.FixtureEventsException;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Set;
 
 import static com.footystars.foot8.utils.LogsNames.EVENTS_FETCHING;
 import static com.footystars.foot8.utils.LogsNames.EVENTS_UPDATED;
@@ -61,7 +62,7 @@ public class EventsFetcher {
             var events = dataFetcher.fetch(FIXTURES_EVENTS, params, Events.class).getResponse();
 
             if (events != null) {
-                fixtureEventsService.fetchFixtureEvents(events, fixtureId);
+                fixtureEventsService.fetchFixtureEvents(Set.copyOf(events), fixtureId);
             }
 
         } catch (IOException e) {

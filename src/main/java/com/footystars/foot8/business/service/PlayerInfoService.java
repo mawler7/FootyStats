@@ -1,9 +1,7 @@
-package com.footystars.foot8.business.service.player;
+package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.api.model.players.player.PlayerApi;
 import com.footystars.foot8.business.model.entity.Player;
-import com.footystars.foot8.business.service.SeasonService;
-import com.footystars.foot8.business.service.teams.TeamService;
 import com.footystars.foot8.mapper.PlayerMapper;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.footystars.foot8.utils.LogsNames.PLAYER_ERROR;
 
@@ -65,7 +64,7 @@ public class PlayerInfoService {
                         var teamList = List.of(team);
                         playerEntity.setTeams(teamList);
                         Player savedPlayer = playerService.save(playerEntity);
-                        List<Player> players = team.getPlayers();
+                        Set<Player> players = team.getPlayers();
                         if(!players.contains(savedPlayer)) {
                             players.add(savedPlayer);
                             teamService.save(team);

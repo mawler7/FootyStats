@@ -1,6 +1,7 @@
-package com.footystars.foot8.api.service.requester;
+package com.footystars.foot8.api.service.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.footystars.foot8.api.service.limiter.RequestsLimiterService;
 import com.footystars.foot8.exception.ClientErrorException;
 import com.footystars.foot8.exception.ServerErrorException;
 import com.footystars.foot8.exception.UnexpectedStatusCodeException;

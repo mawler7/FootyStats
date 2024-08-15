@@ -59,6 +59,8 @@ public interface FixtureMapper {
     @Mapping(source = "homeTeam.city", target = "homeTeam.venue.city")
     @Mapping(source = "awayTeam.venue", target = "awayTeam.venue.name")
     @Mapping(source = "awayTeam.city", target = "awayTeam.venue.city")
+    @Mapping(source = "awayTeam.players", target = "awayTeam.players")
+    @Mapping(source = "homeTeam.players", target = "homeTeam.players")
     FixtureDto toDto(Fixture fixture);
 
     @Mapping(source = "homeTeam.venue", target = "homeTeam.venue.name")

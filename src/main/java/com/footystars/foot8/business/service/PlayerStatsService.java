@@ -1,8 +1,7 @@
-package com.footystars.foot8.business.service.player;
+package com.footystars.foot8.business.service;
 
 import com.footystars.foot8.api.model.players.player.PlayerApi;
 import com.footystars.foot8.business.model.entity.Player;
-import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.exception.PlayerStatisticsException;
 import com.footystars.foot8.mapper.PlayerMapper;
 import com.footystars.foot8.repository.PlayerRepository;
@@ -12,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 import static com.footystars.foot8.utils.LogsNames.PLAYER_STATS_ERROR;
 
@@ -60,7 +61,7 @@ public class PlayerStatsService {
         public void createPlayerStats (@NotNull Player player, @NotNull PlayerApi playerApi){
             try {
                 var playerStats = playerApi.getStatistics();
-                player.setStatistics(playerStats);
+                player.setStatistics(Set.copyOf(playerStats));
                 playerRepository.save(player);
             } catch (Exception e) {
                 throw new PlayerStatisticsException(PLAYER_STATS_ERROR, e);

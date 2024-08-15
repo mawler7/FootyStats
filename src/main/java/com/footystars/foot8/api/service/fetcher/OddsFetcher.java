@@ -2,10 +2,10 @@ package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.odds.OddsApi;
 import com.footystars.foot8.api.model.odds.odd.Odd;
-import com.footystars.foot8.api.service.requester.ParamsProvider;
+import com.footystars.foot8.api.service.params.ParamsProvider;
+import com.footystars.foot8.business.service.FixtureService;
+import com.footystars.foot8.business.service.OddsService;
 import com.footystars.foot8.business.service.SeasonService;
-import com.footystars.foot8.business.service.bets.OddsService;
-import com.footystars.foot8.business.service.fixture.FixtureService;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -63,28 +63,50 @@ public class OddsFetcher {
         optionalSeasons.stream()
                 .filter(s -> s.getCoverage().isOdds())
                 .forEach(season -> {
+                    try {
+                        fetchOddsByLeagueAndYear(leagueId, season.getYear());
+                    } catch (Exception e) {
+                        logger.error((e.getMessage()));
+                    }
+                    logger.info("Odds fetching completed");
+                });
+    }
+
+    @Async
+    public void fetchTodayOdds() {
+        var fixtures = fixtureService.findTodayFixturesId();
+        fixtures.parallelStream().forEach(this::fetchOddsByFixtureId);
+    }
+
+    @Async
+    public void fetchOddsByFixtureId(@NotNull Long fixtureId) {
+        var params = paramsProvider.getFixtureParamsMap(fixtureId);
+        if (bucket.tryConsume(1)) {
             try {
-                fetchOddsByLeagueAndYear(leagueId, season.getYear());
+                    var response = dataFetcher.fetch(ODDS, params, OddsApi.class).getResponse();
+                    if (response!= null) {
+                        response.forEach(this::processOdds);
+                    }
             } catch (Exception e) {
-                logger.error((e.getMessage()));
+                logger.error((e.getMessage()), e);
             }
-            logger.info("Odds fetching completed");
-        });
+        }
     }
 
     @Async
     public void fetchOddsByLeagueAndYear(@NotNull Long leagueId, @NotNull Integer year) {
-        try {
-            var params = paramsProvider.getLeagueAndSeasonParamsMap(leagueId, year);
-            consumeBucket();
-            var response = dataFetcher.fetch(ODDS, params, OddsApi.class);
-            if (response != null && response.getResponse() != null) {
-                fetchResponsePage(params, response);
+        var params = paramsProvider.getLeagueAndSeasonParamsMap(leagueId, year);
+        if (bucket.tryConsume(1)) {
+            try {
+                var response = dataFetcher.fetch(ODDS, params, OddsApi.class);
+                if (response != null && response.getResponse() != null) {
+                    fetchResponsePage(params, response);
+                }
+            } catch (Exception e) {
+                logger.error((e.getMessage()), e);
             }
-
-        } catch (Exception e) {
-            logger.error((e.getMessage()), e);
         }
+
     }
 
     private void consumeBucket() throws InterruptedException {
@@ -107,7 +129,7 @@ public class OddsFetcher {
                 if (pageResponse != null && pageResponse.getResponse() != null) {
                     pageResponse.getResponse().forEach(this::processOdds);
                 }
-            } catch ( Exception e) {
+            } catch (Exception e) {
                 logger.error("Error fetching odds");
             }
 
@@ -116,19 +138,21 @@ public class OddsFetcher {
 
     public void processOdds(@NotNull Odd odds) {
         var fixtureId = odds.getFixture().getFixtureId();
-            Lock lock = oddsLock.computeIfAbsent(fixtureId, k -> new ReentrantLock());
-            lock.lock();
-            try {
-                if (fixtureService.existsById(fixtureId)) {
-                    oddsService.fetchOdds(odds);
-                }
-            } catch (Exception e) {
-                logger.error((e.getMessage()));
-            } finally {
-                lock.unlock();
-                oddsLock.remove(fixtureId);
+        Lock lock = oddsLock.computeIfAbsent(fixtureId, k -> new ReentrantLock());
+        lock.lock();
+        try {
+            if (fixtureService.existsById(fixtureId)) {
+                oddsService.fetchOdds(odds);
             }
+        } catch (Exception e) {
+            logger.error((e.getMessage()));
+        } finally {
+            lock.unlock();
+            oddsLock.remove(fixtureId);
         }
     }
+
+
+}
 
 

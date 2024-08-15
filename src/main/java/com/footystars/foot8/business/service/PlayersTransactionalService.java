@@ -1,4 +1,4 @@
-package com.footystars.foot8.business.service.player;
+package com.footystars.foot8.business.service;
 
 
 import com.footystars.foot8.api.model.players.player.PlayerApi;

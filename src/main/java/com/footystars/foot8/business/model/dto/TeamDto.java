@@ -1,6 +1,8 @@
 package com.footystars.foot8.business.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -37,6 +40,8 @@ public class TeamDto implements Serializable {
 
    private TeamStatsDto statistics;
    private CoachDto coach;
-   private Set<PlayerDto> players;
+
+   @OneToMany(fetch = FetchType.EAGER)
+   private List<PlayerDto> players;
 
 }

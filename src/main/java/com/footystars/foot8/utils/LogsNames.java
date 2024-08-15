@@ -84,7 +84,7 @@ public class LogsNames {
     public static final String COULD_NOT_FETCH_PREDICTIONS = "Could not fetch prediction";
     public static final String TEAM_SAVING_ERROR = "Error saving team {}: {}";
     public static final String FETCH_CLUBS_ERROR = "Error while fetching clubs: ";
-    public static final String TEAM_UPDATED = "Team: {} updated successfully!";
+    public static final String TEAM_UPDATED = "Team: {} in league {} and season {} updated successfully!";
     public static final String TEAM_STATS_UPDATED = "Team stats updated for team {} in league {} in season {}";
     public static final String TEAM_NOT_FOUND_EXCEPTION = "Team with clubId {}, leagueId {} and season {} not found";
     public static final String TEAM_SAVED = "Tean: {} saved successfully!";

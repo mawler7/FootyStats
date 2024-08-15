@@ -1,4 +1,4 @@
-package com.footystars.foot8.api.service.requester;
+package com.footystars.foot8.api.service.limiter;
 
 
 import com.footystars.foot8.business.model.entity.RequestLimiter;

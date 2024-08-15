@@ -1,8 +1,8 @@
 package com.footystars.foot8.api.service.fetcher;
 
 import com.footystars.foot8.api.model.fixtures.statistics.FixtureStatistics;
-import com.footystars.foot8.api.service.requester.ParamsProvider;
-import com.footystars.foot8.business.service.fixture.FixtureStatisticsService;
+import com.footystars.foot8.api.service.params.ParamsProvider;
+import com.footystars.foot8.business.service.FixtureStatisticsService;
 import com.footystars.foot8.business.service.SeasonService;
 import com.footystars.foot8.exception.FixtureStatisticsException;
 import com.footystars.foot8.utils.LogsNames;
@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Set;
 
 import static com.footystars.foot8.utils.PathSegment.FIXTURES_STATISTICS;
 import static com.footystars.foot8.utils.TopLeagues.getTopLeaguesIds;
@@ -37,7 +38,7 @@ public class FixtureStatisticsFetcher {
         try {
             var statisticsApi = dataFetcher.fetch(FIXTURES_STATISTICS, params, FixtureStatistics.class).getResponse();
             if (statisticsApi != null) {
-                fixtureStatisticsService.fetchFixtureStatistics(statisticsApi, params);
+                fixtureStatisticsService.fetchFixtureStatistics(Set.copyOf(statisticsApi), params);
             }
         } catch (IOException e) {
             throw new FixtureStatisticsException(e, "Could not fetch fixture statistics for fixture " + fixtureId);

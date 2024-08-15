@@ -24,7 +24,7 @@ public class PlayersController {
     @GetMapping("/{leagueId}/{seasonYear}")
     public void getPlayersByLeagueIdAndSeason(@PathVariable Long leagueId, @PathVariable Integer seasonYear) {
         try {
-            playersFetcher.fetchPlayersByLeagueIdAndYear(leagueId, seasonYear);
+            playersFetcher.fetchPlayersByLeagueAndYear(leagueId, seasonYear);
         } catch (Exception e) {
             logger.error("Error while fetching players by league ID {} and season {}", leagueId, seasonYear, e);
         }
