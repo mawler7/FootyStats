@@ -1,0 +1,104 @@
+package com.footystars.service.business;
+
+import com.footystars.model.api.TeamStatistics;
+import com.footystars.model.api.TeamsInfo;
+import com.footystars.model.dto.TeamStatsDto;
+import com.footystars.persistence.entity.Team;
+import com.footystars.persistence.mapper.TeamMapper;
+import com.footystars.persistence.mapper.TeamStatsMapper;
+import com.footystars.persistence.repository.TeamRepository;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static com.footystars.utils.LogsNames.FETCH_CLUBS_ERROR;
+import static com.footystars.utils.LogsNames.TEAM_NOT_FOUND_EXCEPTION;
+import static com.footystars.utils.ParameterName.LEAGUE;
+import static com.footystars.utils.ParameterName.SEASON;
+import static com.footystars.utils.ParameterName.TEAM;
+
+@Service
+@RequiredArgsConstructor
+public class TeamService {
+
+    private final TeamRepository teamRepository;
+    private final TeamMapper teamMapper;
+    private final TeamStatsMapper teamStatsMapper;
+    private final LeagueService leagueService;
+
+    private final Logger logger = LoggerFactory.getLogger(TeamService.class);
+
+    public Optional<Team> getByClubIdLeagueIdAndYear(@NotNull Long clubId, @NotNull Long leagueId, @NotNull Integer year) {
+        return teamRepository.findByInfoClubIdAndSeasonYearAndSeasonLeagueLeagueId(clubId, year, leagueId);
+    }
+
+    public void save(Team team) {
+        teamRepository.save(team);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> getClubIdsByLeagueIdAndSeasonYear(@NotNull Long leagueId, @NotNull Integer season) {
+        return teamRepository.findClubIdsByLeagueIdAndSeasonYear(leagueId, season);
+    }
+
+    public List<Team> getCurrentSeasonTeamsByClubId(Long clubId) {
+        return teamRepository.findByIdAndLeagueSeasonCurrent(clubId, Boolean.TRUE);
+    }
+
+
+    public void fetchClubs(@NotNull TeamsInfo teams, @NotNull Long leagueId, @NotNull Integer year) {
+        try {
+            teams.getTeamsList()
+                    .parallelStream()
+                    .forEach(t -> fetchTeams(leagueId, year, t));
+        } catch (Exception e) {
+            logger.error(FETCH_CLUBS_ERROR, e);
+        }
+    }
+
+    public void fetchTeams(@NotNull Long leagueId, @NotNull Integer seasonYear, @NotNull TeamsInfo.TeamDto teamDto) {
+        var clubId = teamDto.getInfo().getClubId();
+        if (clubId != null) {
+            var optionalTeam = getByClubIdLeagueIdAndYear(clubId, leagueId, seasonYear);
+            if (optionalTeam.isPresent()) {
+                var team = optionalTeam.get();
+                teamMapper.partialUpdate(teamDto, team);
+                teamRepository.save(team);
+            } else {
+                var optionalLeague = leagueService.findByLeagueIdAndSeason(leagueId, seasonYear);
+                if (optionalLeague.isPresent()) {
+                    var league = optionalLeague.get();
+                    var teamEntity = teamMapper.toEntity(teamDto);
+                    teamEntity.setLeague(league);
+                    teamEntity.getInfo().setClubId(teamDto.getInfo().getClubId());
+                    teamRepository.save(teamEntity);
+                }
+            }
+        }
+    }
+
+        @Transactional
+        public void fetchTeamStats(@NotNull TeamStatistics.TeamStatsApi teamStatistic, @NotNull Map<String, String> params) {
+            var leagueId = Long.valueOf(params.get(LEAGUE));
+            var season = Integer.parseInt(params.get(SEASON));
+            var clubId = Long.valueOf(params.get(TEAM));
+            var optionalTeam = getByClubIdLeagueIdAndYear(clubId, leagueId, season);
+            if (optionalTeam.isPresent()) {
+                var team = optionalTeam.get();
+                var teamStatsDto = teamStatsMapper.toDto(teamStatistic);
+                var teamStats = teamStatsMapper.toEntity(teamStatsDto);
+                team.setStatistics(teamStats);
+                teamRepository.save(team);
+            } else {
+                logger.warn(TEAM_NOT_FOUND_EXCEPTION, clubId, leagueId, season);
+            }
+        }
+
+}

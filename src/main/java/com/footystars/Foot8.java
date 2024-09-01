@@ -8,10 +8,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@EnableAsync
-@ComponentScan(basePackages = {"com.footystars.foot8"})
-@EnableJpaRepositories(basePackages = "com.footystars.foot8.repository")
+@EnableJpaRepositories(basePackages = "com.footystars.persistence.repository")
 @SpringBootApplication
+@EnableAsync
 public class Foot8 {
     public static void main(String[] args) {
         SpringApplication.run(Foot8.class, args);
