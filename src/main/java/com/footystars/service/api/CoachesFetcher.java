@@ -21,7 +21,11 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 
+import static com.footystars.utils.LogsNames.COACHES_BY_TEAM_ERROR;
 import static com.footystars.utils.LogsNames.COACHES_ERROR;
+import static com.footystars.utils.LogsNames.COACHES_FETCHED;
+import static com.footystars.utils.LogsNames.COACH_BY_LEAGUE_FETCHED;
+import static com.footystars.utils.LogsNames.LIMIT_EXCEEDED_COACH;
 import static com.footystars.utils.ParameterName.TEAM;
 import static com.footystars.utils.PathSegment.COACHS;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
@@ -44,7 +48,7 @@ public class CoachesFetcher {
     @Async
     public void fetchTopLeaguesCoaches() {
         getTopLeaguesIds().forEach(this::fetchCoachesByLeagueIdInCurrentSeason);
-        log.info("Fetches coaches for all leagues");
+        log.info(COACHES_FETCHED);
     }
 
     public void fetchCoachesByLeagueIdInCurrentSeason(@NotNull Long leagueId) {
@@ -61,7 +65,7 @@ public class CoachesFetcher {
                     log.error(COACHES_ERROR, leagueId, e.getMessage());
                 }
             });
-            log.info("Fetched coaches for leagueId: {}", leagueId);
+            log.info(COACH_BY_LEAGUE_FETCHED, leagueId);
         }
     }
 
@@ -77,10 +81,10 @@ public class CoachesFetcher {
                     response.forEach(c -> coachService.fetchCoach(c, clubId));
                 }
             } catch (IOException e) {
-                throw new CoachFetchingException("Error fetching coaches for team " + clubId, e);
+                throw new CoachFetchingException(COACHES_BY_TEAM_ERROR + clubId, e);
             }
         } else {
-            log.warn("Request limit exceeded for teamId: {}", clubId);
+            log.warn(LIMIT_EXCEEDED_COACH, clubId);
         }
     }
 

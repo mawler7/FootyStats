@@ -1,4 +1,4 @@
-package com.footystars.persistence.entity;
+package com.footystars.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -52,9 +52,9 @@ public class Team implements Serializable {
     @JoinColumn(name = "league_id", nullable = false)
     private League league;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "statistics_id")
-    private com.footystars.foot8.business.model.entity.TeamStats statistics;
+    private TeamStats statistics;
 
     @PrePersist
     public void prePersist() {

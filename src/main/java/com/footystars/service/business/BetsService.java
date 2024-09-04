@@ -1,7 +1,7 @@
 package com.footystars.service.business;
 
 import com.footystars.model.api.Odds;
-import com.footystars.persistence.entity.Bet;
+import com.footystars.model.entity.Bet;
 import com.footystars.persistence.repository.BetRepository;
 import com.footystars.persistence.repository.FixtureRepository;
 import jakarta.transaction.Transactional;
@@ -24,16 +24,17 @@ public class BetsService {
                 .forEach(bookmaker -> bookmaker.getBets()
                         .forEach(bet -> bet.getValues()
                                 .forEach(value -> {
-            var betEntity = Bet.builder()
-                    .bookmakerName(bookmaker.getName())
-                    .betName(bet.getName())
-                    .value(value.getValue())
-                    .odd(value.getOdd())
-                    .fixture(fixture)
-                    .build();
-            betRepository.save(betEntity);
-        }))));
+                                    var betEntity = Bet.builder()
+                                            .bookmakerName(bookmaker.getName())
+                                            .betName(bet.getName())
+                                            .value(value.getValue())
+                                            .odd(value.getOdd())
+                                            .fixture(fixture)
+                                            .build();
+                                    betRepository.save(betEntity);
+                                }))));
     }
+
 }
 
 

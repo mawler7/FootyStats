@@ -86,10 +86,8 @@ public class Fixtures implements Serializable {
             @Setter
             @JsonIgnoreProperties(ignoreUnknown = true)
             public static class VenueDto implements Serializable {
-
                 @JsonProperty("name")
                 private String venueName;
-
                 @JsonProperty("city")
                 private String venueCity;
             }
@@ -102,19 +100,14 @@ public class Fixtures implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class LeagueDto implements Serializable {
-
             @JsonProperty("id")
             private Long leagueId;
-
             @JsonProperty("country")
             private String countryName;
-
             @Transient
             private String flag;
-
             @JsonProperty("name")
             private String leagueName;
-
             private String logo;
             @Transient
             private String type;
@@ -143,22 +136,16 @@ public class Fixtures implements Serializable {
             @Embeddable
             @JsonIgnoreProperties(ignoreUnknown = true)
             public static class Coverage implements Serializable {
-
                 @Embedded
                 private FixturesSeason fixtures;
-
                 private boolean standings;
                 private boolean players;
-
                 @JsonProperty("top_scorers")
                 private boolean topScorers;
-
                 @JsonProperty("top_assists")
                 private boolean topAssists;
-
                 @JsonProperty("top_cards")
                 private boolean topCards;
-
                 private boolean injuries;
                 private boolean predictions;
                 private boolean odds;

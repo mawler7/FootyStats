@@ -1,4 +1,4 @@
-package com.footystars.persistence.entity;
+package com.footystars.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

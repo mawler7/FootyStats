@@ -1,7 +1,7 @@
 package com.footystars.service.requester;
 
 
-import com.footystars.persistence.entity.RequestLimiter;
+import com.footystars.model.entity.RequestLimiter;
 import com.footystars.persistence.repository.RequestLimiterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

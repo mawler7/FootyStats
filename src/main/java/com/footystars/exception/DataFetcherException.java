@@ -1,6 +1,5 @@
 package com.footystars.exception;
 
-import java.io.IOException;
 
 public class DataFetcherException extends RuntimeException {
 

@@ -34,9 +34,7 @@ public class Coaches implements Serializable {
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CoachDto implements Serializable {
-
         private Long id;
-
         private String name;
         private String firstname;
         private String lastname;
@@ -95,7 +93,6 @@ public class Coaches implements Serializable {
             @JsonProperty("logo")
             private String teamLogo;
         }
-
     }
 
 }

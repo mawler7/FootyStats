@@ -1,4 +1,4 @@
-package com.footystars.persistence.entity;
+package com.footystars.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -17,9 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.io.Serializable;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -51,8 +50,6 @@ public class Coach implements Serializable {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "coaches_trophies", joinColumns = @JoinColumn(name = "coach_id"))
-    private List<Trophies.Trophy> trophies;
-
-
+    private List<Trophies.Trophy> trophies = new ArrayList<>();
 
 }

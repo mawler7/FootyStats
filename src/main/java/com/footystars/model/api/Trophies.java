@@ -39,7 +39,6 @@ public class Trophies implements Serializable {
         private String season;
         @NotNull
         private String place;
-
     }
 
 }

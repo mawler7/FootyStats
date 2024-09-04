@@ -43,8 +43,6 @@ public class Odds implements Serializable {
     @Builder
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class OddsResponse implements Serializable {
-
-
         private OddFixture fixture;
         private ZonedDateTime update;
         private List<BookmakerDto> bookmakers;

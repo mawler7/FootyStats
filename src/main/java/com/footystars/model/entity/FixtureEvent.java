@@ -1,9 +1,8 @@
-package com.footystars.persistence.entity;
+package com.footystars.model.entity;
 
 import com.footystars.model.api.Fixtures;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,7 +18,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "fixture_events")
+@Table(name = "fixtures_events")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -50,4 +49,5 @@ public class FixtureEvent implements Serializable {
 
     @Embedded
     private Fixtures.FixtureDto.FixtureEvent.Assist assist;
+
 }

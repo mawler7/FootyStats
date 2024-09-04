@@ -1,10 +1,7 @@
 package com.footystars.persistence.mapper;
 
-
-
-
 import com.footystars.model.api.Coaches;
-import com.footystars.persistence.entity.Coach;
+import com.footystars.model.entity.Coach;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -17,8 +14,6 @@ import org.mapstruct.ReportingPolicy;
 public interface CoachMapper {
 
     Coach toEntity(Coaches.CoachDto coachDto);
-
-    Coaches.CoachDto toDto(Coach coach);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Coach partialUpdate(Coaches.CoachDto coachDto, @MappingTarget Coach coach);

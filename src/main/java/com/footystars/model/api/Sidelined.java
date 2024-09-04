@@ -21,7 +21,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Sidelined implements Serializable {
 
-    private List<SidelinedDto> response;
+    private List<Sideline> response;
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -30,14 +30,12 @@ public class Sidelined implements Serializable {
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Embeddable
-    public static class SidelinedDto implements Serializable {
-
+    public static class Sideline implements Serializable {
         private String type;
         @JsonProperty("start")
         private String started;
         @JsonProperty("end")
         private String ended;
-
     }
 
 }

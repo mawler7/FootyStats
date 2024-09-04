@@ -32,7 +32,6 @@ public class Leagues implements Serializable {
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class LeagueDto implements Serializable {
-
         @JsonProperty("league")
         private LeagueInfo info;
         private CountryDto country;
@@ -46,10 +45,8 @@ public class Leagues implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         @Embeddable
         public static class LeagueInfo implements Serializable {
-
             @JsonProperty("id")
             private Long leagueId;
-
             private String name;
             @Transient
             private String logo;
@@ -64,7 +61,6 @@ public class Leagues implements Serializable {
             private String flag;
         }
 
-
         @NoArgsConstructor
         @AllArgsConstructor
         @Builder
@@ -72,14 +68,11 @@ public class Leagues implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class CountryDto implements Serializable {
-
             @JsonProperty("code")
             private String countryCode;
-
             private String name;
             private String flag;
         }
-
 
         @NoArgsConstructor
         @AllArgsConstructor
@@ -89,17 +82,12 @@ public class Leagues implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         @Embeddable
         public static class SeasonDto implements Serializable {
-
             private int year;
-
             @JsonProperty("start")
             private String startDate;
-
             @JsonProperty("end")
             private String endDate;
-
             private Boolean current;
-
             private Coverage coverage;
 
             @NoArgsConstructor
@@ -110,22 +98,16 @@ public class Leagues implements Serializable {
             @Embeddable
             @JsonIgnoreProperties(ignoreUnknown = true)
             public static class Coverage implements Serializable {
-
                 @Embedded
                 private Fixtures fixtures;
-
                 private boolean standings;
                 private boolean players;
-
                 @JsonProperty("top_scorers")
                 private boolean topScorers;
-
                 @JsonProperty("top_assists")
                 private boolean topAssists;
-
                 @JsonProperty("top_cards")
                 private boolean topCards;
-
                 private boolean injuries;
                 private boolean predictions;
                 private boolean odds;
@@ -142,10 +124,8 @@ public class Leagues implements Serializable {
             public static class Fixtures implements Serializable {
                 private boolean events;
                 private boolean lineups;
-
                 @JsonProperty("statistics_fixtures")
                 private boolean statisticsFixtures;
-
                 @JsonProperty("statistics_players")
                 private boolean statisticsPlayers;
             }

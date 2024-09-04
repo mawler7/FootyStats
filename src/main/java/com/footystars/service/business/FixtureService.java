@@ -1,7 +1,7 @@
 package com.footystars.service.business;
 
 import com.footystars.model.api.Fixtures;
-import com.footystars.persistence.entity.Fixture;
+import com.footystars.model.entity.Fixture;
 import com.footystars.persistence.mapper.FixtureMapper;
 import com.footystars.persistence.repository.FixtureRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,9 +84,12 @@ public class FixtureService {
         }
 
         if (fixtureDto.getTeamPlayers() != null && !fixtureDto.getTeamPlayers().isEmpty()) {
-            var players = fixtureMapper.toPlayerEntityList(fixtureDto.getTeamPlayers());
-            players.forEach(player -> player.setFixture(fixtureEntity));
-            fixtureEntity.getPlayers().addAll(players);
+            fixtureDto.getTeamPlayers().forEach(t -> {
+                var players = t.getPlayers();
+            var playersEntities = fixtureMapper.toPlayerEntityList(players);
+                playersEntities.forEach(player -> player.setFixture(fixtureEntity));
+            fixtureEntity.getPlayers().addAll(playersEntities);
+            });
         }
     }
 

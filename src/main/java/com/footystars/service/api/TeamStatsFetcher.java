@@ -2,8 +2,8 @@ package com.footystars.service.api;
 
 import com.footystars.model.api.TeamStatistics;
 import com.footystars.service.business.LeagueService;
-import com.footystars.utils.ParamsProvider;
 import com.footystars.service.business.TeamService;
+import com.footystars.utils.ParamsProvider;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -18,7 +18,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
 
+import static com.footystars.utils.LogsNames.LIMIT_EXCEEDED;
 import static com.footystars.utils.LogsNames.NO_TEAMS_FOUND;
+import static com.footystars.utils.LogsNames.TEAMS_STATS_FETCHED;
+import static com.footystars.utils.LogsNames.TEAMS_STATS_FETCHED_BY_LEAGUE_AND_SEASON;
 import static com.footystars.utils.PathSegment.TEAMS_STATISTICS;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
@@ -49,7 +52,7 @@ public class TeamStatsFetcher {
             var season = league.getSeason().getYear();
             var clubIds = teamService.getClubIdsByLeagueIdAndSeasonYear(leagueId, season);
             clubIds.forEach(clubId -> fetchTeamStatisticsByClubIdLeagueIdAndSeason(clubId, leagueId, season));
-            logger.info("Fetched teams stats in leagueId: {} and season {}", leagueId, season);
+            logger.info(TEAMS_STATS_FETCHED_BY_LEAGUE_AND_SEASON, leagueId, season);
         });
     }
 
@@ -57,21 +60,23 @@ public class TeamStatsFetcher {
         if (bucket.tryConsume(1)) {
             try {
                 var params = paramsProvider.getTeamLeagueAndSeasonParamsMap(clubId, leagueId, season);
-                var teamsStatsDto = dataFetcher.fetch(TEAMS_STATISTICS, params, TeamStatistics.class).getStatistic();
-                    teamService.fetchTeamStats(teamsStatsDto, params);
+                var response = dataFetcher.fetch(TEAMS_STATISTICS, params, TeamStatistics.class).getResponse();
+                if (response != null) {
+                    teamService.fetchTeamStats(response, params);
+                }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                logger.error(e.getMessage(), e);
             }
 
         } else {
-            logger.warn("Request limit exceeded for clubId: {}, leagueId: {}, season: {}", clubId, leagueId, season);
+            logger.warn(LIMIT_EXCEEDED, clubId, leagueId, season);
         }
     }
 
     @Async
     public void fetchCurrentSeasonsTeamStats() {
-        var leaguesIds = getTopLeaguesIds();
-        leaguesIds.forEach(this::fetchCurrentSeasonByLeagueId);
+        getTopLeaguesIds().forEach(this::fetchCurrentSeasonByLeagueId);
+        logger.info(TEAMS_STATS_FETCHED);
     }
 
     public void fetchCurrentSeasonByLeagueId(@NotNull Long leagueId) {
@@ -86,8 +91,6 @@ public class TeamStatsFetcher {
             }
         }
     }
-
-
 
 }
 

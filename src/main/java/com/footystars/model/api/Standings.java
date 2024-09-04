@@ -29,7 +29,6 @@ public class Standings implements Serializable {
 
     private List<StandingApi> response;
 
-
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
@@ -62,7 +61,6 @@ public class Standings implements Serializable {
             @Embeddable
             @JsonIgnoreProperties(ignoreUnknown = true)
             public static class Standing implements Serializable {
-
                 @Embedded
                 private StandingTeam team;
                 private Integer rank;
@@ -117,7 +115,6 @@ public class Standings implements Serializable {
                 public static class StandingTeam implements Serializable {
                     private Long id;
                     private String name;
-
                 }
 
                 @NoArgsConstructor
@@ -128,7 +125,6 @@ public class Standings implements Serializable {
                 @Embeddable
                 @JsonIgnoreProperties(ignoreUnknown = true)
                 public static class AllStat implements Serializable {
-
                     private Integer played;
                     private Integer win;
                     private Integer draw;
@@ -144,14 +140,11 @@ public class Standings implements Serializable {
                     @Embeddable
                     @JsonIgnoreProperties(ignoreUnknown = true)
                     public static class Goals implements Serializable {
-
                         @JsonProperty("for")
                         private Integer goalsFor;
                         @JsonProperty("against")
                         private Integer goalsAgainst;
                     }
-
-
                 }
 
                 @NoArgsConstructor
@@ -162,16 +155,14 @@ public class Standings implements Serializable {
                 @Embeddable
                 @JsonIgnoreProperties(ignoreUnknown = true)
                 public static class HomeStat implements Serializable {
-
                     private Integer played;
                     private Integer win;
                     private Integer draw;
                     private Integer lose;
                     @JsonProperty("goals")
                     private AllStat.Goals homeGoals;
-
-
                 }
+
                 @NoArgsConstructor
                 @AllArgsConstructor
                 @Builder
@@ -180,23 +171,14 @@ public class Standings implements Serializable {
                 @Embeddable
                 @JsonIgnoreProperties(ignoreUnknown = true)
                 public static class AwayStat implements Serializable {
-
                     private Integer played;
                     private Integer win;
                     private Integer draw;
                     private Integer lose;
                     @JsonProperty("goals")
                     private AllStat.Goals awayGoals;
-
-
                 }
-
-
-
             }
-
-
-
         }
 
     }

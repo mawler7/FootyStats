@@ -1,7 +1,7 @@
 package com.footystars.service.business;
 
 import com.footystars.model.api.Predictions;
-import com.footystars.persistence.entity.Prediction;
+import com.footystars.model.entity.Prediction;
 import com.footystars.persistence.mapper.PredictionMapper;
 import com.footystars.persistence.repository.PredictionRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+
+import static com.footystars.utils.LogsNames.PREDICTIONS_ERROR;
 
 
 @Service
@@ -40,7 +42,7 @@ public class PredictionService {
                 fixtureService.save(fixture);
             });
         } catch (Exception e) {
-            log.error("Error processing prediction for fixtureId {}: {}", fixtureId, e.getMessage(), e);
+            log.error(PREDICTIONS_ERROR, fixtureId, e.getMessage(), e);
         }
     }
 

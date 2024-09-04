@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static com.footystars.utils.LogsNames.STANDINGS_LEAGUE_SEASON_FETCHED;
 import static com.footystars.utils.ParameterName.LEAGUE;
 import static com.footystars.utils.ParameterName.SEASON;
 
@@ -18,36 +18,23 @@ import static com.footystars.utils.ParameterName.SEASON;
 @RequiredArgsConstructor
 public class StandingsService {
 
-//    private final SeasonService seasonService;
-//
-//    private final Logger log = LoggerFactory.getLogger(StandingsService.class);
-//
-//    public void fetchStandings(@NotNull Standings standingsApi, @NotNull Map<String, String> params) {
-//        var leagueId = Long.valueOf(params.get(LEAGUE));
-//        var year = Integer.parseInt(params.get(SEASON));
-//        var optionalSeason = seasonService.findByLeagueIdAndYear(leagueId, year);
-//
-//        var seasonCoverage = optionalSeason.stream()
-//                .filter(s -> s.getCoverage().isStandings())
-//                .findFirst();
-//        if (seasonCoverage.isPresent()) {
-//            var season = seasonCoverage.get();
-//            var response = standingsApi.getResponse();
-//
-//            response.forEach(r -> {
-//                List<Standings.StandingApi.StandingLeague.Standing> standings = r.getLeague().getStandings()
-//                        .stream()
-//                        .flatMap(List::stream)
-//                        .collect(Collectors.toList());
-//
-//                season.setStandings(standings);
-//                seasonService.save(season);
-//                log.info("Saved standings for league {} and season {}", leagueId, season);
-//            });
-//        }
-//    }
-//
-//    public List<Standings.StandingApi.StandingLeague.Standing> getStandingsByLeagueId(Long leagueId) {
-//        return seasonService.findCurrentSeasonByLeagueId(leagueId).orElse(null).getStandings();
-//    }
+    private final LeagueService leagueService;
+
+    private final Logger log = LoggerFactory.getLogger(StandingsService.class);
+
+    public void fetchStandings(@NotNull List<Standings.StandingApi.StandingLeague.Standing> standings,
+                               @NotNull Map<String, String> params) {
+
+        var leagueId = Long.valueOf(params.get(LEAGUE));
+        var season = Integer.parseInt(params.get(SEASON));
+
+        var optionalLeague = leagueService.findByLeagueIdAndSeason(leagueId, season);
+        if (optionalLeague.isPresent()) {
+            var league = optionalLeague.get();
+            league.setStandings(standings);
+            leagueService.save(league);
+            log.info(STANDINGS_LEAGUE_SEASON_FETCHED, leagueId, season);
+        }
+    }
+
 }

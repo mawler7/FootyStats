@@ -5,6 +5,7 @@ import com.footystars.exception.TeamInfoException;
 import com.footystars.model.api.Players;
 import com.footystars.service.business.LeagueService;
 import com.footystars.service.business.PlayerService;
+import com.footystars.utils.LogsNames;
 import com.footystars.utils.ParamsProvider;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -24,6 +25,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.footystars.utils.LogsNames.PLAYERS_CURRENT_FETCHED;
+import static com.footystars.utils.LogsNames.PLAYERS_FETCHED;
+import static com.footystars.utils.LogsNames.PLAYERS_FETCHED_LEAGUE_AND_SEASON;
 import static com.footystars.utils.ParameterName.PAGE;
 import static com.footystars.utils.PathSegment.PLAYERS;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
@@ -46,28 +50,16 @@ public class PlayersFetcher {
             .addLimit(Bandwidth.classic(MAX_REQUESTS_PER_MINUTE, Refill.intervally(MAX_REQUESTS_PER_MINUTE, Duration.ofMinutes(1))))
             .build();
 
-
+    @Async
     public void fetchByAllLeagues() {
         getTopLeaguesIds().forEach(this::fetchPlayersByLeagueId);
-        log.info("Fetching players for all leagues completed");
-    }
-
-    @Async
-    public void fetchPlayersByLeagueId(@NotNull Long leagueId) {
-        var leagues = leagueService.findByLeagueId(leagueId);
-        leagues.forEach(l -> {
-            try {
-                fetchPlayersByLeagueAndYear(leagueId, l.getSeason().getYear());
-                log.info("Players fetching completed for league {} and season {}", leagueId, l.getSeason().getYear());
-            } catch (Exception e) {
-                log.error("Error fetching players by league and year: {}", e.getMessage());
-            }
-        });
+        log.info(LogsNames.PLAYERS_FETCHED);
     }
 
     @Async
     public void fetchCurrentSeasonTopLeaguesPlayers() {
         getTopLeaguesIds().forEach(this::fetchCurrentSeasonPlayersByLeagueId);
+        log.info(PLAYERS_CURRENT_FETCHED);
     }
 
     @Async
@@ -76,8 +68,20 @@ public class PlayersFetcher {
         if (optionalInteger.isPresent()) {
             var season = optionalInteger.get();
             fetchPlayersByLeagueAndYear(leagueId, season);
-            log.info("Fetched players in leagueId: {} in season {}", leagueId, season);
+
         }
+    }
+
+    public void fetchPlayersByLeagueId(@NotNull Long leagueId) {
+        var leagues = leagueService.findByLeagueId(leagueId);
+        leagues.forEach(l -> {
+            try {
+                fetchPlayersByLeagueAndYear(leagueId, l.getSeason().getYear());
+                log.info(PLAYERS_FETCHED_LEAGUE_AND_SEASON, leagueId, l.getSeason().getYear());
+            } catch (Exception e) {
+                log.error("Error fetching players by league and year: {}", e.getMessage());
+            }
+        });
     }
 
     public void fetchPlayersByLeagueAndYear(@NotNull Long leagueId, @NotNull Integer year) {
@@ -96,6 +100,12 @@ public class PlayersFetcher {
             }
         }
     }
+
+
+
+
+
+
 
     private void processPlayersResponse(@NotNull Map<String, String> params, @NotNull Players playersApiResponse) {
         int totalPages = playersApiResponse.getPaging().getTotal();

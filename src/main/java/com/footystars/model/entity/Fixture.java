@@ -1,4 +1,4 @@
-package com.footystars.persistence.entity;
+package com.footystars.model.entity;
 
 import com.footystars.model.api.Fixtures;
 import jakarta.persistence.CascadeType;

@@ -3,8 +3,6 @@ package com.footystars.model.api;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.footystars.persistence.entity.Player;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Transient;
@@ -16,7 +14,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -59,7 +56,6 @@ public class Players implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class PlayerInfo implements Serializable {
-
             @JsonProperty("id")
             private Long playerId;
             private String name;
@@ -77,7 +73,6 @@ public class Players implements Serializable {
 
             @Embedded
             private Birth birth;
-
             private String zodiac;
 
             @Getter
@@ -87,16 +82,12 @@ public class Players implements Serializable {
             @Builder
             @Embeddable
             public static class Birth implements Serializable {
-
                 @JsonProperty("date")
                 private String birthDate;
-
                 @JsonProperty("place")
                 private String birthPlace;
-
                 @JsonProperty("country")
                 private String birthCountry;
-
             }
         }
     }
@@ -109,7 +100,6 @@ public class Players implements Serializable {
     @Embeddable
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PlayerStats implements Serializable {
-
         @JsonProperty("team")
         @Embedded
         private Club club;
@@ -157,7 +147,6 @@ public class Players implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Club implements Serializable {
-
             @JsonProperty("id")
             private Long clubId;
             @JsonProperty("logo")
@@ -174,7 +163,6 @@ public class Players implements Serializable {
         @Builder
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Games implements Serializable {
-
             @JsonProperty("appearences")
             private Integer appearances;
             private Integer lineups;
@@ -191,7 +179,6 @@ public class Players implements Serializable {
         @AllArgsConstructor
         @Builder
         public static class Penalty implements Serializable {
-
             @JsonProperty("commited")
             private Integer penaltiesCommitted;
             @JsonProperty("scored")
@@ -211,12 +198,9 @@ public class Players implements Serializable {
         @Builder
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Cards implements Serializable {
-
             private Integer yellow;
-
             @JsonProperty("yellowred")
             private Integer yellowRed;
-
             private Integer red;
         }
 
@@ -227,7 +211,6 @@ public class Players implements Serializable {
         @Builder
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Fouls implements Serializable {
-
             private Integer drawn;
             private Integer committed;
         }
@@ -239,7 +222,6 @@ public class Players implements Serializable {
         @Builder
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Dribbles implements Serializable {
-
             private Integer attempts;
             private Integer success;
             private Integer past;
@@ -270,7 +252,6 @@ public class Players implements Serializable {
             private Integer tacklesTotal;
             private Integer blocks;
             private Integer interceptions;
-
         }
 
         @Getter
@@ -334,19 +315,14 @@ public class Players implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class League implements Serializable {
-
             @JsonProperty("id")
             private Long leagueId;
-
             @JsonProperty("country")
             private String countryName;
-
             @Transient
             private String flag;
-
             @JsonProperty("name")
             private String leagueName;
-
             private String logo;
             @Transient
             private String type;

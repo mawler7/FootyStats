@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.HashMap;
 
+import static com.footystars.utils.LogsNames.LEAGUES_FETCHED;
+import static com.footystars.utils.LogsNames.LEAGUE_BY_LEAGUE_ID_FETCHING_ERROR;
+import static com.footystars.utils.LogsNames.LEAGUE_BY_TYPE_FETCHING_ERROR;
 import static com.footystars.utils.ParameterName.ID;
 import static com.footystars.utils.ParameterName.TYPE;
 import static com.footystars.utils.PathSegment.LEAGUES;
@@ -30,7 +33,7 @@ public class LeaguesFetcher {
     @Async
     public void fetchTopLeaguesAndCups() {
         getTopLeaguesIds().forEach(this::fetchByLeagueId);
-        logger.info("Fetched all leagues");
+        logger.info(LEAGUES_FETCHED);
     }
 
 
@@ -41,10 +44,9 @@ public class LeaguesFetcher {
             var leagues = dataFetcher.fetch(LEAGUES, params, Leagues.class).getResponse();
             leagues.forEach(leagueService::fetchLeague);
         } catch (IOException e) {
-            throw new DataFetcherException("Error fetching leagues by type", e);
+            throw new DataFetcherException(LEAGUE_BY_TYPE_FETCHING_ERROR, e);
         }
     }
-
 
     public void fetchAll() {
         var params = new HashMap<String, String>();
@@ -56,16 +58,15 @@ public class LeaguesFetcher {
         }
     }
 
-
     public void fetchByLeagueId(@NotNull Long leagueId) {
         var params = new HashMap<String, String>();
         params.put(ID, String.valueOf(leagueId));
         try {
             var response = dataFetcher.fetch(LEAGUES, params, Leagues.class).getResponse();
                 response.parallelStream().forEach(leagueService::fetchLeague);
-
         } catch (IOException e) {
-            throw new DataFetcherException("Error fetching leagues by leagueId", e);
+            throw new DataFetcherException(LEAGUE_BY_LEAGUE_ID_FETCHING_ERROR, e);
         }
     }
+
 }

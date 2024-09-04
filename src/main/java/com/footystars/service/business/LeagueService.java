@@ -2,7 +2,7 @@ package com.footystars.service.business;
 
 
 import com.footystars.model.api.Leagues;
-import com.footystars.persistence.entity.League;
+import com.footystars.model.entity.League;
 import com.footystars.persistence.mapper.LeagueMapper;
 import com.footystars.persistence.repository.LeagueRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,11 +40,6 @@ public class LeagueService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<League> findById(Long id) {
-        return leagueRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
     public List<League> findByLeagueId(Long leagueId) {
         return leagueRepository.findByLeagueId(leagueId);
     }
@@ -54,11 +49,13 @@ public class LeagueService {
         return leagueRepository.findCurrentSeasonById(leagueId, Boolean.TRUE);
     }
 
-    public Boolean isCurrent(Long leagueId, Integer year) {
-        return leagueRepository.isCurrent(leagueId, year);
-    }
-
     public Optional<League> findByLeagueIdAndSeason(Long leagueId, Integer seasonYear) {
         return leagueRepository.findByLeagueIdAndSeason(leagueId, seasonYear);
     }
+
+    @Transactional
+    public void save(League league) {
+        leagueRepository.save(league);
+    }
+
 }

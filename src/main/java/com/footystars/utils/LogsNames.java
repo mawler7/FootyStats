@@ -4,8 +4,65 @@ import lombok.Getter;
 
 @Getter
 public class LogsNames {
+
     private LogsNames() {
     }
+
+    //date patterns
+    public static final String DATA_FORMAT_1 = "yyyy-MM-dd";
+    public static final String DATA_FORMAT_2 = "yyyy-dd-MM";
+    public static final String DATA_FORMAT_3 = "yyyy-dd-M";
+    public static final String DATA_FORMAT_4 = "yyyy-M-dd";
+    public static final String DATA_FORMAT_5 = "yyyy-MM-d";
+    public static final String DATA_FORMAT_6 = "yyyy-M-d";
+
+    //api
+    public static final String LIMIT_EXCEEDED = "Request limit exceeded for clubId: {}, leagueId: {}, season: {}";
+    public static final String LIMIT_EXCEEDED_COACH = "Request limit exceeded for teamId: {}";
+
+    //leagues
+    public static final String LEAGUES_FETCHED = "Fetched all leagues";
+    public static final String LEAGUE_BY_TYPE_FETCHING_ERROR = "Error fetching leagues by type";
+    public static final String LEAGUE_BY_LEAGUE_ID_FETCHING_ERROR = "Error fetching leagues for leagueId: {}";
+
+    //standings
+    public static final String STANDINGS_LEAGUE_SEASON_FETCHED = "Saved standings for league {} and season {}";
+    public static final String STANDINGS_ERROR = "Error fetching standings for league {} and season {}: {}";
+    public static final String STANDINGS_FETCHED_BY_ID = "Standings fetched by league id: {}";
+
+    //trophies
+    public static final String PLAYERES_TROPHIES_FETCHING = "Fetching {} players trophies";
+    public static final String PLAYERES_TROPHIES_FETCHED = "Players trophies fetched";
+    public static final String COACHES_TROPHIES_FETCHED = "Coaches trophies fetched";
+
+    //sidelined
+    public static final String PLAYERES_SIDELINED_FETCHED = "Players sidelined fetched";
+    public static final String PLAYERES_SIDELINED_FETCHING = "Fetching {} sidelined players";
+
+    //teams stats
+    public static final String TEAMS_STATS_FETCHED_BY_LEAGUE_AND_SEASON = "Fetched teams stats in leagueId: {} and season {}";
+    public static final String TEAMS_STATS_FETCHED = "All teams stats updated";
+
+    //predictions
+    public static final String PREDICTIONS_ERROR = "Error processing prediction for fixtureId {}: {}";
+
+    //players
+    public static final String PLAYERS_FETCHED = "Fetching players for all leagues completed";
+    public static final String PLAYERS_CURRENT_FETCHED = "Fetched current season players";
+    public static final String PLAYERS_FETCHING = "Fetching players from league: {} and season: {}";
+    public static final String PLAYERS_FETCHED_LEAGUE_AND_SEASON = "Fetched players from league: {} and season: {}";
+
+    public static final String PLAYERS_SIDELINED = "Player {} sidelined for league {} season {}";
+    public static final String PLAYER_STATS_UPDATED = "Updated player stats for player: {} in league {} and season {}";
+    public static final String PLAYER_STATS_UPDATING = "Updating player statistics for {}";
+    public static final String PLAYER_STATS_CREATED = "Created player stats for player: {} in league {} and season {}";
+    public static final String PLAYER_STATS_CREATING = "Creating player statistics for {}";
+    public static final String PLAYER_STATS_ERROR = "Error while fetching player statistics for {}";
+    public static final String PLAYER_ERROR = "Error while creating player: {}";
+    public static final String LINEUP_ERROR = "Error while creating lineup: {} with message: {}";
+    public static final String PLAYER_ALREADY_EXISTS = "Player with ID {} already exists";
+    public static final String PLAYER_CREATED = "Created player {}";
+
 
     public static final String FT = "FT";
     public static final String AET = "AET";
@@ -18,7 +75,9 @@ public class LogsNames {
 
     public static final String COACHES_FETCHED = "Coaches fetched!";
     public static final String COACH_FETCHED = "Coach: {} fetched!";
+    public static final String COACH_BY_LEAGUE_FETCHED = "Coach by league: {} fetched!";
     public static final String COACHES_ERROR = "Error fetching coaches for league {}: {}";
+    public static final String COACHES_BY_TEAM_ERROR = "Error fetching coaches for team {}: {}";
 
     public static final String COMPETITION_ALREADY_EXISTS = "Competition already exists";
     public static final String COMPETITION_SEASON_FETCHED = "Fetched competition {} with season {}";
@@ -38,7 +97,7 @@ public class LogsNames {
     public static final String FIXTURE_UPDATED = "Fixture: {} updated";
 
     public static final String FIXTURE_FETCHED = "Fetched fixtures from leagueId {}";
-    public static final String ALL_FIXTURES_FETCHED = "A L L  F I X T U R E S  F E T C H E D ";
+    public static final String FIXTURES_FETCHED = "Fetched all fixtures";
 
     public static final String EVENTS_FETCHING = "Fetching events for league {} and season {}";
     public static final String EVENTS_UPDATED = "Events updated successfully!";
@@ -49,19 +108,6 @@ public class LogsNames {
     public static final String LINEUPS_FETCHED = "Lineups updated for fixture ID: {}";
     public static final String LINEUPS_LEAGUE_FETCHED = "Lineups updated for league ID: {} in season: {}";
 
-    public static final String PLAYERS_FETCHING = "Fetching players from league: {} and season: {}";
-    public static final String PLAYERS_SIDELINED = "Player {} sidelined for league {} season {}";
-    public static final String PLAYERS_FETCHED = "Players from league: {} and season: {} F E T C H E D  S U C C E S S F U L L Y ";
-    public static final String FETCHED_SUCCESSFULLY = "F E T C H E D  S U C C E S S F U L L Y ";
-    public static final String PLAYER_STATS_UPDATED = "Updated player stats for player: {} in league {} and season {}";
-    public static final String PLAYER_STATS_UPDATING = "Updating player statistics for {}";
-    public static final String PLAYER_STATS_CREATED = "Created player stats for player: {} in league {} and season {}";
-    public static final String PLAYER_STATS_CREATING = "Creating player statistics for {}";
-    public static final String PLAYER_STATS_ERROR = "Error while fetching player statistics for {}";
-    public static final String PLAYER_ERROR = "Error while creating player: {}";
-    public static final String LINEUP_ERROR = "Error while creating lineup: {} with message: {}";
-    public static final String PLAYER_ALREADY_EXISTS = "Player with ID {} already exists";
-    public static final String PLAYER_CREATED = "Created player {}";
 
     public static final String TEAM_NOT_FOUND = "Couldn't find home or away team for fixtureId: {} and season {}";
     public static final String HOME_OR_AWAY_TEAM_ERROR = "Error finding team with clubId {}, leagueId {} and season {}: {}";
@@ -109,7 +155,7 @@ public class LogsNames {
     public static final String RETRY_AFTER = "Retry-After";
     public static final String TOO_MANY_REQUESTS = "429 Too Many Requests";
     public static final String FIXTURE_NOT_FOUND = "Fixture not found with id: {}";
-    public static final String TEAM_STATS_FETCH_ERROR =  "Could not fetch team statistics with message " ;
-    public static final String NO_TEAMS_FOUND =  "No teams found for league {}";
-    public static final String TEAM_STATS_ERROR_BY_LEAGUE_ID =  "Could not fetch team statistics for teams from league id: {} with error: {}";
+    public static final String TEAM_STATS_FETCH_ERROR = "Could not fetch team statistics with message ";
+    public static final String NO_TEAMS_FOUND = "No teams found for league {}";
+    public static final String TEAM_STATS_ERROR_BY_LEAGUE_ID = "Could not fetch team statistics for teams from league id: {} with error: {}";
 }

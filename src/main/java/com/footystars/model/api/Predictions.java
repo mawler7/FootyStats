@@ -105,7 +105,6 @@ public class Predictions implements Serializable {
                 @JsonProperty("name")
                 private String winnerName;
                 private String comment;
-
             }
         }
 
@@ -117,26 +116,19 @@ public class Predictions implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         @Embeddable
         public static class Comparison implements Serializable {
-
             @Embedded
             private Form form;
-
             @Embedded
             private Att att;
-
             @Embedded
             private Def def;
-
             @JsonProperty("poisson_distribution")
             @Embedded
             private PoissonDistribution poissonDistribution;
-
             @Embedded
             private H2H h2h;
-
             @Embedded
             private Goals goals;
-
             @Embedded
             private Total total;
 
@@ -267,7 +259,6 @@ public class Predictions implements Serializable {
             @JsonProperty("home")
             @Embedded
             private HomeTeamDto homeTeam;
-
             @JsonProperty("away")
             @Embedded
             private AwayTeamDto awayTeam;
@@ -280,10 +271,8 @@ public class Predictions implements Serializable {
             @JsonIgnoreProperties(ignoreUnknown = true)
             @Embeddable
             public static class HomeTeamDto implements Serializable {
-
                 @JsonProperty("id")
                 private Long homeClubId;
-
                 @JsonProperty("name")
                 private String homeName;
             }
@@ -296,13 +285,10 @@ public class Predictions implements Serializable {
             @JsonIgnoreProperties(ignoreUnknown = true)
             @Embeddable
             public static class AwayTeamDto implements Serializable {
-
                 @JsonProperty("id")
                 private Long awayClubId;
-
                 @JsonProperty("name")
                 private String awayName;
-
             }
         }
 
@@ -325,7 +311,6 @@ public class Predictions implements Serializable {
             @Setter
             @JsonIgnoreProperties(ignoreUnknown = true)
             public static class FixtureH2H implements Serializable {
-
                 private Long id;
                 private ZonedDateTime date;
                 private String referee;

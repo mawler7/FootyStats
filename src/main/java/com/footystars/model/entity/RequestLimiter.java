@@ -1,4 +1,4 @@
-package com.footystars.persistence.entity;
+package com.footystars.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

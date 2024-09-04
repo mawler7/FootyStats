@@ -1,6 +1,8 @@
-package com.footystars.persistence.entity;
+package com.footystars.model.entity;
 
 import com.footystars.model.api.Fixtures;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,15 +18,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "fixture_teams_stats")
+@Table(name = "fixture_lineups")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FixtureStatistic implements Serializable {
+public class Lineup implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +39,16 @@ public class FixtureStatistic implements Serializable {
     private Fixture fixture;
 
     @Embedded
-    private Fixtures.FixtureDto.Statistics.TeamFixture team;
+    private Fixtures.FixtureDto.FixtureTeam team;
 
-    @Embedded
-    private Fixtures.FixtureDto.Statistics.Statistic.StatisticValue stats;
+    private String formation;
+
+    @ElementCollection
+    @CollectionTable(name = "lineup_players", joinColumns = @JoinColumn(name = "lineup_id"))
+    private Set<Fixtures.FixtureDto.Lineup.PlayerStartXI> startXI = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "lineup_substitutes", joinColumns = @JoinColumn(name = "lineup_id"))
+    private Set<Fixtures.FixtureDto.Lineup.PlayerSubstitutes> substitutes = new HashSet<>();
+
 }

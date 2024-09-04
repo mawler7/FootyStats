@@ -21,8 +21,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TeamsInfo implements Serializable {
 
-    @JsonProperty("response")
-    private List<TeamDto> teamsList;
+    private List<TeamDto> response;
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -31,7 +30,6 @@ public class TeamsInfo implements Serializable {
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class TeamDto implements Serializable {
-
         @JsonProperty("team")
         private TeamInfo info;
         private VenueDto venue;
@@ -45,16 +43,12 @@ public class TeamsInfo implements Serializable {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Embeddable
     public static class TeamInfo implements Serializable {
-
         @JsonProperty("id")
         private Long clubId;
-
         @JsonProperty("name")
         private String teamName;
-
         @Transient
         private String code;
-
         @Transient
         private Integer founded;
         private String logo;
@@ -69,10 +63,8 @@ public class TeamsInfo implements Serializable {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Embeddable
     public static class VenueDto implements Serializable {
-
         @JsonProperty("name")
         private String venueName;
-
         private String city;
     }
 }

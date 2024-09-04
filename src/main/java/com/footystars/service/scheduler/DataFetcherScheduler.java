@@ -8,22 +8,12 @@ import com.footystars.service.api.PredictionsFetcher;
 import com.footystars.service.api.StandingsFetcher;
 import com.footystars.service.api.TeamFetcher;
 import com.footystars.service.api.TeamStatsFetcher;
-import com.footystars.persistence.entity.Fixture;
-import com.footystars.exception.FetchLeaguesException;
-import com.footystars.exception.FixtureException;
-import com.footystars.exception.PredictionFetchException;
 import com.footystars.persistence.repository.FixtureRepository;
-import com.footystars.utils.LogsNames;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

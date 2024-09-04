@@ -1,15 +1,12 @@
 package com.footystars.persistence.mapper;
 
-
 import com.footystars.model.api.Fixtures;
 import com.footystars.model.api.Odds;
-import com.footystars.model.api.Players;
-import com.footystars.persistence.entity.Fixture;
-import com.footystars.persistence.entity.FixtureEvent;
-import com.footystars.persistence.entity.FixturePlayer;
-import com.footystars.persistence.entity.FixtureStatistic;
-import com.footystars.persistence.entity.Lineup;
-import com.footystars.persistence.entity.PlayerStats;
+import com.footystars.model.entity.Fixture;
+import com.footystars.model.entity.FixtureEvent;
+import com.footystars.model.entity.FixturePlayer;
+import com.footystars.model.entity.FixtureStatistic;
+import com.footystars.model.entity.Lineup;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,11 +16,11 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
         uses = {TeamMapper.class,  PlayerMapper.class})
 public interface FixtureMapper {
-
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Fixture partialUpdate(Odds.OddsResponse.OddFixture fixtureDto, @MappingTarget Fixture fixture);
@@ -46,12 +43,10 @@ public interface FixtureMapper {
 
     List<Lineup> toLineupEntityList(List<Fixtures.FixtureDto.Lineup> lineups);
 
-    List<FixturePlayer> toPlayerEntityList(List<Fixtures.FixtureDto.FixturePlayers> players);
+    Set<FixturePlayer> toPlayerEntityList(Set<Fixtures.FixtureDto.FixturePlayer> players);
 
     List<FixtureEvent> toEventEntityList(List<Fixtures.FixtureDto.FixtureEvent> events);
 
     List<FixtureStatistic> toStatistcsEntityList(List<Fixtures.FixtureDto.Statistics.Statistic> statistics);
 
-
-    List<PlayerStats> toPlayerStatsEntityList(List<Players.PlayerStats> stats);
 }

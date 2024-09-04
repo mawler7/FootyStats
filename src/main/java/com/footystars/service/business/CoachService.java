@@ -1,17 +1,15 @@
 package com.footystars.service.business;
 
 import com.footystars.model.api.Coaches;
-import com.footystars.persistence.entity.Coach;
+import com.footystars.model.entity.Coach;
 import com.footystars.persistence.mapper.CoachMapper;
 import com.footystars.persistence.repository.CoachRepository;
-import com.footystars.utils.LogsNames;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,7 +31,7 @@ public class CoachService {
                 coachRepository.save(coach);
             } else {
                 var teams = teamService.getCurrentSeasonTeamsByClubId(clubId);
-                if(!teams.isEmpty()) {
+                if (!teams.isEmpty()) {
                     teams.forEach(t -> {
                         if (t.getCoach() == null) {
                             var coach = coachMapper.toEntity(coachDto);
@@ -43,7 +41,6 @@ public class CoachService {
                         }
                     });
                 }
-
             }
         }
     }
@@ -56,5 +53,8 @@ public class CoachService {
         coachRepository.save(coach);
     }
 
+    public List<Coach> findAll() {
+        return coachRepository.findAll();
+    }
 
 }

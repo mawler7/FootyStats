@@ -1,7 +1,7 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.api.TeamsInfo;
-import com.footystars.persistence.entity.Team;
+import com.footystars.model.entity.Team;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -14,8 +14,6 @@ import org.mapstruct.ReportingPolicy;
 public interface TeamMapper {
 
     Team toEntity(TeamsInfo.TeamDto teamDto);
-
-    TeamsInfo.TeamDto toDto(Team team);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Team partialUpdate(TeamsInfo.TeamDto teamDto, @MappingTarget Team team);

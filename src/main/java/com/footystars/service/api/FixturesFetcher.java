@@ -2,11 +2,8 @@ package com.footystars.service.api;
 
 import com.footystars.exception.FixtureException;
 import com.footystars.model.api.Fixtures;
-import com.footystars.model.api.Leagues;
-import com.footystars.persistence.entity.Fixture;
 import com.footystars.service.business.FixtureService;
 import com.footystars.service.business.LeagueService;
-import com.footystars.service.business.TeamService;
 import com.footystars.utils.ParamsProvider;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -20,8 +17,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.List;
 
+import static com.footystars.utils.LogsNames.FIXTURES_FETCHED;
 import static com.footystars.utils.LogsNames.FIXTURE_FETCHING_ERROR;
 import static com.footystars.utils.LogsNames.FIXTURE_ID_FETCHING_ERROR;
 import static com.footystars.utils.LogsNames.LEAGUE_SEASON_FETCHED;
@@ -50,7 +47,7 @@ public class FixturesFetcher {
     @Async
     public void fetchAllSeasonsFixtures() {
         getTopLeaguesIds().parallelStream().forEach(this::fetchAllSeasonsFixturesByLeagueId);
-        logger.info("Fetched all fixtures");
+        logger.info(FIXTURES_FETCHED);
     }
 
     public void fetchAllSeasonsFixturesByLeagueId(Long leagueId) {
@@ -72,8 +69,7 @@ public class FixturesFetcher {
             var seasonYear = leagueService.findCurrentSeasonByLeagueId(id);
             if (seasonYear.isPresent()) {
                 var season = seasonYear.get();
-//                var ids = fixtureService.findFixtureIdsByLeagueIdAndSeason(id, season);
-                var ids = fixtureService.findTodayFixturesId();
+                var ids = fixtureService.findFixtureIdsByLeagueIdAndSeason(id, season);
                 ids.forEach(this::fetchFixtureById);
             }
         });

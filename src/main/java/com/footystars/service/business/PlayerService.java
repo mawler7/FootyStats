@@ -1,7 +1,7 @@
 package com.footystars.service.business;
 
 import com.footystars.model.api.Players;
-import com.footystars.persistence.entity.Player;
+import com.footystars.model.entity.Player;
 import com.footystars.persistence.mapper.PlayerMapper;
 import com.footystars.persistence.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +25,10 @@ public class PlayerService {
     @Cacheable(value = "players", key = "#playerId + '-' + #leagueId + '-' + #season + '-' + #clubId")
     public Optional<Player> findByIdLeagueIdSeasonAndClubId(Long playerId, Long leagueId, Integer season, Long clubId) {
         return playerRepository.findByPlayerIdLeagueIdSeasonAndClubId(playerId, leagueId, season, clubId);
+    }
+
+    public List<Long> findPlayerIdsByLeagueId(@NotNull Long leagueId) {
+        return playerRepository.findPlayerIdByLeagueId(leagueId);
     }
 
     @CachePut(value = "players", key = "#player.id + '-' + #player.statistics.league.leagueId + '-' + #player.statistics.league.season + '-' + #player.statistics.club.clubId")

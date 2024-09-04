@@ -1,6 +1,5 @@
 package com.footystars.service.api;
 
-import com.footystars.exception.DataFetcherException;
 import com.footystars.model.api.TeamsInfo;
 import com.footystars.service.business.LeagueService;
 import com.footystars.service.business.TeamService;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
 
+import static com.footystars.utils.LogsNames.FETCH_CLUBS_ERROR;
 import static com.footystars.utils.PathSegment.TEAMS_INFORMATION;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
@@ -59,7 +59,8 @@ public class TeamFetcher {
                 var params = paramsProvider.getLeagueAndSeasonParamsMap(league, season);
                 var teamsApiResponse = dataFetcher.fetch(TEAMS_INFORMATION, params, TeamsInfo.class);
                 if (teamsApiResponse != null) {
-                    teamService.fetchClubs(teamsApiResponse, league, season);
+
+                    fetchClubs(teamsApiResponse, league, season);
                 } else {
                     logger.error("Failed to fetch teams for league {} and season {}", league, season);
                 }
@@ -91,6 +92,16 @@ public class TeamFetcher {
                 fetchTeamInfoByLeagueAndSeason(l, season);
             }
         });
+    }
+
+    public void fetchClubs(@NotNull TeamsInfo teams, @NotNull Long leagueId, @NotNull Integer year) {
+        try {
+            teams.getResponse()
+                    .parallelStream()
+                    .forEach(t -> teamService.fetchTeams(leagueId, year, t));
+        } catch (Exception e) {
+            logger.error(FETCH_CLUBS_ERROR, e);
+        }
     }
 
 }
