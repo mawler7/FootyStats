@@ -147,18 +147,6 @@ public class ParameterName {
         return List.of(ID, SEASON, TEAM, LEAGUE, PLAYER, COACH, VENUE, FIXTURE, LAST, NEXT, PAGE, NAME, TIMEZONE, STATUS, IDS, TYPE, SEARCH, CODE, COUNTRY, CURRENT, CITY, FROM, TO, DATE);
     }
 
-    public static List<String> getOddsBetsParams() {
-        return List.of(FIXTURE, LEAGUE, BET);
-    }
-
-    public static List<String> getCountriesParams() {
-        return List.of();
-    }
-
-    public static List<String> getVenuesParams() {
-        return List.of(ID, NAME, CITY, COUNTRY, SEARCH);
-    }
-
     public static List<String> getLeaguesParams() {
         return List.of(ID, NAME, COUNTRY, CODE, SEASON, TEAM, TYPE, CURRENT, SEARCH, LAST);
     }
@@ -167,55 +155,4 @@ public class ParameterName {
         return List.of(ID, LIVE, DATE, LEAGUE, SEASON, TEAM, LAST, NEXT, FROM, TO, ROUND, TIMEZONE, STATUS, VENUE, IDS);
     }
 
-    public static List<String> getTeamsParams() {
-        return List.of(ID, NAME, LEAGUE, SEASON, COUNTRY, SEARCH);
-    }
-
-    public static List<String> getPlayersParams() {
-        return List.of(ID, TEAM, LEAGUE, SEASON, SEARCH, PAGE);
-    }
-
-    public static List<String> getCoachsParams() {
-        return List.of(ID, TEAM, SEARCH);
-    }
-
-    public static List<String> getTrophiesParams() {
-        return List.of(PLAYER, COACH);
-    }
-
-    public static List<String> getInjuredParams() {
-        return List.of(LEAGUE, SEASON, FIXTURE, TEAM, PLAYER, DATE, TIMEZONE);
-    }
-
-    public static List<String> getSidelinedParams() {
-        return List.of(PLAYER, COACH);
-    }
-
-    public static List<String> getLineupsParams() {
-        return List.of(TEAM, PLAYER, TYPE);
-    }
-
-    public static List<String> getTransfersParams() {
-        return List.of(PLAYER, TEAM);
-    }
-
-    public static List<String> getPlayersSquadsParams() {
-        return List.of(PLAYER, TEAM);
-    }
-
-    public static List<String> getBookmakersParams() {
-        return List.of(ID, SEARCH);
-    }
-
-    public static List<String> getBetParams() {
-        return List.of(ID, SEARCH);
-    }
-
-    public static List<String> getOddsMappingParams() {
-        return List.of(PAGE);
-    }
-
-    public static String getPredictionsParam() {
-        return FIXTURE;
-    }
 }

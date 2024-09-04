@@ -62,13 +62,6 @@ public class ParamsProvider {
     }
 
     @NotNull
-    public Map<String, String> getTeamParams(@NotNull Long teamId) {
-        var params = new HashMap<String, String>();
-        params.put(TEAM, String.valueOf(teamId));
-        return params;
-    }
-
-    @NotNull
     public Map<String, String> getPlayerParams(@NotNull Long playerId) {
         var params = new HashMap<String, String>();
         params.put(PLAYER, String.valueOf(playerId));
@@ -82,11 +75,4 @@ public class ParamsProvider {
         return params;
     }
 
-    @NotNull
-    public Map<String, String> getTeamAndSeasonParamsMap(Long clubId, int year) {
-        var params = new HashMap<String, String>();
-        params.put(TEAM, String.valueOf(clubId));
-        params.put(SEASON, String.valueOf(year));
-        return params;
-    }
 }

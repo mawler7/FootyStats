@@ -10,10 +10,7 @@ public class PathSegment {
     public static final String API_HOST = "api-football-v1.p.rapidapi.com";
     public static final String RAPID_API_HOST_HEADER = "X-RapidAPI-Host";
     public static final String RAPID_API_KEY_HEADER = "X-RapidAPI-Key";
-    public static final String TIMEZONE = "v3/timezone";
     public static final String PREDICTIONS = "v3/predictions";
-    public static final String COUNTRIES = "v3/countries";
-    public static final String SEASONS = "v3/leagues/seasons";
     /**
      * Optional parameters:
      * -id (NUMBER) => The id of the fixture
@@ -35,10 +32,6 @@ public class PathSegment {
 
 
     public static final String FIXTURES = "v3/fixtures";
-    public static final String FIXTURES_H2H = "v3/fixtures/headtohead";
-    public static final String FIXTURES_ROUNDS = "v3/fixtures/rounds";
-    public static final String FIXTURES_EVENTS = "v3/fixtures/events";
-    public static final String FIXTURES_STATISTICS = "v3/fixtures/statistics";
     /**
      * Required parameters:
      * -fixture (NUMBER) => The id of the fixture
@@ -47,7 +40,6 @@ public class PathSegment {
      * -player NUMBER => The id of the player
      * -type STRING => The Lineup type Like Formation, Substitutes
      */
-    public static final String FIXTURES_LINEUPS = "v3/fixtures/lineups";
     public static final String STANDINGS = "v3/standings";
     /**
      * Optional parameters:
@@ -61,38 +53,7 @@ public class PathSegment {
      * -bet (NUMBER) => The id of the bet
      */
     public static final String ODDS = "v3/odds";
-    public static final String BETS = "v3/odds/bets";
-    public static final String BOOKMAKERS = "v3/odds/bookmakers";
-    public static final String ODDS_MAPPING = "v3/odds/mapping";
-    public static final String ODDS_LIVE = "v3/odds/live";
-    public static final String ODDS_BETS_IN_PLAY = "v3/odds/live/bets";
     public static final String PLAYERS = "v3/players";
-    public static final String PLAYERS_SEASONS = "v3/players/seasons";
-    public static final String PLAYERS_SQUADS = "v3/players/squads";
-    /**
-     * Required parameters:
-     * -league (NUMBER) REQUIRED => The id of the league
-     * -season (NUMBER) REQUIRED => The season of the league 4 characters ex. 2023
-     */
-    public static final String TOP_YELLOW_CARDS = "v3/players/topyellowcards";
-    /**
-     * Required parameters:
-     * -league (NUMBER) REQUIRED => The id of the league
-     * -season (NUMBER) REQUIRED => The season of the league 4 characters ex. 2023
-     */
-    public static final String TOP_RED_CARDS = "v3/players/topredcards";
-    /**
-     * Required parameters:
-     * -league (NUMBER) REQUIRED => The id of the league
-     * -season (NUMBER) REQUIRED => The season of the league 4 characters ex. 2023
-     */
-    public static final String TOP_SCORERS = "v3/players/topscorers";
-    /**
-     * Required parameters:
-     * -league (NUMBER) REQUIRED => The id of the league
-     * -season (NUMBER) REQUIRED => The season of the league 4 characters ex. 2023
-     */
-    public static final String TOP_ASSISTS = "v3/players/topassists";
     /**
      * Optional parameters:
      * -id (NUMBER) 33 => The id of the team
@@ -112,12 +73,6 @@ public class PathSegment {
      * -team (NUMBER) The id of the team
      */
     public static final String TEAMS_STATISTICS = "v3/teams/statistics";
-    /**
-     * Required Parameters
-     * -id (NUMBER) The id of the team
-     */
-    public static final String TEAMS_SEASONS = "v3/teams/seasons";
-    public static final String TEAMS_COUNTRIES = "v3/teams/countries";
     /**
      * Optional parameters:
      * -id (NUMBER) => The id of the league
@@ -139,32 +94,8 @@ public class PathSegment {
      * -search (STRING) =>  The name of the coach >= 3 characters
      */
     public static final String COACHS = "v3/coachs";
-    /**
-     * Optional parameters:
-     * -league (NUMBER) => The id of the league
-     * -season (NUMBER) => The season of the league, required with league, team and player parameters
-     * -fixture (NUMBER) => 686308  The id of the fixture
-     * -team (NUMBER) => The id of the team
-     * -player (NUMBER) => The id of the player
-     * -date DATE (YYYY-MM-DD) =>  A valid date
-     * -timezone (STRING) => A valid timezone from the endpoint Timezone
-     */
-    public static final String INJURIES = "v3/injuries";
-    /**
-     * Optional parameters:
-     * -id NUMBER  The id of the venue
-     * -name (STRING) => The name of the venue
-     * -city (STRING) =>  The city of the venue
-     * -country (STRING) => England  The country name of the venue
-     * -search (STRING) => The name, city or the country of the venue >= 3 characters
-     */
-    public static final String VENUES = "v3/venues";
-    /**
-     * Optional parameters:
-     * -team (NUMBER) => The id of the team
-     * -player (NUMBER) => The id of the player
-     */
-    public static final String TRANSFERS = "v3/transfers";
+
+
     /**
      * Optional parameters:
      * -player (NUMBER) => The id of the player
