@@ -20,5 +20,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     List<Team> findByIdAndLeagueSeasonCurrent(Long clubId, Boolean aTrue);
 
 
+    List<Team> findByInfoClubId(Long clubId);
 }
 

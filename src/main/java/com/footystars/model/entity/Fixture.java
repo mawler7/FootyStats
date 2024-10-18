@@ -49,11 +49,11 @@ public class Fixture implements Serializable {
     @Embedded
     private Fixtures.FixtureDto.Teams teams;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "prediction_id")
     private Prediction prediction;
 
-    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL,fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Bet> bets = new ArrayList<>();
 
     @OneToMany(mappedBy = "fixture", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

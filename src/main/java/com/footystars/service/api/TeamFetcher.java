@@ -19,6 +19,12 @@ import java.io.IOException;
 import java.time.Duration;
 
 import static com.footystars.utils.LogsNames.FETCH_CLUBS_ERROR;
+import static com.footystars.utils.LogsNames.LIMIT_EXCEEDED_LEAGUE;
+import static com.footystars.utils.LogsNames.NO_CURRENT_SEASON_FOUND;
+import static com.footystars.utils.LogsNames.TEAMS_FETCH_FAILED;
+import static com.footystars.utils.LogsNames.TEAMS_INFO_FETCHED;
+import static com.footystars.utils.LogsNames.TEAMS_INFO_FETCHED_BY_LEAGUE_AND_SEASON;
+import static com.footystars.utils.LogsNames.TEAMS_INFO_FETCH_ERROR;
 import static com.footystars.utils.PathSegment.TEAMS_INFORMATION;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
@@ -41,7 +47,7 @@ public class TeamFetcher {
     @Async
     public void fetchByAllLeagues() {
         getTopLeaguesIds().forEach(this::fetchTeamsByLeagueId);
-        logger.info("All teams info fetched");
+        logger.info(TEAMS_INFO_FETCHED);
     }
 
     public void fetchTeamsByLeagueId(@NotNull Long leagueId) {
@@ -49,7 +55,7 @@ public class TeamFetcher {
         leagues.forEach(l -> {
             int year = l.getSeason().getYear();
             fetchTeamInfoByLeagueAndSeason(leagueId, year);
-            logger.info("Teams in leagueId: {} and season: {} fetched", leagueId, year);
+            logger.info(TEAMS_INFO_FETCHED_BY_LEAGUE_AND_SEASON, leagueId, year);
         });
     }
 
@@ -59,16 +65,15 @@ public class TeamFetcher {
                 var params = paramsProvider.getLeagueAndSeasonParamsMap(league, season);
                 var teamsApiResponse = dataFetcher.fetch(TEAMS_INFORMATION, params, TeamsInfo.class);
                 if (teamsApiResponse != null) {
-
                     fetchClubs(teamsApiResponse, league, season);
                 } else {
-                    logger.error("Failed to fetch teams for league {} and season {}", league, season);
+                    logger.error(TEAMS_FETCH_FAILED, league, season);
                 }
             } catch (IOException e) {
-                logger.error("Error fetching team information for league {} and season {}: {}", league, season, e.getMessage());
+                logger.error(TEAMS_INFO_FETCH_ERROR, league, season, e.getMessage());
             }
         } else {
-            logger.warn("Request limit exceeded for league: {}", league);
+            logger.warn(LIMIT_EXCEEDED_LEAGUE, league);
         }
     }
 
@@ -78,7 +83,7 @@ public class TeamFetcher {
             var season = optionalSeason.get();
             fetchTeamInfoByLeagueAndSeason(leagueId, season);
         } else {
-            logger.warn("No current season found for league {}", leagueId);
+            logger.warn(NO_CURRENT_SEASON_FOUND, leagueId);
         }
     }
 

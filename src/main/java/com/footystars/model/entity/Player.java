@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -33,6 +33,9 @@ public class Player implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(name = "last_updated", columnDefinition = "TIMESTAMPTZ")
+    private ZonedDateTime lastUpdated;
 
     @Embedded
     @AttributeOverride(name = "playerId", column = @Column(name = "player_id"))
@@ -77,20 +80,6 @@ public class Player implements Serializable {
         private String birthPlace;
         @JsonProperty("country")
         private String birthCountry;
-    }
-
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @Getter
-    @Setter
-    @Embeddable
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class League implements Serializable {
-        @Transient
-        private Long id;
-        private String leagueName;
-        private Integer season;
     }
 
 }

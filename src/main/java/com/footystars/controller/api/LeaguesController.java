@@ -1,4 +1,4 @@
-package com.footystars.controller;
+package com.footystars.controller.api;
 
 import com.footystars.service.api.LeaguesFetcher;
 import lombok.RequiredArgsConstructor;

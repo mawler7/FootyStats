@@ -1,7 +1,6 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.api.Players;
-
 import com.footystars.model.entity.Player;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -17,6 +16,8 @@ import java.util.Set;
 public interface PlayerMapper {
 
     Player toEntity(Players.PlayerDto playerDto);
+
+    Players.PlayerDto toDto(Player player);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Player partialUpdate(Players.PlayerDto playerDto, @MappingTarget Player player);

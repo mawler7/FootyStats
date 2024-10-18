@@ -1,4 +1,4 @@
-package com.footystars.controller;
+package com.footystars.controller.api;
 
 import com.footystars.service.api.PredictionsFetcher;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,16 @@ public class PredictionsController {
     @GetMapping("/upcoming")
     public void getUpcomingPredictions() {
         predictionsFetcher.fetchUpcomingPredictions();
+    }
+
+    @GetMapping("/archive")
+    public void getAllTopLeaguesAndCupsFixturesPredictions() {
+        predictionsFetcher.fetchArchivePredictions();
+    }
+
+    @GetMapping("/archive/{leagueId}")
+    public void getAllTopLeaguesAndCupsFixturesPredictions(@PathVariable Long leagueId) {
+        predictionsFetcher.fetchPredictionsByLeagueId(leagueId);
     }
 
 }

@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
+import java.util.Set;
+
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +20,26 @@ public class BetsService {
 
     private final FixtureRepository fixtureRepository;
     private final BetRepository betRepository;
+
+
+    private static final Set<String> VALID_BET_TYPES = Set.of(
+            "Anytime Goal Scorer",
+            "Both Teams Score",
+            "Both Teams To Score in Both Halves",
+            "Cards Over/Under",
+            "Corners Over Under",
+            "Double Chance",
+            "Exact Score",
+            "Goals Over/Under",
+            "Home/Away",
+            "Match Winner",
+            "Player to be booked",
+            "Results/Both Teams Score",
+            "Total - Away",
+            "Total Goals/Both Teams To Score",
+            "Total - Home",
+            "Yellow Over/Under (1st Half)"
+    );
 
     @Transactional
     public void updateOddsForFixture(@NotNull Odds.OddsResponse oddsResponse, @NotNull Long fixtureId) {
@@ -30,10 +53,12 @@ public class BetsService {
                                             .value(value.getValue())
                                             .odd(value.getOdd())
                                             .fixture(fixture)
+                                            .lastUpdated(ZonedDateTime.now())
                                             .build();
                                     betRepository.save(betEntity);
                                 }))));
     }
+
 
 }
 

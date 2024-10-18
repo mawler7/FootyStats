@@ -1,11 +1,9 @@
-package com.footystars.controller;
+package com.footystars.controller.api;
 
 import com.footystars.service.api.TeamFetcher;
 import com.footystars.service.api.TeamStatsFetcher;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

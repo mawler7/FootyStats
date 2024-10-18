@@ -18,4 +18,7 @@ public interface PredictionMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Prediction partialUpdate(Predictions.PredictionDto predictionDto, @MappingTarget Prediction prediction);
 
+
+
+
 }

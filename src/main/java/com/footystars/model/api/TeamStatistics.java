@@ -434,8 +434,10 @@ public class TeamStatistics implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class CardMinuteStats implements Serializable {
-            private String percentage;
-            private Integer total;
+            @Column(nullable = false)
+            private String percentage = "-";
+            @Column(nullable = false)
+            private Integer total = 0;
         }
     }
 

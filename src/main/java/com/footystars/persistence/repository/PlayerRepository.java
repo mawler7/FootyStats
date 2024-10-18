@@ -15,4 +15,12 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("SELECT distinct(p.info.playerId) from Player p where p.statistics.league.leagueId = :leagueId")
     List<Long> findPlayerIdByLeagueId(Long leagueId);
 
+
+    @Query("SELECT p from Player p where p.statistics.club.clubId = :clubId and p.statistics.league.season = :season")
+    List<Player> findByClubIdAndSeason(Long clubId, int season);
+
+    @Query("SELECT p from Player p where p.statistics.league.leagueId = :leagueId and  p.statistics.club.clubId = :clubId and p.statistics.league.season = :season")
+    List<Player> findByLeagueIdClubIdAndSeason(Long clubId, Long leagueId,  int season);
+
 }
+

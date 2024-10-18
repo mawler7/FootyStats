@@ -42,4 +42,16 @@ public class Prediction implements Serializable {
     @Column(name = "last_updated", columnDefinition = "TIMESTAMPTZ")
     private ZonedDateTime lastUpdated;
 
+    @Column(name = "advice_correct")
+    private Boolean advice;
+
+    @Column(name = "home_goals_correct")
+    private Boolean homeGoals;
+
+    @Column(name = "away_goals_correct")
+    private Boolean awayGoals;
+
+    @Column(name = "over_under_correct")
+    private Boolean overUnder;
+
 }

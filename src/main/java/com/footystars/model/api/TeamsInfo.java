@@ -66,6 +66,8 @@ public class TeamsInfo implements Serializable {
         @JsonProperty("name")
         private String venueName;
         private String city;
+        private Integer capacity;
+        private String image;
     }
 }
 

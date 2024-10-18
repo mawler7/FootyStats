@@ -25,7 +25,6 @@ public class ParameterName {
     public static final String SERVER_ERROR = "Server error: {}";
     public static final String UNEXPECTED_STATUS_CODE = "Unexpected status code: {}";
     public static final String COULD_NOT_CREATE_REQUEST = "Could not create request";
-    public static final String BET = "bet";
     public static final String LIVE = "live";
     public static final String ROUND = "round";
     public static final String NAME = "name";
@@ -142,9 +141,6 @@ public class ParameterName {
                 TOTAL_AWAY,
                 TOTAL_HOME
         );
-    }
-    public static List<String> getAllParams() {
-        return List.of(ID, SEASON, TEAM, LEAGUE, PLAYER, COACH, VENUE, FIXTURE, LAST, NEXT, PAGE, NAME, TIMEZONE, STATUS, IDS, TYPE, SEARCH, CODE, COUNTRY, CURRENT, CITY, FROM, TO, DATE);
     }
 
     public static List<String> getLeaguesParams() {

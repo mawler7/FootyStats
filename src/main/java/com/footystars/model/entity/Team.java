@@ -44,7 +44,10 @@ public class Team implements Serializable {
     @AttributeOverride(name = "clubId", column = @Column(name = "club_id"))
     private TeamsInfo.TeamInfo info;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @Embedded
+    private TeamsInfo.VenueDto venue;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "coach_id")
     private Coach coach;
 
@@ -52,7 +55,7 @@ public class Team implements Serializable {
     @JoinColumn(name = "league_id", nullable = false)
     private League league;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "statistics_id")
     private TeamStats statistics;
 

@@ -3,6 +3,9 @@ package com.footystars.service.business;
 import com.footystars.model.api.TeamStatistics;
 import com.footystars.model.api.TeamsInfo;
 import com.footystars.model.entity.Team;
+import com.footystars.model.entity.TeamDto;
+import com.footystars.persistence.mapper.FixtureMapper;
+import com.footystars.persistence.mapper.PlayerMapper;
 import com.footystars.persistence.mapper.TeamMapper;
 import com.footystars.persistence.mapper.TeamStatsMapper;
 import com.footystars.persistence.repository.TeamRepository;
@@ -13,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +34,10 @@ public class TeamService {
     private final TeamMapper teamMapper;
     private final TeamStatsMapper teamStatsMapper;
     private final LeagueService leagueService;
+    private final FixtureService fixtureService;
+    private final FixtureMapper fixtureMapper;
+    private final PlayerService playerService;
+    private final PlayerMapper playerMapper;
 
     private final Logger logger = LoggerFactory.getLogger(TeamService.class);
 
@@ -50,6 +58,25 @@ public class TeamService {
     @Transactional(readOnly = true)
     public List<Team> getCurrentSeasonTeamsByClubId(Long clubId) {
         return teamRepository.findByIdAndLeagueSeasonCurrent(clubId, Boolean.TRUE);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TeamDto> getTeamSeasonsByClubId(Long clubId) {
+        var teams = teamRepository.findByIdAndLeagueSeasonCurrent(clubId, Boolean.TRUE);
+        var teamsDto = teams.stream().map(teamMapper::toDto).toList();
+            teamsDto.forEach(t -> {
+                var matches = fixtureService.findCurrentSeasonFixturesByClubId(clubId);
+
+                t.setMatches(matches);
+                    var players = playerService.findByLeagueIdAndClubId(clubId, t.getLeague().getId(),  t.getLeague().getSeason());
+                    var playersDto = players.stream()
+                            .map(playerMapper::toDto)
+                            .toList();
+                    t.setPlayers(playersDto);
+                });
+
+        return teamsDto;
+
     }
 
     @Transactional
@@ -83,10 +110,14 @@ public class TeamService {
         if (optionalTeam.isPresent()) {
             var team = optionalTeam.get();
             var teamStats = teamStatsMapper.toEntity(teamStatistic);
+            teamStats.setLastUpdated(ZonedDateTime.now());
+            teamStats.setTeam(team);
             team.setStatistics(teamStats);
             teamRepository.save(team);
         } else {
             logger.warn(TEAM_NOT_FOUND_EXCEPTION, clubId, leagueId, season);
         }
     }
+
+
 }

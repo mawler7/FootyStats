@@ -1,5 +1,6 @@
 package com.footystars.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "bets")
@@ -37,5 +39,8 @@ public class Bet implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fixture_id")
     private Fixture fixture;
+
+    @Column(name = "last_updated", columnDefinition = "TIMESTAMPTZ")
+    private ZonedDateTime lastUpdated;
 
 }

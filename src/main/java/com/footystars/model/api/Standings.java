@@ -115,6 +115,7 @@ public class Standings implements Serializable {
                 public static class StandingTeam implements Serializable {
                     private Long id;
                     private String name;
+                    private String logo;
                 }
 
                 @NoArgsConstructor

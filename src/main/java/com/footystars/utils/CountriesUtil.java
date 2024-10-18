@@ -23,5 +23,4 @@ public class CountriesUtil {
     public static final String SWITZERLAND = "Switzerland";
     public static final String USA = "USA";
 
-
 }

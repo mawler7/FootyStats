@@ -50,4 +50,11 @@ public class PlayerService {
         playerRepository.save(playerEntity);
     }
 
+    public List<Player> findByClubId(Long clubId, int season) {
+        return playerRepository.findByClubIdAndSeason(clubId, season);
+    }
+
+    public List<Player> findByLeagueIdAndClubId(Long clubId, Long leagueId, int season) {
+        return playerRepository.findByLeagueIdClubIdAndSeason(clubId, leagueId, season);
+    }
 }

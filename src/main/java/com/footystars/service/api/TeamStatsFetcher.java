@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.time.Duration;
 
 import static com.footystars.utils.LogsNames.LIMIT_EXCEEDED;
-import static com.footystars.utils.LogsNames.NO_TEAMS_FOUND;
 import static com.footystars.utils.LogsNames.TEAMS_STATS_FETCHED;
 import static com.footystars.utils.LogsNames.TEAMS_STATS_FETCHED_BY_LEAGUE_AND_SEASON;
 import static com.footystars.utils.PathSegment.TEAMS_STATISTICS;
@@ -67,7 +66,6 @@ public class TeamStatsFetcher {
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
-
         } else {
             logger.warn(LIMIT_EXCEEDED, clubId, leagueId, season);
         }
@@ -86,8 +84,6 @@ public class TeamStatsFetcher {
             var clubIds = teamService.getClubIdsByLeagueIdAndSeasonYear(leagueId, seasonYear);
             if (!clubIds.isEmpty()) {
                 clubIds.forEach(clubId -> fetchTeamStatisticsByClubIdLeagueIdAndSeason(clubId, leagueId, seasonYear));
-            } else {
-                logger.warn(NO_TEAMS_FOUND, leagueId);
             }
         }
     }

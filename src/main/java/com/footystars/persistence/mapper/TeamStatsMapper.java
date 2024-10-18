@@ -17,4 +17,7 @@ public interface TeamStatsMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     TeamStats partialUpdate(TeamStatistics.TeamStatsApi teamStatistic, @MappingTarget TeamStats teamStats);
 
+    TeamStats toEntity(TeamStats teamStats);
+
+
 }

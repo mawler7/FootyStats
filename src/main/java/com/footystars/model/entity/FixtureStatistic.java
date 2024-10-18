@@ -1,8 +1,10 @@
 package com.footystars.model.entity;
 
 import com.footystars.model.api.Fixtures;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,15 +32,17 @@ public class FixtureStatistic implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fixture_id")
     private Fixture fixture;
 
     @Embedded
     private Fixtures.FixtureDto.Statistics.TeamFixture team;
 
+    @Column(name = "type")
     private String type;
 
+    @Column(name = "value")
     private String value;
 
 }

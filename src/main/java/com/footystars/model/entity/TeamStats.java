@@ -3,8 +3,6 @@ package com.footystars.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -16,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -25,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +42,10 @@ public class TeamStats implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "statistics", cascade = CascadeType.ALL)
+    @Column(name = "last_updated", columnDefinition = "TIMESTAMPTZ")
+    private ZonedDateTime lastUpdated;
+
+    @OneToOne(mappedBy = "statistics")
     private Team team;
 
     @Embedded
@@ -75,6 +78,11 @@ public class TeamStats implements Serializable {
 
     @Embedded
     private Penalty penalty;
+
+    @PrePersist
+    public void prePersist() {
+        this.lastUpdated = ZonedDateTime.now();
+    }
 
     @Embeddable
     @Getter
@@ -121,8 +129,8 @@ public class TeamStats implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class HomeAway implements Serializable {
-            private String home;
-            private String away;
+            private String home = "-";
+            private String away = "-";
         }
 
     }
@@ -134,11 +142,11 @@ public class TeamStats implements Serializable {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Streak implements Serializable {
         @AttributeOverride(name = "draws", column = @Column(name = "biggest_draws_streak"))
-        private Integer draws;
+        private Integer draws = 0;
         @AttributeOverride(name = "loses", column = @Column(name = "biggest_loses_streak"))
-        private Integer loses;
+        private Integer loses = 0;
         @AttributeOverride(name = "wins", column = @Column(name = "biggest_wins_streak"))
-        private Integer wins;
+        private Integer wins = 0;
     }
 
 
@@ -148,28 +156,27 @@ public class TeamStats implements Serializable {
     public static class CleanSheet implements Serializable {
 
         @Column(name = "clean_sheet_away")
-        private Integer away;
+        private Integer away = 0;
 
         @Column(name = "clean_sheet_home")
-        private Integer home;
+        private Integer home = 0;
 
         @Column(name = "clean_sheet_total")
-        private Integer total;
+        private Integer total = 0;
     }
 
     @Embeddable
     @Getter
     @Setter
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class FailedToScore implements Serializable {
         @Column(name = "failed_to_score_away")
-        private Integer away;
+        private Integer away = 0;
 
         @Column(name = "failed_to_score_home")
-        private Integer home;
+        private Integer home = 0;
 
         @Column(name = "failed_to_score_total")
-        private Integer total;
+        private Integer total = 0;
     }
 
     @Embeddable
@@ -232,7 +239,7 @@ public class TeamStats implements Serializable {
         @Getter
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class GoalsFor implements Serializable{
+        public static class GoalsFor implements Serializable {
             @Embedded
             @AttributeOverride(name = "home", column = @Column(name = "average_goals_for_home"))
             @AttributeOverride(name = "away", column = @Column(name = "average_goals_for_away"))
@@ -291,10 +298,10 @@ public class TeamStats implements Serializable {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class GoalMinuteStats implements Serializable {
         @Column(name = "goal_minute_percentage")
-        private String percentage;
+        private String percentage = "-";
 
         @Column(name = "goal_minute_total")
-        private Integer total;
+        private Integer total = 0;
     }
 
     @Embeddable
@@ -334,7 +341,6 @@ public class TeamStats implements Serializable {
     @Embeddable
     @Getter
     @Setter
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Penalty implements Serializable {
 
         @Embedded
@@ -347,16 +353,16 @@ public class TeamStats implements Serializable {
         @AttributeOverride(name = "total", column = @Column(name = "penalties_scored_total"))
         private PenaltyStats scored;
 
-        private Integer total;
+        @Column(name = "total_penalties")
+        private Integer total = 0;
     }
 
     @Embeddable
     @Getter
     @Setter
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PenaltyStats implements Serializable {
-        private String percentage;
-        private Integer total;
+        private String percentage = "-";
+        private Integer total = 0;
     }
 
     @Embeddable
@@ -365,45 +371,43 @@ public class TeamStats implements Serializable {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Cards implements Serializable {
         @Embedded
-        @AttributeOverrides({
-                @AttributeOverride(name = "minute0To15.percentage", column = @Column(name = "red_0_15_percentage")),
-                @AttributeOverride(name = "minute0To15.total", column = @Column(name = "red_0_15_total")),
-                @AttributeOverride(name = "minute106To120.percentage", column = @Column(name = "red_106_120_percentage")),
-                @AttributeOverride(name = "minute106To120.total", column = @Column(name = "red_106_120_total")),
-                @AttributeOverride(name = "minute16To30.percentage", column = @Column(name = "red_16_30_percentage")),
-                @AttributeOverride(name = "minute16To30.total", column = @Column(name = "red_16_30_total")),
-                @AttributeOverride(name = "minute31To45.percentage", column = @Column(name = "red_31_45_percentage")),
-                @AttributeOverride(name = "minute31To45.total", column = @Column(name = "red_31_45_total")),
-                @AttributeOverride(name = "minute46To60.percentage", column = @Column(name = "red_46_60_percentage")),
-                @AttributeOverride(name = "minute46To60.total", column = @Column(name = "red_46_60_total")),
-                @AttributeOverride(name = "minute61To75.percentage", column = @Column(name = "red_61_75_percentage")),
-                @AttributeOverride(name = "minute61To75.total", column = @Column(name = "red_61_75_total")),
-                @AttributeOverride(name = "minute76To90.percentage", column = @Column(name = "red_76_90_percentage")),
-                @AttributeOverride(name = "minute76To90.total", column = @Column(name = "red_76_90_total")),
-                @AttributeOverride(name = "minute91To105.percentage", column = @Column(name = "red_91_105_percentage")),
-                @AttributeOverride(name = "minute91To105.total", column = @Column(name = "red_91_105_total"))
-        })
+
+        @AttributeOverride(name = "minute0To15.percentage", column = @Column(name = "red_0_15_percentage"))
+        @AttributeOverride(name = "minute0To15.total", column = @Column(name = "red_0_15_total"))
+        @AttributeOverride(name = "minute106To120.percentage", column = @Column(name = "red_106_120_percentage"))
+        @AttributeOverride(name = "minute106To120.total", column = @Column(name = "red_106_120_total"))
+        @AttributeOverride(name = "minute16To30.percentage", column = @Column(name = "red_16_30_percentage"))
+        @AttributeOverride(name = "minute16To30.total", column = @Column(name = "red_16_30_total"))
+        @AttributeOverride(name = "minute31To45.percentage", column = @Column(name = "red_31_45_percentage"))
+        @AttributeOverride(name = "minute31To45.total", column = @Column(name = "red_31_45_total"))
+        @AttributeOverride(name = "minute46To60.percentage", column = @Column(name = "red_46_60_percentage"))
+        @AttributeOverride(name = "minute46To60.total", column = @Column(name = "red_46_60_total"))
+        @AttributeOverride(name = "minute61To75.percentage", column = @Column(name = "red_61_75_percentage"))
+        @AttributeOverride(name = "minute61To75.total", column = @Column(name = "red_61_75_total"))
+        @AttributeOverride(name = "minute76To90.percentage", column = @Column(name = "red_76_90_percentage"))
+        @AttributeOverride(name = "minute76To90.total", column = @Column(name = "red_76_90_total"))
+        @AttributeOverride(name = "minute91To105.percentage", column = @Column(name = "red_91_105_percentage"))
+        @AttributeOverride(name = "minute91To105.total", column = @Column(name = "red_91_105_total"))
+
         private Cards.Card red;
 
         @Embedded
-        @AttributeOverrides({
-                @AttributeOverride(name = "minute0To15.percentage", column = @Column(name = "yellow_0_15_percentage")),
-                @AttributeOverride(name = "minute0To15.total", column = @Column(name = "yellow_0_15_total")),
-                @AttributeOverride(name = "minute106To120.percentage", column = @Column(name = "yellow_106_120_percentage")),
-                @AttributeOverride(name = "minute106To120.total", column = @Column(name = "yellow_106_120_total")),
-                @AttributeOverride(name = "minute16To30.percentage", column = @Column(name = "yellow_16_30_percentage")),
-                @AttributeOverride(name = "minute16To30.total", column = @Column(name = "yellow_16_30_total")),
-                @AttributeOverride(name = "minute31To45.percentage", column = @Column(name = "yellow_31_45_percentage")),
-                @AttributeOverride(name = "minute31To45.total", column = @Column(name = "yellow_31_45_total")),
-                @AttributeOverride(name = "minute46To60.percentage", column = @Column(name = "yellow_46_60_percentage")),
-                @AttributeOverride(name = "minute46To60.total", column = @Column(name = "yellow_46_60_total")),
-                @AttributeOverride(name = "minute61To75.percentage", column = @Column(name = "yellow_61_75_percentage")),
-                @AttributeOverride(name = "minute61To75.total", column = @Column(name = "yellow_61_75_total")),
-                @AttributeOverride(name = "minute76To90.percentage", column = @Column(name = "yellow_76_90_percentage")),
-                @AttributeOverride(name = "minute76To90.total", column = @Column(name = "yellow_76_90_total")),
-                @AttributeOverride(name = "minute91To105.percentage", column = @Column(name = "yellow_91_105_percentage")),
-                @AttributeOverride(name = "minute91To105.total", column = @Column(name = "yellow_91_105_total"))
-        })
+        @AttributeOverride(name = "minute0To15.percentage", column = @Column(name = "yellow_0_15_percentage"))
+        @AttributeOverride(name = "minute0To15.total", column = @Column(name = "yellow_0_15_total"))
+        @AttributeOverride(name = "minute106To120.percentage", column = @Column(name = "yellow_106_120_percentage"))
+        @AttributeOverride(name = "minute106To120.total", column = @Column(name = "yellow_106_120_total"))
+        @AttributeOverride(name = "minute16To30.percentage", column = @Column(name = "yellow_16_30_percentage"))
+        @AttributeOverride(name = "minute16To30.total", column = @Column(name = "yellow_16_30_total"))
+        @AttributeOverride(name = "minute31To45.percentage", column = @Column(name = "yellow_31_45_percentage"))
+        @AttributeOverride(name = "minute31To45.total", column = @Column(name = "yellow_31_45_total"))
+        @AttributeOverride(name = "minute46To60.percentage", column = @Column(name = "yellow_46_60_percentage"))
+        @AttributeOverride(name = "minute46To60.total", column = @Column(name = "yellow_46_60_total"))
+        @AttributeOverride(name = "minute61To75.percentage", column = @Column(name = "yellow_61_75_percentage"))
+        @AttributeOverride(name = "minute61To75.total", column = @Column(name = "yellow_61_75_total"))
+        @AttributeOverride(name = "minute76To90.percentage", column = @Column(name = "yellow_76_90_percentage"))
+        @AttributeOverride(name = "minute76To90.total", column = @Column(name = "yellow_76_90_total"))
+        @AttributeOverride(name = "minute91To105.percentage", column = @Column(name = "yellow_91_105_percentage"))
+        @AttributeOverride(name = "minute91To105.total", column = @Column(name = "yellow_91_105_total"))
         private Cards.Card yellow;
 
         @Embeddable
@@ -449,8 +453,10 @@ public class TeamStats implements Serializable {
         @Setter
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class CardMinuteStats implements Serializable {
-            private String percentage;
-            private Integer total;
+            @Column(nullable = false)
+            private String percentage = "-";
+            @Column(nullable = false)
+            private Integer total = 0;
         }
     }
 

@@ -34,7 +34,8 @@ public class Coaches implements Serializable {
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CoachDto implements Serializable {
-        private Long id;
+        @JsonProperty("id")
+        private Long coachId;
         private String name;
         private String firstname;
         private String lastname;

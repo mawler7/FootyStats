@@ -62,8 +62,12 @@ public class OddsFetcher {
 
     @Async
     public void fetchTodayOdds() {
-        fixtureService.findTodayFixturesId().parallelStream().forEach(this::fetchOddsByFixtureId);
-        logger.info("Fetched today fixtures odds");
+        var fixtures = fixtureService.findTodayFixturesToUpdate();
+        if (!fixtures.isEmpty()) {
+            logger.info("Fetching {} of today's fixtures odds", fixtures.size());
+            fixtures.forEach(f -> fetchOddsByFixtureId(f.getId()));
+            logger.info("Fetched today fixtures odds");
+        }
     }
 
     public void fetchOddsByFixtureId(@NotNull Long fixtureId) {

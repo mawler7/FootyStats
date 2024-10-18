@@ -22,6 +22,8 @@ import static com.footystars.utils.LogsNames.FIXTURES_FETCHED;
 import static com.footystars.utils.LogsNames.FIXTURE_FETCHING_ERROR;
 import static com.footystars.utils.LogsNames.FIXTURE_ID_FETCHING_ERROR;
 import static com.footystars.utils.LogsNames.LEAGUE_SEASON_FETCHED;
+import static com.footystars.utils.LogsNames.LIVE_FIXTURES_UPDATED;
+import static com.footystars.utils.LogsNames.TODAY_FIXTURES_FETCHED;
 import static com.footystars.utils.PathSegment.FIXTURES;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
@@ -46,7 +48,7 @@ public class FixturesFetcher {
 
     @Async
     public void fetchAllSeasonsFixtures() {
-        getTopLeaguesIds().parallelStream().forEach(this::fetchAllSeasonsFixturesByLeagueId);
+        getTopLeaguesIds().forEach(this::fetchAllSeasonsFixturesByLeagueId);
         logger.info(FIXTURES_FETCHED);
     }
 
@@ -74,6 +76,37 @@ public class FixturesFetcher {
             }
         });
         logger.info("Fetched current season fixtures");
+    }
+
+    @Async
+    public void updateLiveFixtures() {
+        var fixtures = fixtureService.findLiveFixturesToUpdate();
+        fixtures.forEach(f -> fetchFixtureById(f.getId()));
+        if (!fixtures.isEmpty()) {
+            logger.info(LIVE_FIXTURES_UPDATED, fixtures.size());
+        }
+    }
+
+    @Async
+    public void fetchTodayFixtures() {
+        var fixtures = fixtureService.findFixtureIdsToUpdate();
+        if (!fixtures.isEmpty()) {
+            logger.info("Updating today fixtures: {}", fixtures.size());
+            fixtures.forEach(this::fetchFixtureById);
+            logger.info(TODAY_FIXTURES_FETCHED);
+
+        }
+    }
+
+    @Async
+    public void updateFixtures() {
+        var ids = getTopLeaguesIds();
+        ids.forEach(id -> {
+            var fixtures = fixtureService.findCurrentSeasonFixtures();
+            logger.info("Updating fixtures: {}", fixtures.size());
+            fixtures.forEach(this::fetchFixtureById);
+        });
+
     }
 
     public void fetchFixtureById(Long fixtureId) {

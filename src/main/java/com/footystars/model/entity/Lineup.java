@@ -41,6 +41,9 @@ public class Lineup implements Serializable {
     @Embedded
     private Fixtures.FixtureDto.FixtureTeam team;
 
+    @Embedded
+    private Fixtures.FixtureDto.CoachDto coach;
+
     private String formation;
 
     @ElementCollection
@@ -50,5 +53,7 @@ public class Lineup implements Serializable {
     @ElementCollection
     @CollectionTable(name = "lineup_substitutes", joinColumns = @JoinColumn(name = "lineup_id"))
     private Set<Fixtures.FixtureDto.Lineup.PlayerSubstitutes> substitutes = new HashSet<>();
+
+
 
 }

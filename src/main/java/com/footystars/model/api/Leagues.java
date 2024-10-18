@@ -48,7 +48,6 @@ public class Leagues implements Serializable {
             @JsonProperty("id")
             private Long leagueId;
             private String name;
-            @Transient
             private String logo;
             private String type;
             @Transient
@@ -57,7 +56,6 @@ public class Leagues implements Serializable {
             private String round;
             @Transient
             private String countryName;
-            @Transient
             private String flag;
         }
 
@@ -71,7 +69,8 @@ public class Leagues implements Serializable {
             @JsonProperty("code")
             private String countryCode;
             private String name;
-            private String flag;
+            @JsonProperty("flag")
+            private String countryFlag;
         }
 
         @NoArgsConstructor

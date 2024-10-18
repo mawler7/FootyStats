@@ -1,24 +1,38 @@
 package com.footystars.service.scheduler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.footystars.exception.CoachFetchingException;
+import com.footystars.exception.FetchLeaguesException;
+import com.footystars.exception.PredictionsException;
 import com.footystars.service.api.CoachesFetcher;
 import com.footystars.service.api.FixturesFetcher;
+import com.footystars.service.api.LeaguesFetcher;
 import com.footystars.service.api.OddsFetcher;
 import com.footystars.service.api.PredictionsFetcher;
 import com.footystars.service.api.StandingsFetcher;
 import com.footystars.service.api.TeamFetcher;
 import com.footystars.service.api.TeamStatsFetcher;
-import com.footystars.persistence.repository.FixtureRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import static com.footystars.utils.LogsNames.COACHES_FETCHED;
+import static com.footystars.utils.LogsNames.COACHES_FETCH_ERROR;
+import static com.footystars.utils.LogsNames.LEAGUES_FETCHED;
+import static com.footystars.utils.LogsNames.LEAGUES_FETCHING_ERROR;
+import static com.footystars.utils.LogsNames.PREDICTIONS_FETCHED;
+import static com.footystars.utils.LogsNames.TEAMS_INFO_ERROR;
+import static com.footystars.utils.LogsNames.TEAMS_INFO_FETCHED;
 
 @Service
 @RequiredArgsConstructor
 public class DataFetcherScheduler {
-    private final FixtureRepository fixtureRepository;
+
+    private final LeaguesFetcher leaguesFetcher;
     private final FixturesFetcher fixturesFetcher;
     private final TeamFetcher teamFetcher;
     private final TeamStatsFetcher teamStatsFetcher;
@@ -30,106 +44,91 @@ public class DataFetcherScheduler {
 
     private static final Logger log = LoggerFactory.getLogger(DataFetcherScheduler.class);
 
-    @Scheduled(cron = "0 0 12 * * *")
+    @EventListener(ApplicationReadyEvent.class)
+    public void runAtStartup() {
+        updateFixtures();
+    }
+
+    @Scheduled(cron = "0 * * * * *")
+    public void updateLiveFixtures() {
+        try {
+            fixturesFetcher.updateLiveFixtures();
+
+        } catch (Exception e) {
+            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
+        }
+    }
+
+    @Scheduled(cron = "0 0,15,30,45 11-23 * * *")
+    public void updateFixtures() {
+        try {
+            fixturesFetcher.fetchTodayFixtures();
+        } catch (Exception e) {
+            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * 5")
+    public void fetchLeagues() {
+        try {
+            leaguesFetcher.fetchTopLeaguesAndCups();
+            log.info(LEAGUES_FETCHED);
+        } catch (Exception e) {
+            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 10 * * 5")
     public void fetchTeamsInfo() {
-//        try {
-//            teamFetcher.fetchCurrentSeasonTeamsInfo();
-//            log.info("Fetched teams info");
-//        } catch (Exception e) {
-//            throw new FetchLeaguesException("Cannot fetch teams info ", e);
-//        }
-    }
-
-    @Scheduled(cron = "0 0 12-23 * * *")
-    public void fetchTeamsStats() {
-//        try {
-//        teamStatsFetcher.updateTeamsStats();
-//            log.info("Fetched teams stats");
-//        } catch (Exception e) {
-//            throw new FetchLeaguesException("Cannot fetch teams stats ", e);
-//        }
+        try {
+            teamFetcher.fetchCurrentSeasonTeamsInfo();
+            log.info(TEAMS_INFO_FETCHED);
+        } catch (Exception e) {
+            throw new FetchLeaguesException(TEAMS_INFO_ERROR, e);
+        }
     }
 
 
-//    @Scheduled(cron = "0 0 23 * * *")
-//    public void fetchStandings() {
-//        try {
-//            standingsFetcher.fetchCurrentSeasonsStandings();
-//        } catch (Exception e) {
-//            throw new FetchLeaguesException("Cannot fetch teams info ", e);
-//        }
-//    }
+
+    @Scheduled(cron = "0 0 11-23 * * *")
+    public void fetchStandings() {
+        try {
+            standingsFetcher.fetchCurrentSeasonsStandings();
+        } catch (Exception e) {
+            throw new FetchLeaguesException("Cannot fetch teams info ", e);
+        }
+    }
 
     @Scheduled(cron = "0 0 12 * * *")
     public void fetchCoaches() {
-//        try {
-//            coachesFetcher.fetchTopLeaguesCoaches();
-//            log.info(LogsNames.COACHES_FETCHED);
-//        } catch (Exception e) {
-//            throw new FixtureException("Cannot fetch coaches ", e);
-//        }
+        try {
+            coachesFetcher.fetchTopLeaguesCoaches();
+            log.info(COACHES_FETCHED);
+        } catch (Exception e) {
+            throw new CoachFetchingException(COACHES_FETCH_ERROR, e);
+        }
+    }
+
+
+    @Scheduled(cron = "0 0 12-23 * * *")
+    public void getPredictions() {
+        try {
+            predictionsFetcher.fetchUpcomingPredictions();
+            log.info(PREDICTIONS_FETCHED);
+        } catch (Exception e) {
+            throw new PredictionsException(e.getMessage());
+        }
     }
 
     @Scheduled(cron = "0 0 12 * * *")
-    public void fetchInjured() {
-//        try {
-//        } catch (Exception e) {
-//            throw new FixtureException("Cannot fetch coaches ", e);
-//        }
-    }
-
-    @Scheduled(cron = "0 0 12 * * *")
-    public void fetchSidelined() {
-//        try {
-//        } catch (Exception e) {
-//            throw new FixtureException("Cannot fetch coaches ", e);
-//        }
-    }
-
-
-    @Scheduled(cron = "0 0/15 11-23 * * *")
-    public void getFixtures() {
-//        try {
-//            fixturesFetcher.updateFixtures();
-
-//            log.info(LogsNames.ALL_FIXTURES_FETCHED);
-//        } catch (Exception e) {
-//            throw new FixtureException(LogsNames.FIXTURE_COULD_NOT_BE_FETCHED, e);
-//        }
-    }
-
-//
-//    @Scheduled(cron = "0 0 12-23 * * *") // Codziennie o 12 rano
-//    public void getPredictions() {
-//        try {
-//            predictionsFetcher.fetchTodayPredictions();
-//            log.info("Predictions fetched");
-//        } catch (Exception e) {
-//            throw new PredictionFetchException(e.getMessage());
-//        }
-//    }
-
-
-    @Scheduled(cron = "0 0/30 20 * * *")
     public void getOdds() {
-//        try {
-//            oddsFetcher.fetchByAllLeagues();
-//            log.info("Predictions fetched");
-//        } catch (Exception e) {
-//            throw new PredictionFetchException(e.getMessage());
-//        }
+        try {
+            oddsFetcher.fetchTodayOdds();
+            log.info("Odds fetched");
+        } catch (Exception e) {
+            throw new PredictionsException(e.getMessage());
+        }
     }
 
-    @Scheduled(cron = "0 0 * * * *") // Co godzinę
-    public void updateMatchData() {
-//        try {
-//            List<Fixture> matchDataList = fixtureRepository.findTodayFixturesWithDetails();
-//            String jsonData = objectMapper.writeValueAsString(matchDataList);
-//            Path filePath = Paths.get("src/main/resources/fixtures/today_matches_data.json");
-//            Files.writeString(filePath, jsonData);
-//            log.info("Today's match data updated successfully.");
-//        } catch (Exception e) {
-//            log.error("Failed to update today's match data.", e);
-//        }
-    }
+
 }

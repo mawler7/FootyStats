@@ -164,13 +164,13 @@ public class Players implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Games implements Serializable {
             @JsonProperty("appearences")
-            private Integer appearances;
-            private Integer lineups;
-            private Integer minutes;
-            private Integer number;
-            private String position;
-            private String rating;
-            private Boolean captain;
+            private Integer appearances = 0;
+            private Integer lineups = 0;
+            private Integer minutes = 0;
+            private Integer number = 0;
+            private String position = "-";
+            private String rating = "-";
+            private Boolean captain = false;
         }
 
         @Getter
@@ -180,15 +180,15 @@ public class Players implements Serializable {
         @Builder
         public static class Penalty implements Serializable {
             @JsonProperty("commited")
-            private Integer penaltiesCommitted;
+            private Integer penaltiesCommitted = 0;
             @JsonProperty("scored")
-            private Integer penaltiesScored;
+            private Integer penaltiesScored = 0;
             @JsonProperty("missed")
-            private Integer penaltiesMissed;
+            private Integer penaltiesMissed = 0;
             @JsonProperty("saved")
-            private Integer penaltiesSaved;
+            private Integer penaltiesSaved = 0;
             @JsonProperty("won")
-            private Integer penaltiesWon;
+            private Integer penaltiesWon = 0;
         }
 
         @Getter
@@ -198,10 +198,10 @@ public class Players implements Serializable {
         @Builder
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Cards implements Serializable {
-            private Integer yellow;
+            private Integer yellow = 0;
             @JsonProperty("yellowred")
-            private Integer yellowRed;
-            private Integer red;
+            private Integer yellowRed = 0;
+            private Integer red = 0;
         }
 
         @Getter
@@ -211,8 +211,8 @@ public class Players implements Serializable {
         @Builder
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Fouls implements Serializable {
-            private Integer drawn;
-            private Integer committed;
+            private Integer drawn = 0;
+            private Integer committed = 0;
         }
 
         @Getter
@@ -222,9 +222,9 @@ public class Players implements Serializable {
         @Builder
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Dribbles implements Serializable {
-            private Integer attempts;
-            private Integer success;
-            private Integer past;
+            private Integer attempts = 0;
+            private Integer success = 0;
+            private Integer past = 0;
 
         }
 
@@ -236,9 +236,9 @@ public class Players implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Duels implements Serializable {
             @JsonProperty("total")
-            private Integer duelsTotal;
+            private Integer duelsTotal = 0;
             @JsonProperty("won")
-            private Integer duelsWon;
+            private Integer duelsWon = 0;
         }
 
         @NoArgsConstructor
@@ -249,9 +249,9 @@ public class Players implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Tackles implements Serializable {
             @JsonProperty("total")
-            private Integer tacklesTotal;
-            private Integer blocks;
-            private Integer interceptions;
+            private Integer tacklesTotal = 0;
+            private Integer blocks = 0;
+            private Integer interceptions = 0;
         }
 
         @Getter
@@ -262,10 +262,10 @@ public class Players implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Substitutes implements Serializable {
             @JsonProperty("in")
-            private Integer substitutedIn;
+            private Integer substitutedIn = 0;
             @JsonProperty("out")
-            private Integer substitutedOut;
-            private Integer bench;
+            private Integer substitutedOut = 0;
+            private Integer bench = 0;
         }
 
         @Getter
@@ -276,9 +276,9 @@ public class Players implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Shots implements Serializable {
             @JsonProperty("on")
-            private Integer shotsOnTarget;
+            private Integer shotsOnTarget = 0;
             @JsonProperty("total")
-            private Integer shotsTotal;
+            private Integer shotsTotal = 0;
         }
 
         @Getter
@@ -289,10 +289,10 @@ public class Players implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Goals implements Serializable {
             @JsonProperty("total")
-            private Integer goalsTotal;
-            private Integer conceded;
-            private Integer assists;
-            private Integer saves;
+            private Integer goalsTotal = 0;
+            private Integer conceded = 0;
+            private Integer assists = 0;
+            private Integer saves = 0;
         }
 
         @Getter
@@ -303,9 +303,9 @@ public class Players implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Passes implements Serializable {
             @JsonProperty("total")
-            private Integer passesTotal;
-            private Integer key;
-            private String accuracy;
+            private Integer passesTotal = 0;
+            private Integer key = 0;
+            private String accuracy = "-";
         }
 
         @NoArgsConstructor

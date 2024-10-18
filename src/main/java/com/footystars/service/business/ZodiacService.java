@@ -9,17 +9,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.SignStyle;
 import java.util.Arrays;
 
-import static com.footystars.utils.LogsNames.DATA_FORMAT_1;
-import static com.footystars.utils.LogsNames.DATA_FORMAT_2;
-import static com.footystars.utils.LogsNames.DATA_FORMAT_3;
-import static com.footystars.utils.LogsNames.DATA_FORMAT_4;
-import static com.footystars.utils.LogsNames.DATA_FORMAT_5;
-import static com.footystars.utils.LogsNames.DATA_FORMAT_6;
 import static com.footystars.utils.LogsNames.INVALID_DATE;
 import static com.footystars.utils.LogsNames.INVALID_DATE_FORMAT;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +25,18 @@ public class ZodiacService {
     private final Logger logger = LoggerFactory.getLogger(ZodiacService.class);
 
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
-            DateTimeFormatter.ofPattern(DATA_FORMAT_1),
-            DateTimeFormatter.ofPattern(DATA_FORMAT_2),
-            DateTimeFormatter.ofPattern(DATA_FORMAT_3),
-            DateTimeFormatter.ofPattern(DATA_FORMAT_4),
-            DateTimeFormatter.ofPattern(DATA_FORMAT_5),
-            DateTimeFormatter.ofPattern(DATA_FORMAT_6),
+            new DateTimeFormatterBuilder()
+                    .appendPattern("yyyy-")
+                    .appendValue(java.time.temporal.ChronoField.MONTH_OF_YEAR, 1, 2, SignStyle.NORMAL)
+                    .appendLiteral('-')
+                    .appendValue(java.time.temporal.ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NORMAL)
+                    .toFormatter(),
+            new DateTimeFormatterBuilder()
+                    .appendPattern("yyyy-")
+                    .appendValue(java.time.temporal.ChronoField.DAY_OF_MONTH, 1, 2, SignStyle.NORMAL)
+                    .appendLiteral('-')
+                    .appendValue(java.time.temporal.ChronoField.MONTH_OF_YEAR, 1, 2, SignStyle.NORMAL)
+                    .toFormatter()
     };
 
     public ZodiacSign getZodiacSign(@NotNull String birthDate) {
@@ -50,7 +53,7 @@ public class ZodiacService {
                         .findFirst()
                         .orElseThrow(() -> new IllegalArgumentException(INVALID_DATE));
             } catch (DateTimeParseException e) {
-                logger.error(e.getMessage(), e);
+                logger.debug("Failed to parse date with formatter: {}", formatter, e);
             }
         }
         throw new IllegalArgumentException(INVALID_DATE_FORMAT + birthDate);

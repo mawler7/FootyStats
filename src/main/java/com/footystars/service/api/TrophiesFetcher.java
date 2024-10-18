@@ -6,7 +6,6 @@ import com.footystars.service.business.CoachService;
 import com.footystars.service.business.PlayerService;
 import com.footystars.service.business.PlayerTrophiesService;
 import com.footystars.utils.ParamsProvider;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -69,7 +68,7 @@ public class TrophiesFetcher {
         });
     }
 
-    @Transactional
+    @Async
     public void fetchCoachesTrophies() {
         var coaches = coachService.findAll();
 

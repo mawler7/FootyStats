@@ -1,4 +1,4 @@
-package com.footystars.controller;
+package com.footystars.controller.api;
 
 import com.footystars.service.api.FixturesFetcher;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ public class FixturesController {
         fixturesFetcher.fetchAllSeasonsFixtures();
     }
 
-
     @GetMapping("/{leagueId}")
     public void getFixturesByLeagueId(@PathVariable Long leagueId) {
         fixturesFetcher.fetchAllSeasonsFixturesByLeagueId(leagueId);
@@ -30,6 +29,20 @@ public class FixturesController {
         fixturesFetcher.fetchCurrentSeasonFixtures();
     }
 
+    @GetMapping("/update")
+    public void updateCurrentSeasonFixtures() {
+        fixturesFetcher.updateFixtures();
+    }
+
+    @GetMapping("/update/today")
+    public void updateCurrentSeasonTodayFixtures() {
+        fixturesFetcher.fetchTodayFixtures();
+    }
+
+    @GetMapping("/update/{id}")
+    public void updateCurrentSeasonTodayFixtures(@PathVariable Long id) {
+        fixturesFetcher.fetchFixtureById(id);
+    }
 
     @GetMapping("/{leagueId}/{seasonYear}")
     public void getFixturesByLeagueIdAndSeason(@PathVariable Long leagueId, @PathVariable Integer seasonYear) {

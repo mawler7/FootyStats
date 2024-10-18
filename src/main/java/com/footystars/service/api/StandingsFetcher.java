@@ -41,21 +41,6 @@ public class StandingsFetcher {
         }
     }
 
-    public void fetchStandings(@NotNull Long leagueId, @NotNull Integer season) {
-        try {
-            var params = paramsProvider.getLeagueAndSeasonParamsMap(leagueId, season);
-            var standingsResponse = dataFetcher.fetch(STANDINGS, params, Standings.class).getResponse();
-            standingsResponse.forEach(s -> {
-                var standings = s.getLeague().getStandings().get(0);
-                if (standings != null) {
-                    standingsService.fetchStandings(standings, params);
-                }
-            });
-        } catch (Exception e) {
-            log.error(STANDINGS_ERROR, leagueId, season, e.getMessage());
-        }
-    }
-
     @Async
     public void fetchStandingsByLeagueId(@NotNull Long leagueId) {
         var optionalSeason = leagueService.findCurrentSeasonByLeagueId(leagueId);
@@ -64,6 +49,21 @@ public class StandingsFetcher {
             fetchStandings(leagueId, season);
         }
         log.info(STANDINGS_FETCHED_BY_ID, leagueId);
+    }
+
+    public void fetchStandings(@NotNull Long leagueId, @NotNull Integer season) {
+        try {
+            var params = paramsProvider.getLeagueAndSeasonParamsMap(leagueId, season);
+            var standingsResponse = dataFetcher.fetch(STANDINGS, params, Standings.class).getResponse();
+            standingsResponse.parallelStream().forEach(s -> {
+                var standings = s.getLeague().getStandings();
+                if (standings != null) {
+                    standingsService.fetchStandings(standings, params);
+                }
+            });
+        } catch (Exception e) {
+            log.error(STANDINGS_ERROR, leagueId, season, e.getMessage());
+        }
     }
 
 }

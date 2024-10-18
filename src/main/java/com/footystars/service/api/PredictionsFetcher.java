@@ -18,6 +18,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
+import static com.footystars.utils.LogsNames.API_CALL_LIMIT_EXCEEDED;
+import static com.footystars.utils.LogsNames.FETCHING_PREDICTIONS;
+import static com.footystars.utils.LogsNames.PREDICTIONS_FETCHED;
+import static com.footystars.utils.LogsNames.PREDICTIONS_FETCHED_LEAGUE;
 import static com.footystars.utils.PathSegment.PREDICTIONS;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
@@ -45,16 +49,33 @@ public class PredictionsFetcher {
         leagueService.findCurrentSeasonByLeagueId(leagueId).ifPresent(season -> {
             fixtureService.findByLeagueIdAndSeason(leagueId, season)
                     .forEach(fixture -> fetchFixturePrediction(fixture.getId()));
-            logger.info("Fetched predictions for league {}", leagueId);
+            logger.info(PREDICTIONS_FETCHED_LEAGUE, leagueId);
         });
     }
 
     @Async
     public void fetchUpcomingPredictions() {
         var fixturesId = fixtureService.findTodayFixturesId();
-        logger.info("Updating predictions for : {} fixtures", fixturesId.size());
+        logger.info(FETCHING_PREDICTIONS, fixturesId.size());
         fixturesId.forEach(this::fetchFixturePrediction);
-        logger.info("Updated upcoming fixtures predictions");
+        logger.info(PREDICTIONS_FETCHED);
+    }
+
+    @Async
+    public void fetchArchivePredictions() {
+        var ids = getTopLeaguesIds();
+        ids.forEach(id -> {
+            var leagues = leagueService.findByLeagueId(id);
+            leagues.stream().filter(l -> l.getSeason().getCurrent().equals(Boolean.FALSE))
+                    .forEach(l -> {
+                var leagueId = l.getInfo().getLeagueId();
+                var season = l.getSeason().getYear();
+                        var fixtures = fixtureService.findByLeagueIdAndSeason(leagueId, season);
+                        fixtures.forEach(fixture -> fetchFixturePrediction(fixture.getId()));
+                    });
+
+        });
+        logger.info(PREDICTIONS_FETCHED);
     }
 
     public void fetchFixturePrediction(Long fixtureId) {
@@ -70,9 +91,16 @@ public class PredictionsFetcher {
                 logger.error(e.getMessage(), e);
             }
         } else {
-            logger.warn("Request limit exceeded for fixtureId: {}", fixtureId);
+            logger.warn(API_CALL_LIMIT_EXCEEDED);
         }
     }
 
+    @Async
+    public void fetchPredictionsByLeagueId(@NotNull Long leagueId) {
+        var fixtures = fixtureService.findByLeagueId(leagueId);
+        fixtures.forEach(f-> {
+
+        } );
+    }
 }
 

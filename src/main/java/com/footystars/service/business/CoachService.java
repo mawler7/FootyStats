@@ -20,9 +20,19 @@ public class CoachService {
     private final CoachMapper coachMapper;
     private final TeamService teamService;
 
+
+    public Coaches.CoachDto findCurrentCoachByClubId(@NotNull Long clubId) {
+        var currentCoachByClubId = coachRepository.findCurrentCoachByClubId(clubId);
+        if (currentCoachByClubId.isPresent()) {
+            var coach = currentCoachByClubId.get();
+            return coachMapper.toDto(coach);
+        }
+        return null;
+    }
+
     @Transactional
     public void fetchCoach(@NotNull Coaches.CoachDto coachDto, @NotNull Long clubId) {
-        var coachId = coachDto.getId();
+        var coachId = coachDto.getCoachId();
         if (coachId != null) {
             var optionalCoach = findById(coachId);
             if (optionalCoach.isPresent()) {
@@ -33,7 +43,7 @@ public class CoachService {
                 var teams = teamService.getCurrentSeasonTeamsByClubId(clubId);
                 if (!teams.isEmpty()) {
                     teams.forEach(t -> {
-                        if (t.getCoach() == null) {
+                        if (t.getCoach() == null || !t.getCoach().getId().equals(coachId)) {
                             var coach = coachMapper.toEntity(coachDto);
                             var savedCoach = coachRepository.save(coach);
                             t.setCoach(savedCoach);

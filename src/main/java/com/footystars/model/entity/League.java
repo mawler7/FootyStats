@@ -49,4 +49,5 @@ public class League implements Serializable {
     @CollectionTable(name = "leagues_standings", joinColumns = @JoinColumn(name = "league_id"))
     private List<Standings.StandingApi.StandingLeague.Standing> standings;
 
+
 }
