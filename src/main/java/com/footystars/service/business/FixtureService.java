@@ -80,11 +80,6 @@ public class FixtureService {
         return fixtureRepository.findIdsByLeagueIdAndSeason(leagueId, season);
     }
 
-    public List<Long> findFixturesIdsToUpdateByLeagueIdAndSeason(@NotNull Long leagueId, @NotNull Integer season) {
-        var today = ZonedDateTime.now().toString();
-        return fixtureRepository.findIdsToUpdateByLeagueIdAndSeason(leagueId, season, today);
-    }
-
     private void clearExistingAssociations(@NotNull Fixture fixture) {
         fixture.getEvents().clear();
         fixture.getPlayers().clear();
@@ -136,11 +131,6 @@ public class FixtureService {
         return fixtures.stream().map(fixtureMapper::toMatchDto).toList();
     }
 
-    public List<MatchDto> getTodayFixtures() {
-        var today = ZonedDateTime.now().toLocalDate().toString();
-        return getMatchesByDate(today);
-    }
-
     public MatchDetailsDto getFixtureDtoByFixtureId(Long id) {
         var optionalFixture = fixtureRepository.findById(id);
         if (optionalFixture.isPresent()) {
@@ -150,10 +140,6 @@ public class FixtureService {
         }
         return null;
 
-    }
-
-    public List<Fixture> findFixturesByLeagueAndSeason(Long leagueId, Integer season) {
-        return fixtureRepository.findByLeagueIdAndSeason(leagueId, season);
     }
 
     public List<MatchDto> findCurrentSeasonFixturesByLeagueIdNotStarted(Long leagueId) {
@@ -214,4 +200,15 @@ public class FixtureService {
     public List<Long> findCurrentSeasonFixtures() {
         return fixtureRepository.findCurrentSeasonFixtures(Boolean.TRUE);
     }
+
+    public List<MatchDetailsDto> findPreviousAndNext7DaysFixtures() {
+        var today = ZonedDateTime.now();
+        var startDate = today.minusDays(7);
+        var endDate = today.plusDays(7);
+        return fixtureRepository.findFixturesFromPreviousAndNext7Days(startDate, endDate).stream()
+                .map(fixtureMapper::toMatchDetailsDto).toList();
+
+    }
+
+
 }

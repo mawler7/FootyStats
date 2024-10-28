@@ -35,18 +35,17 @@ public class DataFetcherScheduler {
     private final LeaguesFetcher leaguesFetcher;
     private final FixturesFetcher fixturesFetcher;
     private final TeamFetcher teamFetcher;
-    private final TeamStatsFetcher teamStatsFetcher;
     private final PredictionsFetcher predictionsFetcher;
     private final OddsFetcher oddsFetcher;
     private final CoachesFetcher coachesFetcher;
     private final StandingsFetcher standingsFetcher;
-    private final ObjectMapper objectMapper;
 
     private static final Logger log = LoggerFactory.getLogger(DataFetcherScheduler.class);
 
     @EventListener(ApplicationReadyEvent.class)
     public void runAtStartup() {
         updateFixtures();
+        getPredictions();
     }
 
     @Scheduled(cron = "0 * * * * *")

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface FixtureRepository extends JpaRepository<Fixture, Long> {
@@ -35,12 +36,6 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long> {
 
     @Query("SELECT f.id FROM Fixture f WHERE f.league.leagueId = :leagueId AND f.league.season = :season")
     List<Long> findIdsByLeagueIdAndSeason(Long leagueId, Integer season);
-
-    @Query("SELECT f.id FROM Fixture  f WHERE f.league.leagueId = :leagueId AND f.league.season = :season " +
-            "AND f.info.status.shortStatus NOT IN ('FT', 'AET', 'PEN') " +
-            "AND TO_CHAR(f.info.date, 'YYYY-MM-DD') < :date")
-    List<Long> findIdsToUpdateByLeagueIdAndSeason(Long leagueId, Integer season, String date);
-
 
     @Query(value = "SELECT f.id FROM fixtures f " +
             "JOIN league_seasons l ON l.year = f.season AND l.league_id = f.league_id " +
@@ -81,4 +76,8 @@ public interface FixtureRepository extends JpaRepository<Fixture, Long> {
             "JOIN league_seasons l ON l.year = f.season AND l.league_id = f.league_id " +
             "AND l.current = :aTrue", nativeQuery = true)
     List<Long> findCurrentSeasonFixtures(Boolean aTrue);
+
+    @Query("SELECT f FROM Fixture f WHERE f.info.date BETWEEN :startDate AND :endDate")
+    List<Fixture> findFixturesFromPreviousAndNext7Days(ZonedDateTime startDate, ZonedDateTime endDate);
+
 }

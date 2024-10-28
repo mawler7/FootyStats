@@ -1,7 +1,7 @@
 package com.footystars.service.requester;
 
 import com.footystars.exception.RequestCreatorException;
-import com.footystars.config.RapidApiConfig;
+import com.footystars.config.api.RapidApiConfig;
 import com.footystars.utils.PathSegment;
 import lombok.RequiredArgsConstructor;
 import okhttp3.HttpUrl;

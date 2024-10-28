@@ -1,4 +1,4 @@
-package com.footystars.config;
+package com.footystars.config.api;
 
 import lombok.Getter;
 import lombok.Setter;

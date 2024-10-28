@@ -36,13 +36,12 @@ public class StandingsService {
         if (optionalLeague.isPresent()) {
             var league = optionalLeague.get();
 
-            // Flatten the nested list of standings
             List<Standings.StandingApi.StandingLeague.Standing> flattenedStandings =
                     standings.stream()
                             .flatMap(List::stream)
                             .toList();
-
-            league.setStandings(flattenedStandings);  // Set flattened list
+            league.getStandings().clear();
+            league.getStandings().addAll(flattenedStandings);
             leagueService.save(league);
             log.info(STANDINGS_LEAGUE_SEASON_FETCHED, leagueId, season);
         }

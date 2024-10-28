@@ -6,6 +6,13 @@ import lombok.Getter;
 public class LogsNames {
 
     public static final String PREDICTIONS_CHECKED = "Predictions checked" ;
+    public static final String PARAMETERS = "parameters";
+    public static final String BAERER = "Bearer ";
+    public static final int TOKEN_LENGTH = 7;
+    public static final String USERNAME_EXCEPTION = "User not found: ";
+    public static final String TOKEN_REDIRECT = "http://localhost:3000?token=";
+    public static final String LOGIN_URL = "http://localhost:8080/oauth/login/google" ;
+    public static final String INVALID_EMAIL_OR_PASSWORD = "Invalid email or password.";
 
     private LogsNames() {
     }

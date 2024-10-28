@@ -6,6 +6,7 @@ import com.footystars.model.dto.MatchDto;
 import com.footystars.service.business.FixtureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/fixture")
+@CrossOrigin(origins = "http://localhost:3000")
 public class FixtureController {
 
     private final FixtureService fixtureService;
@@ -29,6 +31,11 @@ public class FixtureController {
     @GetMapping("/id/{id}")
     public ResponseEntity<MatchDetailsDto> getFixtureById(@PathVariable Long id) {
         var todayFixtures = fixtureService.getFixtureDtoByFixtureId(id);
+        return ResponseEntity.ok(todayFixtures);
+    }
+    @GetMapping("/week")
+    public ResponseEntity<List<MatchDetailsDto>> getFixtureById() {
+        var todayFixtures = fixtureService.findPreviousAndNext7DaysFixtures();
         return ResponseEntity.ok(todayFixtures);
     }
 
