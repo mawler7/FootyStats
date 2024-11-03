@@ -1,6 +1,5 @@
 package com.footystars.service.scheduler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.footystars.exception.CoachFetchingException;
 import com.footystars.exception.FetchLeaguesException;
 import com.footystars.exception.PredictionsException;
@@ -11,7 +10,6 @@ import com.footystars.service.api.OddsFetcher;
 import com.footystars.service.api.PredictionsFetcher;
 import com.footystars.service.api.StandingsFetcher;
 import com.footystars.service.api.TeamFetcher;
-import com.footystars.service.api.TeamStatsFetcher;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +44,7 @@ public class DataFetcherScheduler {
     public void runAtStartup() {
         updateFixtures();
         getPredictions();
+        getOdds();
     }
 
     @Scheduled(cron = "0 * * * * *")
@@ -87,8 +86,6 @@ public class DataFetcherScheduler {
         }
     }
 
-
-
     @Scheduled(cron = "0 0 11-23 * * *")
     public void fetchStandings() {
         try {
@@ -107,7 +104,6 @@ public class DataFetcherScheduler {
             throw new CoachFetchingException(COACHES_FETCH_ERROR, e);
         }
     }
-
 
     @Scheduled(cron = "0 0 12-23 * * *")
     public void getPredictions() {
@@ -128,6 +124,5 @@ public class DataFetcherScheduler {
             throw new PredictionsException(e.getMessage());
         }
     }
-
 
 }

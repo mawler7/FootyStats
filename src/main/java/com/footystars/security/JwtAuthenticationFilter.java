@@ -1,6 +1,7 @@
 package com.footystars.security;
 
 import com.footystars.model.entity.User;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +33,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String userEmail = jwtService.extractUsername(token);
+        String userEmail;
+
+        try {
+            userEmail = jwtService.extractUsername(token);
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_FOUND);
+            response.sendRedirect("http://localhost:3000/login");
+            return;
+        }
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             User userDetails = (User) userService.loadUserByUsername(userEmail);
@@ -42,7 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

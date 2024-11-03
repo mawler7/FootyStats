@@ -6,6 +6,7 @@ import com.footystars.model.dto.MatchDetailsDto;
 import com.footystars.model.dto.MatchDto;
 import com.footystars.model.entity.Fixture;
 import com.footystars.persistence.mapper.FixtureMapper;
+import com.footystars.persistence.repository.BetRepository;
 import com.footystars.persistence.repository.FixtureRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -16,13 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FixtureService {
 
     private final FixtureRepository fixtureRepository;
+    private final BetRepository betRepository;
     private final FixtureMapper fixtureMapper;
     private final LeagueService leagueService;
 
@@ -125,11 +129,6 @@ public class FixtureService {
         }
     }
 
-    public List<MatchDto> getMatchesByDate(String date) {
-        var fixtures = fixtureRepository.findByDate(date);
-
-        return fixtures.stream().map(fixtureMapper::toMatchDto).toList();
-    }
 
     public MatchDetailsDto getFixtureDtoByFixtureId(Long id) {
         var optionalFixture = fixtureRepository.findById(id);
@@ -210,5 +209,30 @@ public class FixtureService {
 
     }
 
+    public List<MatchDto> getMatchesByDate(String date) {
+        List<Fixture> fixtures = fixtureRepository.findByDate(date);
+        List<Long> fixtureIds = fixtures.stream().map(Fixture::getId).toList();
+
+        List<Object[]> averageOddsData = betRepository.findAverageOddsByFixtures(fixtureIds);
+
+        Map<Long, MatchDto> matchDtoMap = fixtures.stream()
+                .collect(Collectors.toMap(Fixture::getId, fixtureMapper::toMatchDto));
+
+        averageOddsData.forEach(odd -> {
+            Long fixtureId = (Long) odd[0];
+            String value = (String) odd[1];
+            Double avgOdd = (Double) odd[2];
+            MatchDto matchDto = matchDtoMap.get(fixtureId);
+
+            switch (value) {
+                case "Home" -> matchDto.setAverageHomeOdd(avgOdd);
+                case "Draw" -> matchDto.setAverageDrawOdd(avgOdd);
+                case "Away" -> matchDto.setAverageAwayOdd(avgOdd);
+                default -> throw new IllegalArgumentException("Unexpected odd type: " + value);
+            }
+        });
+
+        return new ArrayList<>(matchDtoMap.values());
+    }
 
 }

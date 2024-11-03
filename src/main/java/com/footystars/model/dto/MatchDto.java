@@ -44,4 +44,8 @@ public class MatchDto implements Serializable {
     private Integer penaltiesHome;
     private Integer penaltiesAway;
 
+    private Double averageHomeOdd;
+    private Double averageDrawOdd;
+    private Double averageAwayOdd;
+
 }

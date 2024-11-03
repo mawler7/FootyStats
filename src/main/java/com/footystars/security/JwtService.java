@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.jetbrains.annotations.Contract;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,6 @@ public class JwtService {
     private String jwtSecretKey;
 
     @NotNull
-    @Contract(" -> new")
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretKey));
     }
@@ -40,7 +39,7 @@ public class JwtService {
                 .getBody();
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
 
@@ -49,7 +48,7 @@ public class JwtService {
                 .setClaims(new HashMap<>())
                 .setSubject(userName)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 300))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
