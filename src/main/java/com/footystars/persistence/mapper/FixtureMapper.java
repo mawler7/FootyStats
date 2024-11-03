@@ -145,8 +145,6 @@ public interface FixtureMapper {
     @Mapping(target= "penaltiesAway", source = "score.penalty.penaltiesAway")
     MatchDto toMatchDto(Fixture fixture);
 
-
-
     List<MatchDto> toMatchDtoList(List<Fixture> fixtures);
 
 }

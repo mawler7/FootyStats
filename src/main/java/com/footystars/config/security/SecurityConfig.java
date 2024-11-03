@@ -4,7 +4,6 @@ import com.footystars.model.entity.User;
 import com.footystars.security.JwtAuthenticationFilter;
 import com.footystars.security.JwtService;
 import com.footystars.security.UserService;
-import com.footystars.utils.LogsNames;
 import com.footystars.utils.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -57,7 +56,7 @@ public class SecurityConfig {
                         .successHandler(successHandler())
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Bezstanowe sesje JWT
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -69,7 +68,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -108,6 +108,7 @@ public class SecurityConfig {
                 String email = oauthUser.getAttribute("email");
                 String firstName = oauthUser.getAttribute("given_name");
                 String lastName = oauthUser.getAttribute("family_name");
+                String token = jwtService.generateToken(email);
 
                 userService.findByEmail(email).ifPresentOrElse(
                         user -> {},
@@ -121,11 +122,9 @@ public class SecurityConfig {
                             userService.save(newUser);
                         }
                 );
-
-                String token = jwtService.generateToken(email);
                 response.sendRedirect("http://localhost:3000?token=" + token);
             } else {
-                response.sendRedirect(LogsNames.LOGIN_URL);
+                response.sendRedirect("http://localhost:8080/oauth/login/google");
             }
         };
     }

@@ -5,6 +5,7 @@ import com.footystars.model.dto.MatchDetailsDto;
 import com.footystars.model.dto.MatchDto;
 import com.footystars.service.business.FixtureService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,8 @@ public class FixtureController {
         var todayFixtures = fixtureService.getFixtureDtoByFixtureId(id);
         return ResponseEntity.ok(todayFixtures);
     }
+
+    @Cacheable(value = "matchesCache")
     @GetMapping("/week")
     public ResponseEntity<List<MatchDetailsDto>> getFixtureById() {
         var todayFixtures = fixtureService.findPreviousAndNext7DaysFixtures();

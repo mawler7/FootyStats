@@ -1,9 +1,11 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.api.Players;
+import com.footystars.model.dto.PlayerCareerDto;
 import com.footystars.model.entity.Player;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -33,5 +35,16 @@ public interface PlayerMapper {
     default List<Players.PlayerStats> mapToList(Players.PlayerStats stats) {
         return stats != null ? List.of(stats) : List.of();
     }
+
+    @Mapping(target = "season", source = "statistics.league.season")
+    @Mapping(target = "clubName", source = "statistics.club.clubName")
+    @Mapping(target = "leagueName", source = "statistics.league.leagueName")
+    @Mapping(target = "form", source = "statistics.games.rating")
+    @Mapping(target = "appearances", source = "statistics.games.appearances")
+    @Mapping(target = "goals", source = "statistics.goals.goalsTotal")
+    @Mapping(target = "assists", source = "statistics.goals.assists")
+    @Mapping(target = "yellowCards", source = "statistics.cards.yellow")
+    @Mapping(target = "redCards", source = "statistics.cards.red")
+    PlayerCareerDto toPlayerCareerDto(Player player);
 
 }
