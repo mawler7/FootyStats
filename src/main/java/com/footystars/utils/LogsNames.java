@@ -5,17 +5,26 @@ import lombok.Getter;
 @Getter
 public class LogsNames {
 
-    public static final String PREDICTIONS_CHECKED = "Predictions checked" ;
-    public static final String PARAMETERS = "parameters";
-    public static final String BAERER = "Bearer ";
+    private LogsNames() {
+    }
+
+    //Security
+    public static final String BEARER = "Bearer ";
+    public static final String EMAIL = "Email";
+    public static final String GIVEN_NAME = "given_name";
+    public static final String FAMILY_NAME = "family_name";
     public static final int TOKEN_LENGTH = 7;
     public static final String USERNAME_EXCEPTION = "User not found: ";
     public static final String TOKEN_REDIRECT = "http://localhost:3000?token=";
-    public static final String LOGIN_URL = "http://localhost:8080/oauth/login/google" ;
-    public static final String INVALID_EMAIL_OR_PASSWORD = "Invalid email or password.";
-
-    private LogsNames() {
-    }
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String ACCEPT = "Accept";
+    public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String LOGIN_SUCCESS = "http://localhost:3000?token=" ;
+    public static final String LOGIN_REDIRECT = "http://localhost:8080/oauth/login/google";
+    public static final String USER_NOT_AUTHENTICATED = "User is not authenticated";
+    public static final String TOKEN_EXPIRED = "{\"error\": \"Token expired\", \"redirect\": \"/login\"}";
 
     //api
     public static final String LIMIT_EXCEEDED = "Request limit exceeded for clubId: {}, leagueId: {}, season: {}";
@@ -25,8 +34,8 @@ public class LogsNames {
     //leagues
     public static final String LIVE_FIXTURES_UPDATED = "Updated live fixtures: {}";
     public static final String LEAGUES_FETCHED = "Fetched all leagues";
-    public static final String LEAGUE_BY_TYPE_FETCHING_ERROR = "Error fetching leagues by type";
-    public static final String LEAGUES_FETCHING_ERROR = "Error fetching leagues";
+    public static final String LEAGUE_BY_TYPE_FETCHING_ERROR = "Error fetching leagues by type: {}, {}";
+    public static final String LEAGUES_FETCHING_ERROR = "Error fetching leagues: {}";
     public static final String LEAGUE_BY_LEAGUE_ID_FETCHING_ERROR = "Error fetching leagues for leagueId: {}";
     public static final String NO_CURRENT_SEASON_FOUND = "No current season found for league {}";
 
@@ -43,7 +52,6 @@ public class LogsNames {
     //sidelined
     public static final String PLAYERES_SIDELINED_FETCHED = "Players sidelined fetched";
     public static final String PLAYERES_SIDELINED_FETCHING = "Fetching {} sidelined players";
-    public static final String PLAYERES_SIDELINED_EXCEPTION = "Sidelined players exception: {}";
 
     //teams stats
     public static final String TEAMS_STATS_FETCHED_BY_LEAGUE_AND_SEASON = "Fetched teams stats in leagueId: {} and season {}";
@@ -59,13 +67,12 @@ public class LogsNames {
     public static final String FETCHING_PREDICTIONS = "Fetching: {} fixtures predictions";
     public static final String PREDICTIONS_FETCHED = "Fetched upcoming predictions";
     public static final String PREDICTIONS_FETCHED_LEAGUE = "Fetched predictions for league: {}";
+    public static final String PREDICTIONS_CHECKED = "Predictions checked" ;
 
     //players
     public static final String PLAYERS_FETCHED = "Fetching players for all leagues completed";
     public static final String PLAYERS_CURRENT_FETCHED = "Fetched current season players";
     public static final String PLAYERS_FETCHED_LEAGUE_AND_SEASON = "Fetched players from league: {} and season: {}";
-
-    public static final String FT = "FT";
 
     public static final String COACHES_FETCHED = "Coaches fetched!";
     public static final String COACH_BY_LEAGUE_FETCHED = "Coach by league: {} fetched!";
@@ -74,11 +81,7 @@ public class LogsNames {
     public static final String COACHES_BY_TEAM_ERROR = "Error fetching coaches for team {}: {}";
 
     public static final String FIXTURE_FETCHING_ERROR = "Error fetching fixtures for league {} and season {}: {}";
-    public static final String FIXTURE_ID_FETCHING_ERROR = "Error fetching fixture {}: {}";
-    public static final String FIXTURE_ERROR = "Error fetching fixture :{}";
     public static final String FIXTURES_FETCHED = "Fetched all fixtures";
-    public static final String TODAY_FIXTURES_FETCHED = "Fetched today's fixtures";
-    public static final String TODAY_FIXTURES_UPDATED = "Updated old fixtures";
 
     public static final String LEAGUE_SEASON_FETCHED = "Fetched season: {} for league: {}";
 
@@ -87,6 +90,9 @@ public class LogsNames {
     public static final String TEAM_NOT_FOUND_EXCEPTION = "Team with clubId {}, leagueId {} and season {} not found";
     public static final String INVALID_DATE = "Invalid date";
     public static final String INVALID_DATE_FORMAT = "Invalid date format: ";
+    public static final String TEAM_STATS_ERROR = "Error fetching team stats for parameters {}: {}";
+    public static final String TEAMS_FETCH_ERROR = "Error fetching teams for league ID {} and season {}: {}";
+    public static final String TEAMS_SEASON_ERROR = "Error retrieving team seasons for club ID {}: {}";
 
     // New log messages
     public static final String FAILED_EXECUTE_IO_EXCEPTION = "Failed to execute request due to IO exception";
@@ -101,6 +107,15 @@ public class LogsNames {
     public static final String THREAD_INTERRUPTED_RATE_LIMITING = "Thread was interrupted during rate limiting";
     public static final String RETRY_AFTER = "Retry-After";
     public static final String TOO_MANY_REQUESTS = "429 Too Many Requests";
-    public static final String NO_TEAMS_FOUND = "No teams found for league {}";
+
+    //Async
+    public static final String THREAD_GROUP_NAME = "Async - ";
+    public static final Integer QUEUE_CAPACITY = 1000;
+    public static final Integer MAX_POOL_SIZE = 75;
+    public static final Integer CORE_POOL_SIZE = 30;
+
+    //Security
+    public static final String LOGIN_PAGE = "/oauth2/authorization/google";
+
 
 }

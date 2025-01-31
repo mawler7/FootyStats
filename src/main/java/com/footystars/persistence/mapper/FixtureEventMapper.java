@@ -1,6 +1,6 @@
 package com.footystars.persistence.mapper;
 
-import com.footystars.model.dto.FixtureEventDto;
+import com.footystars.model.dto.fixture.FixtureEventDto;
 import com.footystars.model.entity.FixtureEvent;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

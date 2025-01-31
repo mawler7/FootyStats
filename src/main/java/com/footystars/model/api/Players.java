@@ -150,7 +150,6 @@ public class Players implements Serializable {
             @JsonProperty("id")
             private Long clubId;
             @JsonProperty("logo")
-            @Transient
             private String clubLogo;
             @JsonProperty("name")
             private String clubName;

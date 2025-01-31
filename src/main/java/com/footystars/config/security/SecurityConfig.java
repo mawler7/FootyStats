@@ -33,6 +33,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+
+/**
+ * Security configuration class for managing authentication and authorization settings.
+ * Configures JWT authentication, OAuth2 login, CORS policies, and session management.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -43,12 +48,20 @@ public class SecurityConfig {
     private final UserService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Configures security filters, authentication, and session policies.
+     *
+     * @param http the {@link HttpSecurity} object to configure security settings.
+     * @return a {@link SecurityFilterChain} defining security rules.
+     * @throws Exception if an error occurs during configuration.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/api/performance/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -63,6 +76,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Configures Cross-Origin Resource Sharing (CORS) policies.
+     *
+     * @return a {@link CorsConfigurationSource} defining allowed origins, headers, and methods.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -77,6 +95,11 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * Configures the authentication provider using a DAO-based authentication mechanism.
+     *
+     * @return an {@link AuthenticationProvider} for handling user authentication.
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -85,21 +108,45 @@ public class SecurityConfig {
         return provider;
     }
 
+    /**
+     * Provides a password encoder for securely hashing and verifying passwords.
+     *
+     * @return a {@link PasswordEncoder} instance using BCrypt hashing.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Provides the authentication manager used to authenticate users.
+     *
+     * @param config the authentication configuration.
+     * @return an {@link AuthenticationManager} instance.
+     * @throws Exception if an error occurs during configuration.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Provides an OAuth2 authorized client service for managing OAuth2 clients.
+     *
+     * @param clientRegistrationRepository the repository storing OAuth2 client registrations.
+     * @return an {@link OAuth2AuthorizedClientService} instance for handling authorized clients.
+     */
     @Bean
     public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
         return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
     }
 
+    /**
+     * Defines a custom success handler for OAuth2 authentication.
+     * Upon successful login, generates a JWT token and saves the user if they do not exist.
+     *
+     * @return an {@link AuthenticationSuccessHandler} handling OAuth2 authentication success.
+     */
     @Bean
     public AuthenticationSuccessHandler successHandler() {
         return (request, response, authentication) -> {
@@ -111,7 +158,7 @@ public class SecurityConfig {
                 String token = jwtService.generateToken(email);
 
                 userService.findByEmail(email).ifPresentOrElse(
-                        user -> {},
+                        user -> {}, // User exists, no action needed
                         () -> {
                             var newUser = User.builder()
                                     .role(List.of(Role.USER))

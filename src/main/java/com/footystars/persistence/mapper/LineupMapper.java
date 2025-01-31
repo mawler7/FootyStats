@@ -1,7 +1,7 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.entity.Lineup;
-import com.footystars.model.dto.LineupDto;
+import com.footystars.model.dto.fixture.LineupDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

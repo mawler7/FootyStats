@@ -19,5 +19,4 @@ public interface TeamStatsMapper {
 
     TeamStats toEntity(TeamStats teamStats);
 
-
 }

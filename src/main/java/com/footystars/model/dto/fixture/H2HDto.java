@@ -1,4 +1,4 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.fixture;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

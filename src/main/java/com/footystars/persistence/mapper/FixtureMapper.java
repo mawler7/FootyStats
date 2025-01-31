@@ -2,9 +2,10 @@ package com.footystars.persistence.mapper;
 
 import com.footystars.model.api.Fixtures;
 import com.footystars.model.api.Odds;
-import com.footystars.model.dto.FixtureDto;
-import com.footystars.model.dto.MatchDetailsDto;
-import com.footystars.model.dto.MatchDto;
+import com.footystars.model.dto.fixture.DBViewMatchDto;
+import com.footystars.model.dto.fixture.FixtureDto;
+import com.footystars.model.dto.fixture.MatchDetailsDto;
+import com.footystars.model.dto.fixture.MatchDto;
 import com.footystars.model.entity.Fixture;
 import com.footystars.model.entity.FixtureEvent;
 import com.footystars.model.entity.FixturePlayer;
@@ -147,4 +148,24 @@ public interface FixtureMapper {
 
     List<MatchDto> toMatchDtoList(List<Fixture> fixtures);
 
+    @Mapping(target= "date", source = "info.date")
+    @Mapping(target= "homeTeamName", source = "teams.homeTeam.homeName")
+    @Mapping(target= "homeTeamLogo", source = "teams.homeTeam.homeLogo")
+    @Mapping(target= "awayTeamName", source = "teams.awayTeam.awayName")
+    @Mapping(target= "awayTeamLogo", source = "teams.awayTeam.awayLogo")
+    @Mapping(target= "leagueName", source = "league.leagueName")
+    @Mapping(target= "status", source = "info.status.shortStatus")
+    @Mapping(target= "home", source = "goals.home")
+    @Mapping(target= "away", source = "goals.away")
+    @Mapping(target= "leagueId", source = "league.leagueId")
+    @Mapping(target= "leagueLogo", source = "league.logo")
+    @Mapping(target= "halfTimeHome", source = "score.halftime.halfTimeHome")
+    @Mapping(target= "halfTimeAway", source = "score.halftime.halfTimeAway")
+    @Mapping(target= "fullTimeHome", source = "score.fulltime.fullTimeHome")
+    @Mapping(target= "fullTimeAway", source = "score.fulltime.fullTimeAway")
+    @Mapping(target= "extraTimeHome", source = "score.extratime.extraTimeHome")
+    @Mapping(target= "extraTimeAway", source = "score.extratime.extraTimeAway")
+    @Mapping(target= "penaltiesHome", source = "score.penalty.penaltiesHome")
+    @Mapping(target= "penaltiesAway", source = "score.penalty.penaltiesAway")
+    DBViewMatchDto toDBViewMatchDto(Fixture fixture);
 }

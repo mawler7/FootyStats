@@ -7,6 +7,7 @@ import com.footystars.service.api.CoachesFetcher;
 import com.footystars.service.api.FixturesFetcher;
 import com.footystars.service.api.LeaguesFetcher;
 import com.footystars.service.api.OddsFetcher;
+import com.footystars.service.api.PlayersFetcher;
 import com.footystars.service.api.PredictionsFetcher;
 import com.footystars.service.api.StandingsFetcher;
 import com.footystars.service.api.TeamFetcher;
@@ -17,6 +18,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.footystars.utils.LogsNames.COACHES_FETCHED;
 import static com.footystars.utils.LogsNames.COACHES_FETCH_ERROR;
@@ -36,31 +41,63 @@ public class DataFetcherScheduler {
     private final PredictionsFetcher predictionsFetcher;
     private final OddsFetcher oddsFetcher;
     private final CoachesFetcher coachesFetcher;
+    private final PlayersFetcher playersFetcher;
     private final StandingsFetcher standingsFetcher;
 
     private static final Logger log = LoggerFactory.getLogger(DataFetcherScheduler.class);
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
     @EventListener(ApplicationReadyEvent.class)
     public void runAtStartup() {
-        updateFixtures();
-        getPredictions();
-        getOdds();
+        scheduler.schedule(this::updateFixtures, 0, TimeUnit.MINUTES);
+        scheduler.schedule(this::fetchStandings,  1, TimeUnit.SECONDS);
+        scheduler.schedule(this::getPredictions, 2, TimeUnit.MINUTES);
+        scheduler.schedule(this::getOdds, 3, TimeUnit.MINUTES);
     }
 
     @Scheduled(cron = "0 * * * * *")
     public void updateLiveFixtures() {
         try {
             fixturesFetcher.updateLiveFixtures();
+        } catch (Exception e) {
+            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
+        }
+    }
+
+    @Scheduled(cron = "0 0/10 * * * *")
+    public void updateFixturesStatus() {
+        try {
+            fixturesFetcher.updateFixturesStatus();
 
         } catch (Exception e) {
             throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
         }
     }
 
-    @Scheduled(cron = "0 0,15,30,45 11-23 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
+    public void updatePlayers() {
+        try {
+            playersFetcher.fetchCurrentSeasonTopLeaguesPlayers();
+
+        } catch (Exception e) {
+            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
+        }
+    }
+
+//    @Scheduled(cron = "0 0,15,30,45 11-23 * * *")
     public void updateFixtures() {
         try {
-            fixturesFetcher.fetchTodayFixtures();
+            fixturesFetcher.updateFixtures();
+        } catch (Exception e) {
+            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
+        }
+    }
+
+//        @Scheduled(cron = "0 0,15,30,45 11-23 * * *")
+    public void updateAllFixtures() {
+        try {
+            fixturesFetcher.updateFixtures();
         } catch (Exception e) {
             throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
         }

@@ -1,4 +1,4 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.player;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,12 +13,15 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Builder
 public class PlayerLastMatchDto {
+    private Long id;
     private ZonedDateTime matchDate;
     private String leagueLogo;
     private String leagueName;
     private String homeTeamName;
+    private Integer homeScore;
     private String homeTeamLogo;
     private String awayTeamName;
+    private Integer awayScore;
     private String awayTeamLogo;
     private int minutes;
     private int goals;

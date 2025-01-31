@@ -13,13 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import static com.footystars.utils.LogsNames.COACHES_TROPHIES_FETCHED;
-import static com.footystars.utils.LogsNames.PLAYERES_TROPHIES_FETCHED;
-import static com.footystars.utils.LogsNames.PLAYERES_TROPHIES_FETCHING;
+import static com.footystars.utils.LogsNames.*;
 import static com.footystars.utils.PathSegment.TROPHIES;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
-
+/**
+ * Service responsible for fetching trophies won by players and coaches.
+ * It retrieves trophies data from an external API and stores it in the database.
+ */
 @Service
 @RequiredArgsConstructor
 public class TrophiesFetcher {
@@ -32,13 +33,20 @@ public class TrophiesFetcher {
 
     private final Logger logger = LoggerFactory.getLogger(TrophiesFetcher.class);
 
+    /**
+     * Asynchronously fetches trophies for all players in top leagues.
+     */
     @Async
     public void fetchPlayersTrophies() {
         getTopLeaguesIds().forEach(this::fetchPlayersTrophiesByLeagueId);
         logger.info(PLAYERES_TROPHIES_FETCHED);
     }
 
-
+    /**
+     * Fetches player trophies for a given league.
+     *
+     * @param leagueId ID of the league.
+     */
     public void fetchPlayersTrophiesByLeagueId(@NotNull Long leagueId) {
         var ids = playerService.findPlayerIdsByLeagueId(leagueId);
         logger.info(PLAYERES_TROPHIES_FETCHING, ids.size());
@@ -63,16 +71,19 @@ public class TrophiesFetcher {
                     }
                 });
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                logger.error("Error fetching player trophies: {}", e.getMessage(), e);
             }
         });
     }
 
+    /**
+     * Asynchronously fetches trophies for all coaches.
+     */
     @Async
     public void fetchCoachesTrophies() {
         var coaches = coachService.findAll();
 
-        if(!coaches.isEmpty()) {
+        if (!coaches.isEmpty()) {
             coaches.forEach(c -> {
                 var coachId = c.getId();
                 var params = paramsProvider.getCoachParams(coachId);
@@ -85,13 +96,10 @@ public class TrophiesFetcher {
                         coachService.save(c);
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error("Error fetching coach trophies: {}", e.getMessage(), e);
                 }
             });
             logger.info(COACHES_TROPHIES_FETCHED);
         }
     }
-
 }
-
-

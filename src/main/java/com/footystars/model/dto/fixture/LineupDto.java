@@ -1,4 +1,4 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.fixture;
 
 import com.footystars.model.api.Fixtures;
 import lombok.Builder;

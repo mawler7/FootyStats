@@ -23,4 +23,7 @@ public interface CoachMapper {
     Coaches.CoachDto toDto(Coach coach);
 
 
+    Coach toEntity(Coach coach);
+
+
 }

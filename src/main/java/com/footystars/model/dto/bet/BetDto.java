@@ -1,4 +1,4 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.bet;
 
 import lombok.Builder;
 import lombok.Getter;
