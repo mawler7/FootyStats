@@ -1,4 +1,4 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.player;
 
 
 import com.footystars.model.entity.Player;
@@ -18,5 +18,5 @@ import java.util.List;
 public class PlayerResponseDto {
     private Player.PlayerInfo info;
     private List<PlayerLastMatchDto> lastMatches;
-    private List<PlayerCareerDto> carrer;
+    private List<PlayerCareerDto> career;
 }

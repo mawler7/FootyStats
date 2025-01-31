@@ -19,17 +19,18 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.HashMap;
 
-import static com.footystars.utils.LogsNames.COACHES_BY_TEAM_ERROR;
-import static com.footystars.utils.LogsNames.COACHES_ERROR;
-import static com.footystars.utils.LogsNames.COACHES_FETCHED;
-import static com.footystars.utils.LogsNames.COACH_BY_LEAGUE_FETCHED;
-import static com.footystars.utils.LogsNames.LIMIT_EXCEEDED_COACH;
+import static com.footystars.utils.LogsNames.*;
 import static com.footystars.utils.ParameterName.TEAM;
 import static com.footystars.utils.PathSegment.COACHS;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
+/**
+ * Service responsible for fetching coach data from an external API.
+ * Uses rate limiting with {@link Bucket4j} to prevent exceeding API limits.
+ */
 @Service
 @RequiredArgsConstructor
 public class CoachesFetcher {
@@ -45,12 +46,21 @@ public class CoachesFetcher {
             .addLimit(Bandwidth.classic(450, Refill.greedy(450, Duration.ofMinutes(1))))
             .build();
 
+    /**
+     * Fetches coaches for all teams in top leagues asynchronously.
+     * Calls {@link #fetchCoachesByLeagueIdInCurrentSeason(Long)} for each league.
+     */
     @Async
     public void fetchTopLeaguesCoaches() {
         getTopLeaguesIds().forEach(this::fetchCoachesByLeagueIdInCurrentSeason);
         log.info(COACHES_FETCHED);
     }
 
+    /**
+     * Fetches coaches for all teams in a given league during the current season.
+     *
+     * @param leagueId The ID of the league.
+     */
     public void fetchCoachesByLeagueIdInCurrentSeason(@NotNull Long leagueId) {
         var optionalSeason = leagueService.findCurrentSeasonByLeagueId(leagueId);
 
@@ -69,6 +79,13 @@ public class CoachesFetcher {
         }
     }
 
+    /**
+     * Fetches a coach for a given club by making an API request.
+     * Uses a rate limiter to prevent exceeding API request limits.
+     *
+     * @param clubId The ID of the club.
+     * @throws CoachFetchingException If an error occurs while fetching coach data.
+     */
     public void fetchCoachByClubId(Long clubId) throws CoachFetchingException {
         if (bucket.tryConsume(1)) {
             var params = new HashMap<String, String>();
@@ -78,6 +95,21 @@ public class CoachesFetcher {
                 var response = dataFetcher.fetch(COACHS, params, Coaches.class).getCoachesDto();
 
                 if (response != null) {
+                    response.sort(Comparator
+                            .comparing((Coaches.CoachDto coach) -> coach.getCareer() != null
+                                    && coach.getCareer().stream().allMatch(c -> c.getEndDate() != null))
+                            .reversed()
+                            .thenComparing(coach -> {
+                                if (coach.getCareer() != null) {
+                                    return coach.getCareer().stream()
+                                            .min(Comparator.comparing(Coaches.CoachDto.Career::getStartDate))
+                                            .map(Coaches.CoachDto.Career::getStartDate)
+                                            .orElse(null);
+                                }
+                                return null;
+                            })
+                    );
+
                     response.forEach(c -> coachService.fetchCoach(c, clubId));
                 }
             } catch (IOException e) {
@@ -87,7 +119,4 @@ public class CoachesFetcher {
             log.warn(LIMIT_EXCEEDED_COACH, clubId);
         }
     }
-
 }
-
-

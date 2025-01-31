@@ -49,7 +49,7 @@ public class Fixture implements Serializable {
     @Embedded
     private Fixtures.FixtureDto.Teams teams;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER,orphanRemoval = true)
     @JoinColumn(name = "prediction_id")
     private Prediction prediction;
 

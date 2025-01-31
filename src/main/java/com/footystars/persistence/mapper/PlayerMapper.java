@@ -1,8 +1,9 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.api.Players;
-import com.footystars.model.dto.PlayerCareerDto;
+import com.footystars.model.dto.player.PlayerCareerDto;
 import com.footystars.model.entity.Player;
+import com.footystars.model.dto.player.PlayerDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,7 +39,9 @@ public interface PlayerMapper {
 
     @Mapping(target = "season", source = "statistics.league.season")
     @Mapping(target = "clubName", source = "statistics.club.clubName")
+    @Mapping(target = "clubLogo", source = "statistics.club.clubLogo")
     @Mapping(target = "leagueName", source = "statistics.league.leagueName")
+    @Mapping(target = "leagueLogo", source = "statistics.league.logo")
     @Mapping(target = "form", source = "statistics.games.rating")
     @Mapping(target = "appearances", source = "statistics.games.appearances")
     @Mapping(target = "goals", source = "statistics.goals.goalsTotal")
@@ -46,5 +49,7 @@ public interface PlayerMapper {
     @Mapping(target = "yellowCards", source = "statistics.cards.yellow")
     @Mapping(target = "redCards", source = "statistics.cards.red")
     PlayerCareerDto toPlayerCareerDto(Player player);
+
+    PlayerDto toPlayerDto(Player player);
 
 }

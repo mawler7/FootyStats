@@ -1,7 +1,8 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.fixture;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.footystars.model.api.Predictions;
+import com.footystars.model.dto.bet.BetDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

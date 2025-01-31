@@ -24,6 +24,10 @@ import static com.footystars.utils.LogsNames.TEAMS_STATS_FETCHED_BY_LEAGUE_AND_S
 import static com.footystars.utils.PathSegment.TEAMS_STATISTICS;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
+/**
+ * Service responsible for fetching team statistics from an external API.
+ * This class manages rate-limited requests to fetch team statistics for leagues and seasons.
+ */
 @Service
 @RequiredArgsConstructor
 public class TeamStatsFetcher {
@@ -35,16 +39,27 @@ public class TeamStatsFetcher {
 
     private final Logger logger = LoggerFactory.getLogger(TeamStatsFetcher.class);
 
+    /**
+     * Rate limiting bucket to prevent exceeding API request limits.
+     * Allows 300 requests per minute.
+     */
     private final Bucket bucket = Bucket4j.builder()
             .addLimit(Bandwidth.classic(300, Refill.greedy(300, Duration.ofMinutes(1))))
             .build();
 
-
+    /**
+     * Fetches team statistics for all top leagues across all seasons asynchronously.
+     */
     @Async
     public void fetchTopLeaguesTeamsStatsByAllTime() {
         getTopLeaguesIds().forEach(this::fetchAllTimeTeamsStatsByLeagueId);
     }
 
+    /**
+     * Fetches team statistics for a given league across all its seasons.
+     *
+     * @param leagueId The ID of the league.
+     */
     public void fetchAllTimeTeamsStatsByLeagueId(@NotNull Long leagueId) {
         var leagues = leagueService.findByLeagueId(leagueId);
         leagues.forEach(league -> {
@@ -55,6 +70,14 @@ public class TeamStatsFetcher {
         });
     }
 
+    /**
+     * Fetches team statistics for a given club in a specific league and season.
+     * Uses a rate-limited request to prevent exceeding API limits.
+     *
+     * @param clubId   The ID of the club.
+     * @param leagueId The ID of the league.
+     * @param season   The season year.
+     */
     public void fetchTeamStatisticsByClubIdLeagueIdAndSeason(Long clubId, Long leagueId, Integer season) {
         if (bucket.tryConsume(1)) {
             try {
@@ -71,12 +94,20 @@ public class TeamStatsFetcher {
         }
     }
 
+    /**
+     * Fetches team statistics for the current season asynchronously for top leagues.
+     */
     @Async
     public void fetchCurrentSeasonsTeamStats() {
         getTopLeaguesIds().forEach(this::fetchCurrentSeasonByLeagueId);
         logger.info(TEAMS_STATS_FETCHED);
     }
 
+    /**
+     * Fetches team statistics for a given league in the current season.
+     *
+     * @param leagueId The ID of the league.
+     */
     public void fetchCurrentSeasonByLeagueId(@NotNull Long leagueId) {
         var optionalSeason = leagueService.findCurrentSeasonByLeagueId(leagueId);
         if (optionalSeason.isPresent()) {
@@ -87,6 +118,4 @@ public class TeamStatsFetcher {
             }
         }
     }
-
 }
-

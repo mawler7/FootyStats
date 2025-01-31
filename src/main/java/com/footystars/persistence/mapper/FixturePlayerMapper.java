@@ -1,13 +1,15 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.entity.FixturePlayer;
-import com.footystars.model.dto.FixturePlayerDto;
+import com.footystars.model.dto.fixture.FixturePlayerDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+
+import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface FixturePlayerMapper {
@@ -17,4 +19,7 @@ public interface FixturePlayerMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     FixturePlayer partialUpdate(FixturePlayerDto fixturePlayerDto, @MappingTarget FixturePlayer fixturePlayer);
+
+    List<FixturePlayerDto> toDtoList(List<FixturePlayer> fixturePlayers);
+
 }

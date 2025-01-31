@@ -3,14 +3,18 @@ package com.footystars.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.footystars.model.api.Players;
+import com.footystars.model.dto.player.PlayerTopScorerDto;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +31,26 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
+@SqlResultSetMapping(
+        name = "PlayerTopScorerMapping",
+        classes = @ConstructorResult(
+                targetClass = PlayerTopScorerDto.class,
+                columns = {
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "nationality", type = String.class),
+                        @ColumnResult(name = "photo", type = String.class),
+                        @ColumnResult(name = "clubName", type = String.class),
+                        @ColumnResult(name = "clubLogo", type = String.class),
+                        @ColumnResult(name = "form", type = String.class),
+                        @ColumnResult(name = "position", type = String.class),
+                        @ColumnResult(name = "appearances", type = Integer.class),
+                        @ColumnResult(name = "goals", type = Integer.class),
+                        @ColumnResult(name = "assists", type = Integer.class),
+                        @ColumnResult(name = "yellowCards", type = Integer.class),
+                        @ColumnResult(name = "redCards", type = Integer.class)
+                }
+        )
+)
 @Table(name = "players")
 public class Player implements Serializable {
 

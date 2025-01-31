@@ -44,13 +44,11 @@ public class Coach implements Serializable {
     @Embedded
     private Coaches.CoachDto.Team team;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "coaches_careers", joinColumns = @JoinColumn(name = "coach_id"))
     private List<Coaches.CoachDto.Career> career;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "coaches_trophies", joinColumns = @JoinColumn(name = "coach_id"))
     private List<Trophies.Trophy> trophies = new ArrayList<>();
-
-
 }

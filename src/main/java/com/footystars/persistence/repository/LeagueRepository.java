@@ -4,9 +4,7 @@ import com.footystars.model.entity.League;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public interface LeagueRepository extends JpaRepository<League, Long> {
@@ -26,6 +24,4 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
     @Query("SELECT l from League l where l.season.current =:aTrue ")
     List<League> findCurrentSeasonLeagues(Boolean aTrue);
 
-    @Query("SELECT l from League l where l.info.leagueId =:leagueId and l.season.current =:aTrue ")
-    Optional<League> findCurrentSeasonLeagueByLeagueId(Long leagueId, Boolean aTrue);
 }

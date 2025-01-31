@@ -55,6 +55,9 @@ public class ParameterName {
     public static final String COMMUNITY_SHIELD = "Community Shield";
     public static final String COPPA_ITALIA = "Coppa Italia";
     public static final String COPA_DEL_REY = "Copa del Rey";
+    public static final String SUPER_CUP_SPAIN = "Super Cup Spain";
+    public static final String BELGIUM_CUP = "Belgium Cup";
+    public static final String NATIONAL_LEAGUE_CUP = "National League Cup";
     public static final String COUPE_DE_FRANCE = "Coupe de France";
     public static final String DFB_POKAL = "DFB Pokal";
     public static final String EFL_TROPHY = "EFL Trophy";
@@ -66,7 +69,6 @@ public class ParameterName {
     public static final String SUPER_CUP_PRIMAVERA = "Super Cup Primavera";
     public static final String TROPHEE_DES_CHAMPIONS = "Trophée des Champions";
 
-    // Add new leagues
     public static final String EKSTRAKLASA = "Ekstraklasa";
     public static final String SUPERLIGA = "Superliga";
     public static final String SUPER_LEAGUE = "Super League";
@@ -99,16 +101,13 @@ public class ParameterName {
     public static final String SUPER_LIG = "Süper Lig";
     public static final String CUP_TURKEY = "Cup";
     public static final String SCHWEIZER_CUP = "Schweizer Cup";
-    public static final String MAJOR_LEAGUE_SOCCER = "Major League Soccer";
-    public static final String US_OPEN_CUP = "US Open Cup";
-    public static final String OLYMPICS_MEN = "Olympics Men";
     public static final String SUPER_CUP_NETHERLANDS = "Super Cup Netherlands";
     public static final String SUPER_CUP_POLAND = "Super Cup Poland";
     public static final String CONMEBOL_UEFA_FINALISSIMA = "CONMEBOL - UEFA Finalissima";
     public static final String EMIRATES_CUP = "Emirates Cup";
     public static final String UEFA_CONFERENCE_LEAGUE = "UEFA Conference League";
     public static final String KINGS_CUP = "King's Cup";
-
+    public static final String PRO_LEAGUE = "Pro League";
    public static final String GOAL_SCORER = "Anytime Goal Scorer";
    public static final String BOTH_TEAMS_SCORE = "Both Teams Score";
    public static final String BOTH_TEAMS_TO_SCORE_IN_BOTH_HALVES = "Both Teams To Score in Both Halves";

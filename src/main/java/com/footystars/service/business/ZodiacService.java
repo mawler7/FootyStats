@@ -17,13 +17,18 @@ import java.util.Arrays;
 import static com.footystars.utils.LogsNames.INVALID_DATE;
 import static com.footystars.utils.LogsNames.INVALID_DATE_FORMAT;
 
-
+/**
+ * Service responsible for determining the zodiac sign based on a given birth date.
+ */
 @Service
 @RequiredArgsConstructor
 public class ZodiacService {
 
     private final Logger logger = LoggerFactory.getLogger(ZodiacService.class);
 
+    /**
+     * Supported date formats for parsing birthdates.
+     */
     private static final DateTimeFormatter[] DATE_FORMATTERS = {
             new DateTimeFormatterBuilder()
                     .appendPattern("yyyy-")
@@ -39,6 +44,13 @@ public class ZodiacService {
                     .toFormatter()
     };
 
+    /**
+     * Determines the zodiac sign based on a given birthdate.
+     *
+     * @param birthDate The birthdate as a string in a supported format.
+     * @return The corresponding {@link ZodiacSign}.
+     * @throws IllegalArgumentException if the date format is invalid or if the zodiac sign cannot be determined.
+     */
     public ZodiacSign getZodiacSign(@NotNull String birthDate) {
         for (DateTimeFormatter formatter : DATE_FORMATTERS) {
             try {

@@ -1,4 +1,4 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.fixture;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -15,7 +14,7 @@ import java.time.ZonedDateTime;
 public class MatchDto implements Serializable {
 
     private Long id;
-    private ZonedDateTime date;
+    private String date;
     private String homeTeamId;
     private String homeTeamName;
     private String homeTeamLogo;

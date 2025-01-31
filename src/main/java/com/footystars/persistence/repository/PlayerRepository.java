@@ -1,6 +1,5 @@
 package com.footystars.persistence.repository;
 
-import com.footystars.model.dto.PlayerCareerDto;
 import com.footystars.model.entity.Player;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,17 +26,46 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
     @Query("SELECT p from Player p where p.info.playerId = :playerId")
     List<Player> findByInfoPlayerId(Long playerId);
 
-    @Query("SELECT new com.footystars.model.dto.PlayerCareerDto(" +
-            "p.statistics.league.season, " +
-            "p.statistics.club.clubName, " +
-            "p.statistics.league.leagueName, " +
-            "p.statistics.games.appearances, " +
-            "p.statistics.goals.goalsTotal, " +
-            "p.statistics.goals.assists, " +
-            "p.statistics.cards.yellow, " +
-            "p.statistics.cards.red) " +
-            "FROM Player p " +
-            "WHERE p.info.playerId = :playerId")
-    List<PlayerCareerDto> findCareerByPlayerId(@Param("playerId") Long playerId);
+    @Query(value = """
+    SELECT 
+        p.player_id AS playerId,
+        p.name AS name,
+        p.nationality AS nationality,
+        p.photo AS photo,
+        p.club_name AS clubName,
+        p.club_logo AS clubLogo,
+        p.position AS position,
+        p.rating AS form,
+        p.appearances AS appearances,
+        p.goals_total AS goals,
+        p.assists AS assists,
+        p.yellow AS yellowCards,
+        p.red AS redCards,
+        p.shots_on_target AS shotsOnTarget,
+        p.shots_total AS totalShots,
+        p.penalties_scored AS penaltiesScored,
+        p.penalties_missed AS penaltiesMissed,
+        p.minutes AS minutesPlayed,
+        p.key AS keyPasses,
+        p.duels_total AS duelsTotal,
+        p.duels_won AS duelsWon
+    FROM players p
+    WHERE p.league_id = :leagueId 
+      AND p.season = (
+          SELECT MAX(sub.season) 
+          FROM players sub 
+          WHERE sub.league_id = :leagueId
+      )
+      AND p.goals_total IS NOT NULL 
+      AND p.goals_total > 0
+    ORDER BY p.goals_total DESC
+    LIMIT 250
+""", nativeQuery = true)
+    List<Object[]> findTopScorersByLeagueId(@Param("leagueId") int leagueId);
+
+
 }
+
+
+
 

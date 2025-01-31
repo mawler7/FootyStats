@@ -15,15 +15,31 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.Executor;
 
+import static com.footystars.utils.LogsNames.*;
+
+/**
+ * Configuration class for application-wide beans and async execution settings.
+ */
 @Configuration
 @EnableAsync
 public class AppConfig implements AsyncConfigurer {
 
+    /**
+     * Configures and provides an instance of {@link OkHttpClient} for making HTTP requests.
+     *
+     * @return an instance of {@link OkHttpClient}.
+     */
     @Bean
     public OkHttpClient okHttpClient() {
         return new OkHttpClient();
     }
 
+    /**
+     * Configures and provides an instance of {@link ObjectMapper} with custom settings.
+     * Registers modules for Java Time and Hibernate compatibility.
+     *
+     * @return a configured {@link ObjectMapper} instance.
+     */
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -32,6 +48,12 @@ public class AppConfig implements AsyncConfigurer {
         return objectMapper;
     }
 
+    /**
+     * Customizes the default Jackson configuration for Spring Boot.
+     * Registers additional modules and disables timestamp serialization for dates.
+     *
+     * @return a {@link Jackson2ObjectMapperBuilderCustomizer} to modify Jackson settings.
+     */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer() {
         return builder -> {
@@ -41,20 +63,30 @@ public class AppConfig implements AsyncConfigurer {
         };
     }
 
+    /**
+     * Configures and provides an executor for asynchronous tasks.
+     * Defines thread pool settings such as core pool size, max pool size, and queue capacity.
+     *
+     * @return an {@link Executor} instance for handling async tasks.
+     */
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(30);
-        executor.setMaxPoolSize(75);
-        executor.setQueueCapacity(1000);
-        executor.setThreadGroupName("Async - ");
+        executor.setCorePoolSize(CORE_POOL_SIZE);
+        executor.setMaxPoolSize(MAX_POOL_SIZE);
+        executor.setQueueCapacity(QUEUE_CAPACITY);
+        executor.setThreadGroupName(THREAD_GROUP_NAME);
         executor.initialize();
         return executor;
     }
 
+    /**
+     * Configures and provides an instance of {@link RestTemplate} for making REST API calls.
+     *
+     * @return a configured {@link RestTemplate} instance.
+     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-
 }

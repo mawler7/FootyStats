@@ -1,6 +1,6 @@
 package com.footystars.persistence.mapper;
 
-import com.footystars.model.dto.BetDto;
+import com.footystars.model.dto.bet.BetDto;
 import com.footystars.model.entity.Bet;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

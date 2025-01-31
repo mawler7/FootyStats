@@ -1,6 +1,7 @@
-package com.footystars.model.dto;
+package com.footystars.model.dto.league;
 
 import com.footystars.model.api.Standings;
+import com.footystars.model.dto.fixture.MatchDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,13 +18,13 @@ public class LeagueDto implements Serializable {
     private String leagueName;
     private String logo;
     private String flag;
-    private String type;
     private Integer season;
+    private String type;
     private Boolean current;
 
     private List<Standings.StandingApi.StandingLeague.Standing> standings;
 
-    private List<FixtureDto> fixtures;
+    private List<MatchDto> fixtures;
 
 
 }

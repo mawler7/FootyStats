@@ -5,7 +5,6 @@ import lombok.Getter;
 @Getter
 public class CountriesUtil {
 
-
     private CountriesUtil() {
     }
 
@@ -21,6 +20,7 @@ public class CountriesUtil {
     public static final String DENMARK = "Denmark";
     public static final String TURKEY = "Turkey";
     public static final String SWITZERLAND = "Switzerland";
-    public static final String USA = "USA";
+    public static final String SAUDI_ARABIA = "Saudi Arabia";
+
 
 }

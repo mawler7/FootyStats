@@ -1,7 +1,8 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.api.Leagues;
-import com.footystars.model.dto.LeagueDto;
+import com.footystars.model.dto.league.LeagueDetailsDto;
+import com.footystars.model.dto.league.LeagueDto;
 import com.footystars.model.entity.League;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -15,6 +16,8 @@ import org.mapstruct.ReportingPolicy;
 public interface LeagueMapper {
 
     @Mapping(source = "country.name", target = "country")
+    @Mapping(source = "country.countryFlag", target = "info.flag")
+    @Mapping(target = "id", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     League toEntity(Leagues.LeagueDto leagueDto);
 
@@ -35,6 +38,11 @@ public interface LeagueMapper {
     @Mapping(source = "season.current", target = "current")
     LeagueDto toDto(League league);
 
-
+    @Mapping(source = "info.leagueId", target = "id")
+    @Mapping(source = "info.name", target = "leagueName")
+    @Mapping(source = "info.logo", target = "logo")
+    @Mapping(source = "info.flag", target = "flag")
+    @Mapping(source = "season.year", target = "season")
+    LeagueDetailsDto toLeagueDetailsDto(League league);
 
 }

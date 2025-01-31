@@ -50,6 +50,11 @@ public class TeamFetcher {
         logger.info(TEAMS_INFO_FETCHED);
     }
 
+    /**
+     * Fetches team information for a specific league.
+     *
+     * @param leagueId The ID of the league.
+     */
     public void fetchTeamsByLeagueId(@NotNull Long leagueId) {
         var leagues = leagueService.findByLeagueId(leagueId);
         leagues.forEach(l -> {
@@ -59,24 +64,35 @@ public class TeamFetcher {
         });
     }
 
-    public void fetchTeamInfoByLeagueAndSeason(@NotNull Long league, @NotNull Integer season) {
+    /**
+     * Fetches team information for a specific league and season.
+     *
+     * @param leagueId The ID of the league.
+     * @param season   The season year.
+     */
+    public void fetchTeamInfoByLeagueAndSeason(@NotNull Long leagueId, @NotNull Integer season) {
         if (bucket.tryConsume(1)) {
             try {
-                var params = paramsProvider.getLeagueAndSeasonParamsMap(league, season);
+                var params = paramsProvider.getLeagueAndSeasonParamsMap(leagueId, season);
                 var teamsApiResponse = dataFetcher.fetch(TEAMS_INFORMATION, params, TeamsInfo.class);
                 if (teamsApiResponse != null) {
-                    fetchClubs(teamsApiResponse, league, season);
+                    fetchClubs(teamsApiResponse, leagueId, season);
                 } else {
-                    logger.error(TEAMS_FETCH_FAILED, league, season);
+                    logger.error(TEAMS_FETCH_FAILED, leagueId, season);
                 }
             } catch (IOException e) {
-                logger.error(TEAMS_INFO_FETCH_ERROR, league, season, e.getMessage());
+                logger.error(TEAMS_INFO_FETCH_ERROR, leagueId, season, e.getMessage());
             }
         } else {
-            logger.warn(LIMIT_EXCEEDED_LEAGUE, league);
+            logger.warn(LIMIT_EXCEEDED_LEAGUE, leagueId);
         }
     }
 
+    /**
+     * Fetches current season team information for a specific league.
+     *
+     * @param leagueId The ID of the league.
+     */
     public void fetchCurrentSeasonByLeagueId(Long leagueId) {
         var optionalSeason = leagueService.findCurrentSeasonByLeagueId(leagueId);
         if (optionalSeason.isPresent()) {
@@ -87,6 +103,9 @@ public class TeamFetcher {
         }
     }
 
+    /**
+     * Fetches current season team information for all top leagues asynchronously.
+     */
     @Async
     public void fetchCurrentSeasonTeamsInfo() {
         var leagues = getTopLeaguesIds();
@@ -99,6 +118,13 @@ public class TeamFetcher {
         });
     }
 
+    /**
+     * Processes and stores team information.
+     *
+     * @param teams    The API response containing team data.
+     * @param leagueId The ID of the league.
+     * @param year     The season year.
+     */
     public void fetchClubs(@NotNull TeamsInfo teams, @NotNull Long leagueId, @NotNull Integer year) {
         try {
             teams.getResponse()

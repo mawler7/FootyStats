@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service responsible for verifying and updating prediction results based on match outcomes.
+ */
 @Service
 @RequiredArgsConstructor
 public class PredictionCheckerService {
@@ -23,6 +26,13 @@ public class PredictionCheckerService {
     private final PredictionRepository predictionRepository;
     private final FixtureService fixtureService;
 
+    /**
+     * Checks whether a given prediction advice is correct based on match results.
+     *
+     * @param prediction The prediction entity containing advice.
+     * @param fixture    The fixture entity with match results.
+     * @return True if the advice is correct, false otherwise, or null if no advice is available.
+     */
     @Nullable
     public Boolean checkAdvice(@NotNull Prediction prediction, Fixture fixture) {
         var advice = prediction.getPredictions().getAdvice();
@@ -41,6 +51,13 @@ public class PredictionCheckerService {
         return false;
     }
 
+    /**
+     * Verifies the correctness of a "Double chance" prediction.
+     *
+     * @param advice  The prediction advice.
+     * @param fixture The fixture entity with match results.
+     * @return True if the prediction is correct, otherwise false.
+     */
     @NotNull
     private Boolean checkDoubleChance(@NotNull String advice, @NotNull Fixture fixture) {
         var parts = advice.split(":");
@@ -59,6 +76,13 @@ public class PredictionCheckerService {
         return isDraw || isHomeWin || isAwayWin;
     }
 
+    /**
+     * Verifies the correctness of a "Combo Double chance" prediction.
+     *
+     * @param advice  The prediction advice.
+     * @param fixture The fixture entity with match results.
+     * @return True if the prediction is correct, otherwise false.
+     */
     @NotNull
     private Boolean checkComboDoubleChance(@NotNull String advice, Fixture fixture) {
         var parts = advice.split("and");
@@ -68,6 +92,13 @@ public class PredictionCheckerService {
         return doubleChanceCorrect && checkGoalsCondition(goalsCondition, fixture);
     }
 
+    /**
+     * Evaluates the correctness of a goals-based prediction.
+     *
+     * @param condition The condition to verify (e.g., "+2.5", "-1.5").
+     * @param fixture   The fixture entity with match results.
+     * @return True if the condition holds, otherwise false.
+     */
     @NotNull
     private Boolean checkGoalsCondition(@NotNull String condition, @NotNull Fixture fixture) {
         var totalGoals = fixture.getGoals() != null ? fixture.getGoals().getHome() + fixture.getGoals().getAway() : 0;
@@ -83,6 +114,13 @@ public class PredictionCheckerService {
         return false;
     }
 
+    /**
+     * Checks if a "Winner" prediction is correct.
+     *
+     * @param advice  The prediction advice.
+     * @param fixture The fixture entity with match results.
+     * @return True if the prediction is correct, otherwise false.
+     */
     @NotNull
     private Boolean checkWinner(@NotNull String advice, @NotNull Fixture fixture) {
         var parts = advice.split(":");
@@ -103,6 +141,14 @@ public class PredictionCheckerService {
         return false;
     }
 
+
+    /**
+     * Checks if the home team goals prediction is correct.
+     *
+     * @param prediction The prediction entity.
+     * @param fixture    The fixture entity with actual results.
+     * @return True if the prediction is correct, false otherwise, or null if no prediction exists.
+     */
     @Nullable
     private Boolean checkHomeGoalsPrediction(@NotNull Prediction prediction, @NotNull Fixture fixture) {
         if (prediction.getPredictions().getGoals().getHomePrediction() == null) {
@@ -118,25 +164,16 @@ public class PredictionCheckerService {
         }
     }
 
-    @Nullable
-    private Boolean checkAwayGoalsPrediction(@NotNull Prediction prediction, @NotNull Fixture fixture) {
 
-        if (prediction.getPredictions().getGoals().getAwayPrediction() == null) {
-            return null;
-        }
-
-        var awayGoalsPrediction = prediction.getPredictions().getGoals().getAwayPrediction();
-        if (fixture.getGoals() != null && fixture.getGoals().getAway() != null) {
-            int actualAwayGoals = fixture.getGoals().getAway();
-            return evaluateGoalsPrediction(awayGoalsPrediction, actualAwayGoals);
-        } else {
-            return null;
-        }
-    }
-
+    /**
+     * Evaluates whether the Over/Under prediction is correct based on the actual total goals in the match.
+     *
+     * @param prediction The prediction entity containing the Over/Under prediction.
+     * @param fixture    The fixture entity with actual match results.
+     * @return True if the prediction is correct, false if incorrect, or null if no prediction is available.
+     */
     @Nullable
     private Boolean checkOverUnderPrediction(@NotNull Prediction prediction, @NotNull Fixture fixture) {
-        // Sprawdzamy, czy prediction.getPredictions().getUnderOver() nie jest null
         var underOverPrediction = prediction.getPredictions().getUnderOver();
         if (underOverPrediction == null) {
             return null;
@@ -144,13 +181,10 @@ public class PredictionCheckerService {
 
         var totalGoals = fixture.getGoals() != null ? fixture.getGoals().getHome() + fixture.getGoals().getAway() : 0;
 
-        // Sprawdzamy, czy predykcja jest dodatnia (over) czy ujemna (under)
         if (underOverPrediction.contains("+")) {
-            // "Over" - całkowita liczba bramek musi być większa niż próg
             var threshold = Double.parseDouble(underOverPrediction.split("\\+")[1].trim());
             return totalGoals > threshold;
         } else if (underOverPrediction.contains("-")) {
-            // "Under" - całkowita liczba bramek musi być mniejsza niż próg
             var threshold = Double.parseDouble(underOverPrediction.split("\\-")[1].trim());
             return totalGoals < threshold;
         } else {
@@ -158,7 +192,13 @@ public class PredictionCheckerService {
         }
     }
 
-
+    /**
+     * Evaluates whether the predicted goal count is correct based on actual goals scored.
+     *
+     * @param goalsPrediction The predicted number of goals, which may be an exact value or a threshold (e.g., "+2.5", "-1.5").
+     * @param actualGoals     The actual number of goals scored in the match.
+     * @return True if the prediction matches the actual goals scored, false otherwise.
+     */
     @NotNull
     private Boolean evaluateGoalsPrediction(@NotNull String goalsPrediction, int actualGoals) {
         if (goalsPrediction.contains("+")) {
@@ -172,6 +212,34 @@ public class PredictionCheckerService {
         }
     }
 
+    /**
+     * Checks if the away team goals prediction is correct.
+     *
+     * @param prediction The prediction entity.
+     * @param fixture    The fixture entity with actual results.
+     * @return True if the prediction is correct, false otherwise, or null if no prediction exists.
+     */
+    @Nullable
+    private Boolean checkAwayGoalsPrediction(@NotNull Prediction prediction, @NotNull Fixture fixture) {
+        if (prediction.getPredictions().getGoals().getAwayPrediction() == null) {
+            return null;
+        }
+
+        var awayGoalsPrediction = prediction.getPredictions().getGoals().getAwayPrediction();
+        if (fixture.getGoals() != null && fixture.getGoals().getAway() != null) {
+            int actualAwayGoals = fixture.getGoals().getAway();
+            return evaluateGoalsPrediction(awayGoalsPrediction, actualAwayGoals);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Updates the prediction result in the database.
+     *
+     * @param prediction The prediction entity.
+     * @param fixture    The fixture entity with match results.
+     */
     public void updatePredictionResult(Prediction prediction, Fixture fixture) {
         var adviceCorrect = checkAdvice(prediction, fixture);
         var overUnderCorrect = checkOverUnderPrediction(prediction, fixture);
@@ -192,15 +260,16 @@ public class PredictionCheckerService {
         predictionRepository.save(prediction);
     }
 
+    /**
+     * Asynchronously updates prediction results for a list of fixture IDs.
+     *
+     * @param uncheckedPredictions List of fixture IDs that need prediction validation.
+     */
     @Async
     public void updatePredictionResult(@NotNull List<Long> uncheckedPredictions) {
         uncheckedPredictions.parallelStream().forEach(f -> {
             var optionalFixture = fixtureService.findById(f);
-            if (optionalFixture.isPresent()) {
-                var fixture = optionalFixture.get();
-                var prediction = fixture.getPrediction();
-                updatePredictionResult(prediction, fixture);
-            }
+            optionalFixture.ifPresent(fixture -> updatePredictionResult(fixture.getPrediction(), fixture));
         });
         log.info(LogsNames.PREDICTIONS_CHECKED);
     }

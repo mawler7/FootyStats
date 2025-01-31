@@ -1,7 +1,7 @@
 package com.footystars.persistence.mapper;
 
 import com.footystars.model.entity.FixtureStatistic;
-import com.footystars.model.dto.FixtureStatisticDto;
+import com.footystars.model.dto.fixture.FixtureStatisticDto;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

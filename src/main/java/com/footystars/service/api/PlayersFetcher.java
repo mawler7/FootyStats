@@ -5,7 +5,6 @@ import com.footystars.exception.TeamInfoException;
 import com.footystars.model.api.Players;
 import com.footystars.service.business.LeagueService;
 import com.footystars.service.business.PlayerService;
-import com.footystars.utils.LogsNames;
 import com.footystars.utils.ParamsProvider;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -25,13 +24,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.footystars.utils.LogsNames.PLAYERS_CURRENT_FETCHED;
-import static com.footystars.utils.LogsNames.PLAYERS_FETCHED;
-import static com.footystars.utils.LogsNames.PLAYERS_FETCHED_LEAGUE_AND_SEASON;
+import static com.footystars.utils.LogsNames.*;
 import static com.footystars.utils.ParameterName.PAGE;
 import static com.footystars.utils.PathSegment.PLAYERS;
 import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
+/**
+ * Service responsible for fetching player data from the external API.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -50,40 +50,56 @@ public class PlayersFetcher {
             .addLimit(Bandwidth.classic(MAX_REQUESTS_PER_MINUTE, Refill.intervally(MAX_REQUESTS_PER_MINUTE, Duration.ofMinutes(1))))
             .build();
 
+    /**
+     * Fetches players for all leagues asynchronously.
+     */
     @Async
     public void fetchByAllLeagues() {
         getTopLeaguesIds().forEach(this::fetchPlayersByLeagueId);
-        log.info(LogsNames.PLAYERS_FETCHED);
+        log.info(PLAYERS_FETCHED);
     }
 
+    /**
+     * Fetches players for the current season in top leagues asynchronously.
+     */
     @Async
     public void fetchCurrentSeasonTopLeaguesPlayers() {
         getTopLeaguesIds().forEach(this::fetchCurrentSeasonPlayersByLeagueId);
         log.info(PLAYERS_CURRENT_FETCHED);
     }
 
+    /**
+     * Fetches players for the current season in a given league.
+     *
+     * @param leagueId The ID of the league.
+     */
     @Async
     public void fetchCurrentSeasonPlayersByLeagueId(@NotNull Long leagueId) {
-        var optionalInteger = leagueService.findCurrentSeasonByLeagueId(leagueId);
-        if (optionalInteger.isPresent()) {
-            var season = optionalInteger.get();
-            fetchPlayersByLeagueAndYear(leagueId, season);
-
-        }
+        leagueService.findCurrentSeasonByLeagueId(leagueId).ifPresent(season -> fetchPlayersByLeagueAndYear(leagueId, season));
     }
 
+    /**
+     * Fetches players for a given league.
+     *
+     * @param leagueId The ID of the league.
+     */
     public void fetchPlayersByLeagueId(@NotNull Long leagueId) {
-        var leagues = leagueService.findByLeagueId(leagueId);
-        leagues.forEach(l -> {
+        leagueService.findByLeagueId(leagueId).forEach(league -> {
             try {
-                fetchPlayersByLeagueAndYear(leagueId, l.getSeason().getYear());
-                log.info(PLAYERS_FETCHED_LEAGUE_AND_SEASON, leagueId, l.getSeason().getYear());
+                fetchPlayersByLeagueAndYear(leagueId, league.getSeason().getYear());
+                log.info(PLAYERS_FETCHED_LEAGUE_AND_SEASON, leagueId, league.getSeason().getYear());
             } catch (Exception e) {
-                log.error("Error fetching players by league and year: {}", e.getMessage());
+                log.error("Error fetching players for league {} in year {}: {}", leagueId, league.getSeason().getYear(), e.getMessage());
             }
         });
     }
 
+    /**
+     * Fetches players for a given league and season.
+     *
+     * @param leagueId The league ID.
+     * @param year     The season year.
+     */
     public void fetchPlayersByLeagueAndYear(@NotNull Long leagueId, @NotNull Integer year) {
         var params = paramsProvider.getLeagueAndSeasonParamsMap(leagueId, year);
         if (bucket.tryConsume(1)) {
@@ -101,12 +117,12 @@ public class PlayersFetcher {
         }
     }
 
-
-
-
-
-
-
+    /**
+     * Processes API response and fetches additional pages if available.
+     *
+     * @param params             API request parameters.
+     * @param playersApiResponse Initial API response.
+     */
     private void processPlayersResponse(@NotNull Map<String, String> params, @NotNull Players playersApiResponse) {
         int totalPages = playersApiResponse.getPaging().getTotal();
         var response = playersApiResponse.getResponse();
@@ -128,6 +144,11 @@ public class PlayersFetcher {
         }
     }
 
+    /**
+     * Processes a single player from the API response.
+     *
+     * @param playerDto The player data transfer object.
+     */
     public void processPlayer(@NotNull Players.PlayerDto playerDto) {
         var clubId = playerDto.getStatistics().get(0).getClub().getClubId();
         var playerId = playerDto.getInfo().getPlayerId();
@@ -166,6 +187,4 @@ public class PlayersFetcher {
             }
         }
     }
-
-
 }
