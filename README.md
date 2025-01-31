@@ -1,5 +1,5 @@
 # FootyStars ⚽  
-🚀 An advanced football statistics tracking application – inspired by Flashscore!  
+🚀 An advanced football statistics tracking application
 
 ## 📌 Project Description  
 FootyStars is a web application for tracking football match results, team and player statistics, and making match predictions. The data is fetched from an external API and stored in a PostgreSQL database.  
