@@ -3,6 +3,7 @@ package com.footystars.service.api;
 import com.footystars.model.api.Predictions;
 import com.footystars.service.business.FixtureService;
 import com.footystars.service.business.LeagueService;
+import com.footystars.service.business.PredictionCheckerService;
 import com.footystars.service.business.PredictionService;
 import com.footystars.utils.ParamsProvider;
 import io.github.bucket4j.Bandwidth;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static com.footystars.utils.LogsNames.API_CALL_LIMIT_EXCEEDED;
@@ -40,6 +42,7 @@ public class PredictionsFetcher {
     private final ApiDataFetcher dataFetcher;
     private final PredictionService predictionService;
     private final FixtureService fixtureService;
+    private final PredictionCheckerService predictionCheckerService;
     private final LeagueService leagueService;
     private final ParamsProvider paramsProvider;
 
@@ -118,6 +121,8 @@ public class PredictionsFetcher {
         fetchFixturePrediction(fixtureId);
         return CompletableFuture.completedFuture(null);
     }
+
+
 
 }
 

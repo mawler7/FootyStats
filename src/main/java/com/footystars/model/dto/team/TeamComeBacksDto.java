@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 
 @Getter
@@ -19,5 +20,5 @@ public class TeamComeBacksDto {
     private String team;
     private int draws;
     private int totalMatches;
-    private LocalDateTime lastDrawDate;
+    private ZonedDateTime lastDrawDate;
 }

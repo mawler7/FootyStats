@@ -114,6 +114,9 @@ public interface FixtureMapper {
     @Mapping(target= "season", source = "league.season")
     @Mapping(target= "leagueId", source = "league.leagueId")
     @Mapping(target= "leagueLogo", source = "league.logo")
+    @Mapping(target = "bets", ignore = true)
+    @Mapping(target = "teams", ignore = true)
+    @Mapping(target = "players", ignore = true)
     MatchDetailsDto toMatchDetailsDto(Fixture fixture);
 
     @Mapping(target= "date", source = "info.date")
@@ -130,9 +133,13 @@ public interface FixtureMapper {
     @Mapping(target= "home", source = "goals.home")
     @Mapping(target= "away", source = "goals.away")
     @Mapping(target= "homePrediction", source = "prediction.predictions.goals.homePrediction")
+    @Mapping(target= "isHomeGoals", source = "prediction.homeGoals")
     @Mapping(target= "awayPrediction", source = "prediction.predictions.goals.awayPrediction")
+    @Mapping(target= "isAwayGoals", source = "prediction.awayGoals")
     @Mapping(target= "underOver", source = "prediction.predictions.underOver")
+    @Mapping(target= "isOverUnder", source = "prediction.overUnder")
     @Mapping(target= "advice", source = "prediction.predictions.advice")
+    @Mapping(target= "isAdvice", source = "prediction.advice")
     @Mapping(target= "leagueId", source = "league.leagueId")
     @Mapping(target= "season", source = "league.season")
     @Mapping(target= "leagueLogo", source = "league.logo")
@@ -144,6 +151,9 @@ public interface FixtureMapper {
     @Mapping(target= "extraTimeAway", source = "score.extratime.extraTimeAway")
     @Mapping(target= "penaltiesHome", source = "score.penalty.penaltiesHome")
     @Mapping(target= "penaltiesAway", source = "score.penalty.penaltiesAway")
+    @Mapping(target = "bets", ignore = true)
+    @Mapping(target = "homeForm", ignore = true)
+    @Mapping(target = "awayForm", ignore = true)
     MatchDto toMatchDto(Fixture fixture);
 
     List<MatchDto> toMatchDtoList(List<Fixture> fixtures);

@@ -21,5 +21,4 @@ import java.util.List;
 public class PlayerDto implements Serializable {
    private Player.PlayerInfo info;
    private Players.PlayerStats statistics;
-   private List<FixturePlayerDto> fixtures;
 }

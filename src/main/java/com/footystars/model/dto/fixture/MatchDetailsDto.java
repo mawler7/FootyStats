@@ -1,8 +1,12 @@
 package com.footystars.model.dto.fixture;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.footystars.model.api.Players;
 import com.footystars.model.api.Predictions;
 import com.footystars.model.dto.bet.BetDto;
+import com.footystars.model.dto.player.PlayerDto;
+import com.footystars.model.dto.team.TeamDetailsDto;
+import com.footystars.model.entity.Player;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,10 +25,10 @@ public class MatchDetailsDto implements Serializable {
     private ZonedDateTime date;
     private String venueName;
     private String referee;
-    private String homeTeamId;
+    private Long homeTeamId;
     private String homeTeamName;
     private String homeTeamLogo;
-    private String awayTeamId;
+    private Long awayTeamId;
     private String awayTeamName;
     private String awayTeamLogo;
     private String leagueName;
@@ -72,11 +76,11 @@ public class MatchDetailsDto implements Serializable {
     private String homeTotalComparison;
     private String awayTotalComparison;
 
-
+    private List<TeamDetailsDto> teams = new ArrayList<>();;
     private List<BetDto> bets = new ArrayList<>();
     private Predictions.PredictionDto prediction;
     private List<LineupDto> lineups = new ArrayList<>();
-    private List<FixturePlayerDto> players = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
     private List<FixtureStatisticDto> statistics = new ArrayList<>();
     private List<FixtureEventDto> events = new ArrayList<>();
 }

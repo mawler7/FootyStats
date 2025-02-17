@@ -36,7 +36,7 @@ public class Bet implements Serializable {
     private String value;
     private double odd;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fixture_id")
     private Fixture fixture;
 

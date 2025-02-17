@@ -2,6 +2,9 @@ package com.footystars.persistence.mapper;
 
 import com.footystars.model.api.Players;
 import com.footystars.model.dto.player.PlayerCareerDto;
+import com.footystars.model.dto.player.PlayerInfoDto;
+import com.footystars.model.dto.player.PlayerLastMatchDto;
+import com.footystars.model.entity.FixturePlayer;
 import com.footystars.model.entity.Player;
 import com.footystars.model.dto.player.PlayerDto;
 import org.mapstruct.BeanMapping;
@@ -15,7 +18,7 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 import java.util.Set;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {PlayerMapper.class, PlayerMapper.class})
 public interface PlayerMapper {
 
     Player toEntity(Players.PlayerDto playerDto);
@@ -51,5 +54,12 @@ public interface PlayerMapper {
     PlayerCareerDto toPlayerCareerDto(Player player);
 
     PlayerDto toPlayerDto(Player player);
+
+    PlayerLastMatchDto toPlayerLastMatchDto(FixturePlayer fixturePlayer);
+
+    Player.PlayerInfo toEntity(PlayerInfoDto playerInfoDto);
+
+    PlayerInfoDto toDto(Player.PlayerInfo playerInfo);
+
 
 }

@@ -2,23 +2,25 @@ package com.footystars.service.business;
 
 
 import com.footystars.model.api.Leagues;
-import com.footystars.model.dto.fixture.MatchScoreDto;
+import com.footystars.model.api.Standings;
+import com.footystars.model.dto.fixture.MatchDto;
 import com.footystars.model.dto.league.LeagueDetailsDto;
 import com.footystars.model.dto.league.LeagueDto;
-import com.footystars.model.dto.fixture.LeagueMatchDto;
+import com.footystars.model.dto.league.LeagueInfoDto;
 import com.footystars.model.entity.League;
-import com.footystars.persistence.mapper.FixtureMapper;
 import com.footystars.persistence.mapper.LeagueMapper;
 import com.footystars.persistence.repository.FixtureRepository;
 import com.footystars.persistence.repository.LeagueRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -78,7 +80,7 @@ public class LeagueService {
      */
     @Transactional(readOnly = true)
     public Optional<Integer> findCurrentSeasonByLeagueId(Long leagueId) {
-        return leagueRepository.findCurrentSeasonByLeagueId(leagueId, Boolean.TRUE);
+        return leagueRepository.findCurrentSeasonByLeagueId(leagueId);
     }
 
     /**
@@ -107,9 +109,8 @@ public class LeagueService {
      *
      * @return A list of {@link LeagueDto} containing current season leagues.
      */
-    public List<LeagueDto> findCurrentSeasonLeagues() {
-        var currentSeasonLeagues = leagueRepository.findCurrentSeasonLeagues(Boolean.TRUE);
-        return currentSeasonLeagues.stream().map(leagueMapper::toDto).toList();
+    public List<LeagueInfoDto> findCurrentSeasonLeagues() {
+        return leagueRepository.findCurrentSeasonLeaguesInfo();
     }
 
     /**
@@ -118,51 +119,39 @@ public class LeagueService {
      * @param leagueId The ID of the league.
      * @return A {@link LeagueDetailsDto} containing league information and fixtures.
      */
-    public LeagueDetailsDto findLeagueSeasonsByLeagueId(Long leagueId) {
-        var optionalSeason = leagueRepository.findCurrentSeasonByLeagueId(leagueId, Boolean.TRUE);
-        if (optionalSeason.isPresent()) {
-            var season = optionalSeason.get();
-            var optionalLeague = findByLeagueIdAndSeason(leagueId, season);
-            if (optionalLeague.isPresent()) {
-                var league = optionalLeague.get();
-                var fixtures = fixtureRepository.findFixturesByLeagueAndSeason(leagueId, season).stream()
-                        .map(result -> new LeagueMatchDto(
-                                (Long) result[0], // Fixture ID
-                                ((ZonedDateTime) result[1]).toString(), // Match Date
-                                (Long) result[2], // Home Team ID
-                                (String) result[3], // Home Team Name
-                                (String) result[4], // Home Team Logo
-                                (Long) result[5], // Away Team ID
-                                (String) result[6], // Away Team Name
-                                (String) result[7], // Away Team Logo
-                                (String) result[8], // League Name
-                                (String) result[9], // League Logo
-                                (Long) result[10], // League ID
-                                (Integer) result[11], // Season Year
-                                (String) result[12], // League Round
-                                (String) result[13], // Match Elapsed Time
-                                (String) result[14], // Match Status
-                                new MatchScoreDto(
-                                        (Integer) result[15], // Home Goals
-                                        (Integer) result[16], // Away Goals
-                                        (Integer) result[17], // Halftime Home Goals
-                                        (Integer) result[18], // Halftime Away Goals
-                                        (Integer) result[19], // Fulltime Home Goals
-                                        (Integer) result[20], // Fulltime Away Goals
-                                        (Integer) result[21], // Extra Time Home Goals
-                                        (Integer) result[22], // Extra Time Away Goals
-                                        (Integer) result[23], // Penalty Home Goals
-                                        (Integer) result[24]  // Penalty Away Goals
-                                )
-                        ))
-                        .toList();
+    public LeagueDetailsDto findCurrentLeagueSeasonByLeagueId(Long leagueId) {
+        CompletableFuture<LeagueInfoDto> leagueInfoFuture = CompletableFuture.supplyAsync(() ->
+                {
+                    try {
+                        return leagueRepository.findLeagueInfoByLeagueId(leagueId)
+                                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+                    } catch (ChangeSetPersister.NotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
 
-                var leagueDto = leagueMapper.toLeagueDetailsDto(league);
-                leagueDto.setFixtures(fixtures);
-                return leagueDto;
-            }
-        }
-        return null;
+        CompletableFuture<List<Standings.StandingApi.StandingLeague.Standing>> standingsFuture = CompletableFuture.supplyAsync(() ->
+                leagueRepository.findLeagueStandingsByLeagueId(leagueId)
+        );
+
+        CompletableFuture<List<MatchDto>> fixturesFuture = CompletableFuture.supplyAsync(() ->
+                fixtureRepository.findCurrentSeasonMatchesByLeagueId(leagueId)
+        );
+
+        CompletableFuture.allOf(leagueInfoFuture, standingsFuture, fixturesFuture).join();
+
+        return LeagueDetailsDto.builder()
+                .leagueInfo(leagueInfoFuture.join())
+                .standings(standingsFuture.join())
+                .fixtures(fixturesFuture.join())
+                .build();
     }
+
+    public List<LeagueInfoDto> getLeaguesByClubId(Long clubId) {
+        var year = LocalDate.now().getYear();
+      return   leagueRepository.findLeaguesByClubId(clubId,year );
+    }
+
 
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class H2HDto {
 
-    private List<MatchDto> lastHomeMatches;
-    private List<MatchDto> lastAwayMatches;
-    private List<MatchDto> headToHeadMatches;
+    private List<ClubMatchDto> lastHomeMatches;
+    private List<ClubMatchDto> lastAwayMatches;
+    private List<ClubMatchDto> headToHeadMatches;
 }

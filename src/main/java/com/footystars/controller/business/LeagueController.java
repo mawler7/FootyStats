@@ -1,7 +1,10 @@
 package com.footystars.controller.business;
 
+import com.footystars.model.dto.fixture.LeaguePredictionsDto;
 import com.footystars.model.dto.league.LeagueDetailsDto;
 import com.footystars.model.dto.league.LeagueDto;
+import com.footystars.model.dto.league.LeagueInfoDto;
+import com.footystars.service.business.FixtureService;
 import com.footystars.service.business.LeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import java.util.List;
 public class LeagueController {
 
     private final LeagueService leagueService;
+    private final FixtureService fixtureService;
 
     /**
      * Retrieves all leagues for the current season.
@@ -27,7 +31,7 @@ public class LeagueController {
      * @return a list of {@link LeagueDto} representing the leagues for the current season.
      */
     @GetMapping("/current")
-    public ResponseEntity<List<LeagueDto>> getAllLeagues() {
+    public ResponseEntity<List<LeagueInfoDto>> getAllLeagues() {
         var currentSeasonLeagues = leagueService.findCurrentSeasonLeagues();
         return ResponseEntity.ok(currentSeasonLeagues);
     }
@@ -40,7 +44,13 @@ public class LeagueController {
      */
     @GetMapping("/{leagueId}")
     public ResponseEntity<LeagueDetailsDto> getLeagueSeasonsByLeagueId(@PathVariable Long leagueId) {
-        var leagueSeasons = leagueService.findLeagueSeasonsByLeagueId(leagueId);
+        var leagueSeasons = leagueService.findCurrentLeagueSeasonByLeagueId(leagueId);
         return ResponseEntity.ok(leagueSeasons);
     }
+
+    @GetMapping("/stats/leagues")
+    public List<LeaguePredictionsDto> getPredictionStatsByLeague() {
+        return fixtureService.getPredictionStatsForLeagues();
+    }
+
 }

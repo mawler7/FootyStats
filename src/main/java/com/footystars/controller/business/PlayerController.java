@@ -1,5 +1,6 @@
 package com.footystars.controller.business;
 
+import com.footystars.model.dto.player.PlayerInfoDto;
 import com.footystars.model.dto.player.PlayerResponseDto;
 import com.footystars.model.dto.player.PlayerTopScorerDto;
 import com.footystars.service.business.PlayerService;
@@ -27,10 +28,10 @@ public class PlayerController {
      * @param playerId the ID of the player.
      * @return a {@link PlayerResponseDto} containing player details.
      */
-    @GetMapping("/id/{playerId}")
-    public ResponseEntity<PlayerResponseDto> getByPlayerId(@PathVariable Long playerId) {
-        var player = playerService.getPlayerDetails(playerId);
-        return ResponseEntity.ok(player);
+    @GetMapping("/info/id/{playerId}")
+    public ResponseEntity<PlayerInfoDto> getPlayer(@PathVariable("playerId") Long playerId) {
+        var playerDto = playerService.getPlayerDto(playerId);
+        return ResponseEntity.ok(playerDto);
     }
 
     /**

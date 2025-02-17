@@ -11,6 +11,8 @@ import com.footystars.service.api.PlayersFetcher;
 import com.footystars.service.api.PredictionsFetcher;
 import com.footystars.service.api.StandingsFetcher;
 import com.footystars.service.api.TeamFetcher;
+import com.footystars.service.business.FixtureService;
+import com.footystars.service.business.PredictionCheckerService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,8 @@ public class DataFetcherScheduler {
     private static final Logger log = LoggerFactory.getLogger(DataFetcherScheduler.class);
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final FixtureService fixtureService;
+    private final PredictionCheckerService predictionCheckerService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void runAtStartup() {
@@ -60,6 +64,14 @@ public class DataFetcherScheduler {
     public void updateLiveFixtures() {
         try {
             fixturesFetcher.updateLiveFixtures();
+        } catch (Exception e) {
+            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
+        }
+    }
+    @Scheduled(cron = "0 0/2 * * * *")
+    public void verifyPredictions() {
+        try {
+            predictionCheckerService.updatePredictionResult();
         } catch (Exception e) {
             throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
         }
@@ -85,17 +97,8 @@ public class DataFetcherScheduler {
         }
     }
 
-//    @Scheduled(cron = "0 0,15,30,45 11-23 * * *")
+    @Scheduled(cron = "0 0,15,30,45 11-23 * * *")
     public void updateFixtures() {
-        try {
-            fixturesFetcher.updateFixtures();
-        } catch (Exception e) {
-            throw new FetchLeaguesException(LEAGUES_FETCHING_ERROR, e);
-        }
-    }
-
-//        @Scheduled(cron = "0 0,15,30,45 11-23 * * *")
-    public void updateAllFixtures() {
         try {
             fixturesFetcher.updateFixtures();
         } catch (Exception e) {

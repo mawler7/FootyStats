@@ -13,6 +13,8 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
         uses = {PlayerMapper.class, TeamMapper.class, CoachMapper.class, LeagueMapper.class, TeamStatsMapper.class})
 public interface TeamMapper {
@@ -20,6 +22,7 @@ public interface TeamMapper {
     Team toEntity(TeamsInfo.TeamDto teamDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
     Team partialUpdate(TeamsInfo.TeamDto teamDto, @MappingTarget Team team);
 
     @Mapping(source = "teamId", target = "info.clubId")
@@ -41,7 +44,10 @@ public interface TeamMapper {
     TeamDetailsDto toDto1(Team team);
 
     @Mapping(source = "league.season", target = "league.season.year")
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Team partialUpdate(TeamDetailsDto teamDetailsDto, @MappingTarget Team team);
+
+    List<TeamDetailsDto> toTeamDetailList(List<Team> homeTeam);
 }
 

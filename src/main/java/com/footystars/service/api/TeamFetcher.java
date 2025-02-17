@@ -128,7 +128,7 @@ public class TeamFetcher {
     public void fetchClubs(@NotNull TeamsInfo teams, @NotNull Long leagueId, @NotNull Integer year) {
         try {
             teams.getResponse()
-                    .parallelStream()
+                    .stream()
                     .forEach(t -> teamService.fetchTeams(leagueId, year, t));
         } catch (Exception e) {
             logger.error(FETCH_CLUBS_ERROR, e);

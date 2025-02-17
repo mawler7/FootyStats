@@ -1,6 +1,5 @@
 package com.footystars.controller.business;
 
-import com.footystars.service.business.FixtureService;
 import com.footystars.service.business.PredictionCheckerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PredictionController {
 
     private final PredictionCheckerService predictionCheckerService;
-    private final FixtureService fixtureService;
 
     /**
      * Verifies and updates predictions that have not yet been checked.
@@ -25,7 +23,8 @@ public class PredictionController {
      */
     @GetMapping("/verify")
     public void checkPredictions() {
-        var uncheckedPredictions = fixtureService.findUncheckedPredictions();
-        predictionCheckerService.updatePredictionResult(uncheckedPredictions);
+        predictionCheckerService.updatePredictionResult();
     }
+
+
 }

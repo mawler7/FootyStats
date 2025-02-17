@@ -86,41 +86,16 @@ public class FixtureController {
         }
     }
 
-    /**
-     * Retrieves match information for a given fixture ID.
-     *
-     * @param id the fixture ID.
-     * @return match information.
-     */
-    @GetMapping("/id/info/{id}")
-    public ResponseEntity<MatchInfo> getMatchInfoById(@PathVariable Long id) {
-        var fixtures = fixtureService.getMatchInfoByFixtureId(id);
-        return ResponseEntity.ok(fixtures);
+    @GetMapping("predict/id/{id}")
+    public ResponseEntity<?> getFixtureData(@PathVariable Long id) {
+        try {
+            MatchDetailsDto matchInfo = fixtureService.getMatchDetailsDto(id);
+            return ResponseEntity.ok(matchInfo);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Match not found for ID: " + id);
+        }
     }
 
-    /**
-     * Retrieves fixtures for the previous and next 7 days.
-     *
-     * @return a list of fixtures from the past and upcoming week.
-     */
-    @Cacheable(value = "matchesCache")
-    @GetMapping("/week")
-    public ResponseEntity<List<MatchDto>> getFixtureById() {
-        var todayFixtures = fixtureService.findPreviousAndNext7DaysFixtures();
-        return ResponseEntity.ok(todayFixtures);
-    }
-
-    /**
-     * Retrieves upcoming fixtures for a specific league in the current season.
-     *
-     * @param leagueId the league ID.
-     * @return a list of upcoming fixtures.
-     */
-    @GetMapping("/upcoming/{leagueId}")
-    public ResponseEntity<List<MatchDto>> getCurrentSeasonFixturesByLeagueId(@PathVariable Long leagueId) {
-        var todayFixtures = fixtureService.findCurrentSeasonFixturesByLeagueIdNotStarted(leagueId);
-        return ResponseEntity.ok(todayFixtures);
-    }
 
     /**
      * Retrieves completed fixtures for a specific league in the current season.
@@ -142,9 +117,9 @@ public class FixtureController {
      * @return H2H match data.
      */
     @GetMapping("/h2h/{homeId}/{awayId}")
-    public ResponseEntity<H2HDto> getHeadToHeadMatches(@PathVariable Long homeId, @PathVariable Long awayId) {
-        var h2hMatches = fixtureService.getHeadToHeadMatches(homeId, awayId);
-        return ResponseEntity.ok(h2hMatches);
+    public ResponseEntity<H2HDto>  getH2HMatches(@PathVariable Long homeId, @PathVariable Long awayId) {
+        var  h2hDto = fixtureService.getHeadToHeadMatches(homeId, awayId);
+        return ResponseEntity.ok(h2hDto);
     }
 
     /**
@@ -201,6 +176,6 @@ public class FixtureController {
     @PostMapping("/savePrediction")
     public ResponseEntity<?> savePrediction(@RequestBody Map<String, Object> data) {
         return fixtureService.savePredictionToFile(data);
-
     }
+
 }

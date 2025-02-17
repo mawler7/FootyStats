@@ -1,7 +1,10 @@
 package com.footystars.model.entity;
 
 import com.footystars.model.api.Fixtures;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -39,6 +42,7 @@ public class FixturePlayer implements Serializable {
     private Fixture fixture;
 
     @Embedded
+    @AttributeOverride(name = "playerId", column = @Column(name = "player_id"))
     private Fixtures.FixtureDto.FixturePlayer.FixturePlayerInfo player;
 
     @ElementCollection

@@ -1,5 +1,6 @@
 package com.footystars.controller.business;
 
+import com.footystars.model.dto.team.ClubDto;
 import com.footystars.model.dto.team.TeamDto;
 import com.footystars.service.business.TeamService;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +21,8 @@ public class TeamController {
 
     private final TeamService teamService;
 
-    /**
-     * Retrieves team seasons for a given club ID.
-     *
-     * @param id the ID of the club.
-     * @return a list of {@link TeamDto} representing the club's seasons.
-     */
     @GetMapping("/{id}")
-    public ResponseEntity<List<TeamDto>> getTeamById(@PathVariable Long id) {
-        var teamSeasons = teamService.getTeamSeasonsByClubId(id);
-        return ResponseEntity.ok(teamSeasons);
+    public ResponseEntity<ClubDto> getClub(@PathVariable Long id) {
+        return ResponseEntity.ok(teamService.getClubDto(id));
     }
 }

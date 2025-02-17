@@ -2,17 +2,19 @@ package com.footystars.service.business;
 
 import com.footystars.model.api.TeamStatistics;
 import com.footystars.model.api.TeamsInfo;
-import com.footystars.model.entity.Team;
+import com.footystars.model.dto.fixture.ClubMatchDto;
+import com.footystars.model.dto.player.PlayerTeamSquadDto;
+import com.footystars.model.dto.team.ClubDto;
 import com.footystars.model.dto.team.TeamDto;
+import com.footystars.model.entity.Team;
 import com.footystars.persistence.mapper.PlayerMapper;
 import com.footystars.persistence.mapper.TeamMapper;
 import com.footystars.persistence.mapper.TeamStatsMapper;
 import com.footystars.persistence.repository.TeamRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,6 +185,45 @@ public class TeamService {
         } catch (Exception e) {
             log.error(TEAM_STATS_ERROR, params, e.getMessage());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public ClubDto getClubDto(Long clubId) {
+        var optionalTeam = teamRepository.findClubBasicInfo(clubId);
+        if (optionalTeam.isEmpty()) {
+            throw new EntityNotFoundException("Club not found with id: " + clubId);
+        } else {
+            var team = optionalTeam.get();
+            var clubDto = ClubDto.builder()
+                    .clubId(team.getClubId())
+                    .teamName(team.getTeamName())
+                    .logo(team.getLogo())
+                    .venueName(team.getVenueName())
+                    .image(team.getImage())
+                    .capacity(team.getCapacity())
+                    .name(team.getName())
+                    .build();
+
+            var leagues = leagueService.getLeaguesByClubId(clubId);
+            clubDto.setLeagues(leagues);
+
+
+
+            leagues.forEach(l -> {
+                Long leagueId = l.getLeagueId();
+                Integer season = l.getYear();
+                List<PlayerTeamSquadDto> players = playerService.getPlayers(clubId, leagueId, season);
+                l.setPlayers(players);
+                List<ClubMatchDto> leagueFixtures = fixtureService.findClubMatchDtosByClubId(clubId);
+                    clubDto.setFixtures(leagueFixtures);
+            });
+
+
+            var predictions = fixtureService.getTeamPredictionStats(clubId);
+            clubDto.setPredictionStats(predictions);
+            return clubDto;
+        }
+
     }
 }
 

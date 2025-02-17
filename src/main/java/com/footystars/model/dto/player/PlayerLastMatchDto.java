@@ -13,20 +13,21 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Builder
 public class PlayerLastMatchDto {
-    private Long id;
     private ZonedDateTime matchDate;
-    private String leagueLogo;
+    private Long leagueId;
     private String leagueName;
+    private String leagueLogo;
     private String homeTeamName;
-    private Integer homeScore;
-    private String homeTeamLogo;
     private String awayTeamName;
-    private Integer awayScore;
+    private String homeTeamLogo;
     private String awayTeamLogo;
-    private int minutes;
-    private int goals;
-    private int assists;
-    private int yellowCards;
-    private int redCards;
+    private Integer home;
+    private Integer away;
     private String rating;
+    private Integer minutes;
+    private Integer goals;
+    private Integer assists;
+    private Integer yellowCards;
+    private Integer redCards;
+
 }

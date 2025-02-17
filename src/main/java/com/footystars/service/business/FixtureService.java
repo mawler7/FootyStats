@@ -2,23 +2,32 @@ package com.footystars.service.business;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.footystars.model.api.Fixtures;
+import com.footystars.model.api.TeamStatistics;
 import com.footystars.model.dto.bet.BetDto;
+import com.footystars.model.dto.fixture.ClubMatchDto;
 import com.footystars.model.dto.fixture.DBViewMatchDto;
 import com.footystars.model.dto.fixture.H2HDto;
+import com.footystars.model.dto.fixture.LeaguePredictionsDto;
 import com.footystars.model.dto.fixture.MatchDetailsDto;
 import com.footystars.model.dto.fixture.MatchDto;
 import com.footystars.model.dto.fixture.MatchInfo;
+import com.footystars.model.dto.fixture.MatchInfoDetails;
+import com.footystars.model.dto.fixture.TeamPredictionStats;
 import com.footystars.model.dto.team.TeamComeBacksDto;
 import com.footystars.model.dto.team.TeamCorrectScoresDto;
+import com.footystars.model.dto.team.TeamFormDto;
 import com.footystars.model.dto.team.TeamHTDrawsDto;
 import com.footystars.model.entity.Fixture;
 import com.footystars.model.entity.FixturePlayer;
 import com.footystars.model.dto.player.PlayerDto;
 import com.footystars.model.dto.team.TeamDetailsDto;
+import com.footystars.model.entity.Player;
+import com.footystars.model.entity.Team;
 import com.footystars.persistence.mapper.FixtureMapper;
 import com.footystars.persistence.mapper.FixturePlayerMapper;
 import com.footystars.persistence.mapper.PlayerMapper;
@@ -30,8 +39,10 @@ import com.footystars.persistence.repository.FixtureSpecification;
 import com.footystars.persistence.repository.PlayerRepository;
 import com.footystars.persistence.repository.TeamRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,18 +54,27 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.springframework.data.domain.PageImpl;
+import org.springframework.beans.factory.annotation.Value;
+
+import static com.footystars.utils.TopLeagues.getTopLeaguesIds;
 
 /**
  * Service class responsible for managing Fixtures.
@@ -75,6 +95,9 @@ public class FixtureService {
     private final ObjectMapper objectMapper;
     private final FixturePlayerRepository fixturePlayerRepository;
     private final FixturePlayerMapper fixturePlayerMapper;
+
+    @Value("${PREDICTION_FILE_PATH:/app/data/predictions/}")
+    private String predictionFilePath;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -180,16 +203,87 @@ public class FixtureService {
         return fixtureRepository.findFixturesIdToUpdate();
     }
 
-    /**
-     * Retrieves all fixtures scheduled for a specific date.
-     *
-     * @param date The date in format YYYY-MM-DD.
-     * @return A list of matches played or scheduled on the given date.
-     */
-    public List<MatchDto> getMatchesByDate(String date) {
-        List<Fixture> fixtures = fixtureRepository.findByDate(date);
-        return getMatchDtos(fixtures);
+
+
+
+
+    public static ZonedDateTime getStartOfDay(String dateStr, String zoneId) {
+        LocalDate localDate = LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        return localDate.atStartOfDay(ZoneId.of(zoneId));
     }
+
+    public static ZonedDateTime getEndOfDay(String dateStr, String zoneId) {
+        LocalDate localDate = LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        ZonedDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay(ZoneId.of(zoneId));
+        return startOfNextDay.minusNanos(1);
+    }
+
+    public List<MatchDto> getMatchesByDate(String dateStr) {
+
+        ZonedDateTime startDate = getStartOfDay(dateStr, ZoneOffset.UTC.toString());
+        ZonedDateTime endDate = getEndOfDay(dateStr, ZoneOffset.UTC.toString());
+
+        CompletableFuture<List<MatchDto>> matchesFuture = CompletableFuture.supplyAsync(() -> {
+            List<MatchDto> matches = fixtureRepository.findMatchDtosByDateRange(startDate, endDate);
+            return matches;
+        });
+
+        CompletableFuture<List<BetDto>> betsFuture = matchesFuture.thenApply(matchDtos -> {
+            List<Long> fixtureIds = matchDtos.stream()
+                    .map(MatchDto::getId)
+                    .collect(Collectors.toList());
+            List<BetDto> bets = betRepository.findAverageOddsByFixtures(fixtureIds);
+            return bets;
+        });
+
+        // 3. Łączenie wyników meczów i kursów zakładów
+        CompletableFuture<List<MatchDto>> combinedMatchesFuture = matchesFuture.thenCombine(betsFuture, (matchDtos, bets) -> {
+            Map<Long, List<BetDto>> betsByFixture = bets.stream()
+                    .collect(Collectors.groupingBy(BetDto::getFixtureId));
+            matchDtos.forEach(match ->
+                    match.setBets(betsByFixture.getOrDefault(match.getId(), Collections.emptyList()))
+            );
+            return matchDtos;
+        });
+
+        List<MatchDto> matches = combinedMatchesFuture.join();
+        Set<Long> teamIds = matches.stream()
+                .flatMap(match -> Stream.of(match.getHomeTeamId(), match.getAwayTeamId()))
+                .collect(Collectors.toSet());
+
+
+        Map<Long, CompletableFuture<List<ClubMatchDto>>> h2hFutures = teamIds.stream()
+                .collect(Collectors.toMap(
+                        teamId -> teamId,
+                        teamId -> CompletableFuture.supplyAsync(() -> {
+                            return fixtureRepository.findLastMatchesByTeamId(teamId, PageRequest.of(0, 5));
+                        })
+                ));
+
+        CompletableFuture<Void> allH2hFutures = CompletableFuture.allOf(
+                h2hFutures.values().toArray(new CompletableFuture[0])
+        );
+        allH2hFutures.join();
+
+        Map<Long, List<ClubMatchDto>> h2hMap = h2hFutures.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().join()
+                ));
+
+        matches.parallelStream().forEach(match -> {
+            match.setHomeForm(h2hMap.getOrDefault(match.getAwayTeamId(), Collections.emptyList()));
+            match.setAwayForm(h2hMap.getOrDefault(match.getHomeTeamId(), Collections.emptyList()));
+        });
+
+
+        return matches;
+    }
+
+
+
+
+
 
     /**
      * Retrieves fixture IDs that have outdated status.
@@ -241,11 +335,84 @@ public class FixtureService {
      * @param id The fixture ID.
      * @return A match details DTO containing fixture information, or null if not found.
      */
+    @Transactional(readOnly = true)
     public MatchDetailsDto getMatchDetailsDto(Long id) {
-        return fixtureRepository.findById(id)
-                .map(fixtureMapper::toMatchDetailsDto)
-                .orElse(null);
+        // Pobieramy główne dane meczu asynchronicznie
+        CompletableFuture<MatchDetailsDto> matchFuture = CompletableFuture.supplyAsync(() ->
+                fixtureRepository.findById(id)
+                        .map(fixtureMapper::toMatchDetailsDto)
+                        .orElseThrow(() -> new EntityNotFoundException("Match not found with id: " + id))
+        );
+
+        // Równoległe pobieranie zakładów dla meczu
+        CompletableFuture<List<BetDto>> betsFuture = matchFuture.thenApply(match ->
+                betRepository.findAverageOddsByFixtureId(id)
+        );
+
+        // Równoległe pobieranie drużyn dla gospodarzy i gości
+        CompletableFuture<List<Team>> homeTeamsFuture = matchFuture.thenApply(match ->
+                teamRepository.findByInfoClubId(match.getHomeTeamId())
+        );
+        CompletableFuture<List<Team>> awayTeamsFuture = matchFuture.thenApply(match ->
+                teamRepository.findByInfoClubId(match.getAwayTeamId())
+        );
+
+        // Równoległe pobieranie identyfikatorów graczy dla obu drużyn
+        CompletableFuture<List<Long>> homePlayerIdsFuture = matchFuture.thenApply(match ->
+                playerRepository.findByInfoClubId(match.getHomeTeamId())
+        );
+        CompletableFuture<List<Long>> awayPlayerIdsFuture = matchFuture.thenApply(match ->
+                playerRepository.findByInfoClubId(match.getAwayTeamId())
+        );
+
+        // Łączymy identyfikatory graczy i dla każdego id wykonujemy zapytanie findByInfoPlayerId
+        CompletableFuture<List<Player>> playersFuture = homePlayerIdsFuture.thenCombine(awayPlayerIdsFuture,
+                (homeIds, awayIds) -> {
+                    // Usuwamy duplikaty
+                    Set<Long> allIds = Stream.concat(homeIds.stream(), awayIds.stream())
+                            .collect(Collectors.toSet());
+                    // Dla każdego identyfikatora tworzymy asynchroniczne zapytanie
+                    List<CompletableFuture<List<Player>>> futures = allIds.stream()
+                            .map(playerId -> CompletableFuture.supplyAsync(() ->
+                                    playerRepository.findByInfoPlayerId(playerId)
+                            ))
+                            .collect(Collectors.toList());
+                    // Czekamy, aż wszystkie zapytania się zakończą
+                    CompletableFuture<Void> allDone =
+                            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+                    // Łączymy wyniki i zwracamy listę graczy
+                    return allDone.thenApply(v ->
+                            futures.stream()
+                                    .flatMap(f -> f.join().stream())
+                                    .collect(Collectors.toList())
+                    ).join();
+                }
+        );
+
+        // Łączymy wszystkie wyniki, ustawiając dane w DTO
+        return matchFuture.thenCombine(betsFuture, (matchDto, bets) -> {
+                    matchDto.setBets(bets);
+                    return matchDto;
+                })
+                .thenCombine(homeTeamsFuture, (matchDto, homeTeams) -> {
+                    List<TeamDetailsDto> homeTeamDetails = teamMapper.toTeamDetailList(homeTeams);
+                    matchDto.setTeams(new ArrayList<>(homeTeamDetails));
+                    return matchDto;
+                })
+                .thenCombine(awayTeamsFuture, (matchDto, awayTeams) -> {
+                    List<TeamDetailsDto> awayTeamDetails = teamMapper.toTeamDetailList(awayTeams);
+                    // Dodajemy drużyny gości do już ustawionej listy drużyn
+                    matchDto.getTeams().addAll(awayTeamDetails);
+                    return matchDto;
+                })
+                .thenCombine(playersFuture, (matchDto, players) -> {
+                    matchDto.setPlayers(players);
+                    return matchDto;
+                })
+                .join();
     }
+
+
 
     /**
      * Updates associations for a fixture based on the provided fixture DTO.
@@ -295,74 +462,9 @@ public class FixtureService {
         }
     }
 
-    /**
-     * Retrieves match information, including details, players, and teams, based on fixture ID.
-     *
-     * @param id The fixture ID.
-     * @return A {@link MatchInfo} object containing match details.
-     */
-    public MatchInfo getMatchInfoByFixtureId(@NotNull Long id) {
-        MatchDetailsDto matchDetailsDto = getMatchDetailsDto(id);
-        List<PlayerDto> playersStats = getPlayersStats(matchDetailsDto);
-        Long awayTeamId = Long.valueOf(matchDetailsDto.getAwayTeamId());
-        Long homeTeamId = Long.valueOf(matchDetailsDto.getHomeTeamId());
-        var home = teamRepository.findByInfoClubId(homeTeamId);
-        var away = teamRepository.findByInfoClubId(awayTeamId);
 
-        var homeTeamStats = home.stream().map(teamMapper::toDto1).toList();
-        var awayTeamStats = away.stream().map(teamMapper::toDto1).toList();
 
-        List<TeamDetailsDto> result = new ArrayList<>();
-        result.addAll(homeTeamStats);
-        result.addAll(awayTeamStats);
 
-        return MatchInfo.builder().matchDetails(matchDetailsDto).players(playersStats).teams(result).build();
-    }
-
-    /**
-     * Retrieves player statistics for a given match.
-     *
-     * @param matchDetailsDto The match details DTO.
-     * @return A list of {@link PlayerDto} objects containing player statistics.
-     */
-    @NotNull
-    private List<PlayerDto> getPlayersStats(@NotNull MatchDetailsDto matchDetailsDto) {
-        var players = matchDetailsDto.getPlayers();
-        List<PlayerDto> list = new ArrayList<>();
-
-        if (players.isEmpty()) {
-            var leagueId = matchDetailsDto.getLeagueId();
-            var season = matchDetailsDto.getSeason();
-            var homeId = Long.valueOf(matchDetailsDto.getHomeTeamId());
-            var awayId = Long.valueOf(matchDetailsDto.getAwayTeamId());
-            var homePlayers = playerRepository.findByLeagueIdClubIdAndSeason(homeId, leagueId, season);
-            var awayPlayers = playerRepository.findByLeagueIdClubIdAndSeason(awayId, leagueId, season);
-            var homePlayersDtoList = homePlayers.stream().map(playerMapper::toPlayerDto).toList();
-            var awayPlayersDtoList = awayPlayers.stream().map(playerMapper::toPlayerDto).toList();
-
-            awayPlayersDtoList.forEach(p -> {
-                List<FixturePlayer> lastMatchesByPlayerId = fixturePlayerRepository.findLastMatchesByPlayerId(p.getInfo().getPlayerId());
-                var awayPlayersDto = fixturePlayerMapper.toDtoList(lastMatchesByPlayerId);
-                p.setFixtures(awayPlayersDto);
-            });
-
-            homePlayersDtoList.forEach(p -> {
-                List<FixturePlayer> lastMatchesByPlayerId = fixturePlayerRepository.findLastMatchesByPlayerId(p.getInfo().getPlayerId());
-                var homePlayersDto = fixturePlayerMapper.toDtoList(lastMatchesByPlayerId);
-                p.setFixtures(homePlayersDto);
-            });
-
-            list.addAll(homePlayersDtoList);
-            list.addAll(awayPlayersDtoList);
-        } else {
-            players.forEach(player -> {
-                var playersEntity = playerRepository.findByInfoPlayerId(player.getPlayer().getPlayerId());
-                List<PlayerDto> playerDtoList = playersEntity.stream().map(playerMapper::toPlayerDto).toList();
-                list.addAll(playerDtoList);
-            });
-        }
-        return list;
-    }
 
     /**
      * Retrieves a list of matches for the current season in a given league that have not started yet.
@@ -408,15 +510,16 @@ public class FixtureService {
      * @return An {@link H2HDto} containing last matches and direct encounters between the teams.
      */
     public H2HDto getHeadToHeadMatches(Long homeId, Long awayId) {
-        var lastHomeFixtures = fixtureRepository.findLastMatchesByTeamId(homeId, PageRequest.of(0, 50));
-        var lastAwayFixtures = fixtureRepository.findLastMatchesByTeamId(awayId, PageRequest.of(0, 50));
-        var headToHeadFixtures = fixtureRepository.findHeadToHeadMatches(homeId, awayId);
+        List<ClubMatchDto> headToHeadMatches = fixtureRepository.findHeadToHeadMatches(homeId,awayId);
+        List<ClubMatchDto> lastAwayMatches = fixtureRepository.findLastMatchesByTeamId(homeId,PageRequest.of(0, 50));
+        List<ClubMatchDto> lastHomeMatches = fixtureRepository.findLastMatchesByTeamId(awayId, PageRequest.of(0, 50));
 
-        var lastHomeMatches = fixtureMapper.toMatchDtoList(lastHomeFixtures);
-        var lastAwayMatches = fixtureMapper.toMatchDtoList(lastAwayFixtures);
-        var headToHeadMatches = fixtureMapper.toMatchDtoList(headToHeadFixtures);
+        return H2HDto.builder()
+                .headToHeadMatches(headToHeadMatches)
+                .lastAwayMatches(lastAwayMatches)
+                .lastHomeMatches(lastHomeMatches)
+                .build();
 
-        return new H2HDto(lastHomeMatches, lastAwayMatches, headToHeadMatches);
     }
 
     /**
@@ -445,38 +548,6 @@ public class FixtureService {
     }
 
     /**
-     * Converts a list of fixtures into a list of {@link MatchDto} objects, including average betting odds.
-     *
-     * @param fixtures The list of fixtures.
-     * @return A list of {@link MatchDto} with match details and average odds.
-     */
-    @NotNull
-    private List<MatchDto> getMatchDtos(List<Fixture> fixtures) {
-        List<Long> fixtureIds = fixtures.stream().map(Fixture::getId).toList();
-
-        List<Object[]> averageOddsData = betRepository.findAverageOddsByFixtures(fixtureIds);
-
-        Map<Long, MatchDto> matchDtoMap = fixtures.stream()
-                .collect(Collectors.toMap(Fixture::getId, fixtureMapper::toMatchDto));
-
-        averageOddsData.forEach(odd -> {
-            Long fixtureId = (Long) odd[0];
-            String value = (String) odd[1];
-            Double avgOdd = (Double) odd[2];
-            MatchDto matchDto = matchDtoMap.get(fixtureId);
-
-            switch (value) {
-                case "Home" -> matchDto.setAverageHomeOdd(avgOdd);
-                case "Draw" -> matchDto.setAverageDrawOdd(avgOdd);
-                case "Away" -> matchDto.setAverageAwayOdd(avgOdd);
-                default -> throw new IllegalArgumentException("Unexpected odd type: " + value);
-            }
-        });
-
-        return new ArrayList<>(matchDtoMap.values());
-    }
-
-    /**
      * Retrieves match details along with average betting odds.
      *
      * @param fixtureId The fixture ID.
@@ -491,20 +562,11 @@ public class FixtureService {
 
         Fixture fixture = fixtureOptional.get();
 
-        List<Object[]> averageOdds = betRepository.findAverageOddsByFixtureId(fixtureId);
+        List<BetDto> averageOdds = betRepository.findAverageOddsByFixtureId(fixtureId);
 
         MatchDetailsDto matchDetailsDto = fixtureMapper.toMatchDetailsDto(fixture);
 
-        List<BetDto> bets = averageOdds.stream()
-                .map(odd -> BetDto.builder()
-                        .betName((String) odd[0])
-                        .odd((Double) odd[1])
-                        .value(String.valueOf(odd[2]))
-                        .bookmakerName(String.valueOf(odd[2]))
-                        .build())
-                .toList();
-
-        matchDetailsDto.setBets(bets);
+        matchDetailsDto.setBets(averageOdds);
 
         return matchDetailsDto;
     }
@@ -522,7 +584,7 @@ public class FixtureService {
                         (String) result[1],
                         ((Number) result[2]).intValue(),
                         ((Number) result[3]).intValue(),
-                        LocalDateTime.ofInstant((Instant) result[4], ZoneId.systemDefault())
+                        ZonedDateTime.ofInstant((Instant) result[4], ZoneOffset.UTC)
                 ))
                 .toList();
     }
@@ -598,25 +660,22 @@ public class FixtureService {
      */
     public ResponseEntity<String> savePredictionToFile(Map<String, Object> data) {
         try {
-            // Validate required fields
             if (!data.containsKey("homeTeamName") || !data.containsKey("awayTeamName")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Missing required fields: homeTeamName or awayTeamName");
             }
 
-            // Generate filename with the current date
             String date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            String fileName = String.format("src/main/resources/predictions/%s_%s_%s_.json",
+            String filePath = String.format("%s%s_%s_%s.json", predictionFilePath,
                     data.get("homeTeamName"), data.get("awayTeamName"), date);
-            File file = new File(System.getProperty("user.dir"), fileName);
 
-            // Ensure the directory exists
+            File file = new File(filePath);
+
             if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("Failed to create directory for predictions");
             }
 
-            // Write data to JSON file
             objectMapper.writeValue(file, data);
             return ResponseEntity.ok("File saved successfully: " + file.getAbsolutePath());
         } catch (Exception e) {
@@ -625,5 +684,23 @@ public class FixtureService {
         }
     }
 
+    public List<LeaguePredictionsDto> getPredictionStatsForLeagues() {
+        List<LeaguePredictionsDto> predictions = new ArrayList<>();
+        var ids = getTopLeaguesIds();
+        ids.forEach(leagueId -> {
+            LeaguePredictionsDto leaguePredictions = fixtureRepository.findLeaguePredictions(leagueId);
+            predictions.add(leaguePredictions);
+        });
+    return predictions;
+    }
+
+
+    public List<ClubMatchDto> findClubMatchDtosByClubId(Long clubId) {
+        return fixtureRepository.findClubMatchDtosByClubIdLeagueId(clubId);
+    }
+
+    public TeamPredictionStats getTeamPredictionStats(Long clubId) {
+        return fixtureRepository.findTeamPredictions(clubId);
+    }
 }
 
